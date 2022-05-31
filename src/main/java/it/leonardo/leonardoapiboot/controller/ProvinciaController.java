@@ -1,6 +1,9 @@
 package it.leonardo.leonardoapiboot.controller;
 
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import it.leonardo.leonardoapiboot.entity.Provincia;
 import it.leonardo.leonardoapiboot.entity.Regione;
 import it.leonardo.leonardoapiboot.service.ProvinciaService;
@@ -29,6 +32,12 @@ public class ProvinciaController {
     private RegioneService regioneService;
 
     @GetMapping
+    @Operation(description = "Restituisce una lista di tutti le province disponibili sul database.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Richiesta andata a buon fine. La lista è popolata e restituita"),
+            @ApiResponse(responseCode = "204", description = "Richiesta andata a buon fine, ma la lista è vuota"),
+            @ApiResponse(responseCode = "500", description = "Errore generico del server")
+    })
     public ResponseEntity<List<Provincia>> getAll() {
         log.info("Invoked ProvinciaController.getAll()");
         ResponseEntity<List<Provincia>> resp = null;
@@ -48,6 +57,12 @@ public class ProvinciaController {
     }
 
     @GetMapping("{id}")
+    @Operation(description = "Restituisce l'oggetto relativo alla provincia il quale id è fornito")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Richiesta andata a buon fine, l'oggetto è restituito"),
+            @ApiResponse(responseCode = "404", description = "Non è stato possibile trovare l'oggetto associato all'id fornito"),
+            @ApiResponse(responseCode = "500", description = "Errore generico del server")
+    })
     public ResponseEntity<Provincia> getById(@PathVariable("id") Integer id) {
         log.info("Invoked ProvinciaController.getById(" + id + ")");
         ResponseEntity<Provincia> resp = null;
@@ -67,6 +82,12 @@ public class ProvinciaController {
     }
 
     @GetMapping("/by-regione/{id}")
+    @Operation(description = "Restituisce una lista di tutti le province disponibili sul database, che si trovano all'interno della regione il quale id è fornito")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Richiesta andata a buon fine. La lista è popolata e restituita"),
+            @ApiResponse(responseCode = "204", description = "Richiesta andata a buon fine, ma la lista è vuota"),
+            @ApiResponse(responseCode = "500", description = "Errore generico del server")
+    })
     public ResponseEntity<Object> getByRegione(@PathVariable("id") Integer id) {
         log.info("Invoked ProvinciaController.getByRegione(" + id + ")");
         ResponseEntity<Object> resp = null;
