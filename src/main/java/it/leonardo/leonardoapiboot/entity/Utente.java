@@ -30,15 +30,12 @@ public class Utente implements Serializable {
 	@Column(name = "username")
 	private String username;
 
-	@JsonIgnore
 	@Column(name = "email")
 	private String email;
 
-	@JsonIgnore
 	@Column(name = "password")
 	private String password;
 
-	@JsonIgnore
 	@Column(name = "telefono", length = 10)
 	private String telefono;
 
@@ -59,7 +56,6 @@ public class Utente implements Serializable {
 	@Column(name = "moreinfo")
 	private String moreInfo;
 
-	@JsonIgnore
 	@Column(name = "indirizzo")
 	private String indirizzo;
 
@@ -69,7 +65,6 @@ public class Utente implements Serializable {
 	@Column(name = "foto")
 	private String foto;
 
-	@JsonIgnore
 	@Column(name = "datanascita")
 	@Temporal(TemporalType.DATE)
 	private Date dataNascita;
@@ -80,7 +75,6 @@ public class Utente implements Serializable {
 	@Column(name = "cap")
 	private String cap;
 
-	@JsonIgnore
 	@Column(name = "email_confermata")
 	private Boolean email_confermata = false;
 
@@ -114,7 +108,6 @@ public class Utente implements Serializable {
 	@ManyToOne
 	private Citta citta;
 
-	@JsonIgnore
 	@OneToOne(mappedBy = "utente")
 	@PrimaryKeyJoinColumn
 	private UtentiPreferences preferences;
