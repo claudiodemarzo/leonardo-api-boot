@@ -331,6 +331,7 @@ public class Utente implements Serializable {
 		this.preferences = preferences;
 	}
 
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;

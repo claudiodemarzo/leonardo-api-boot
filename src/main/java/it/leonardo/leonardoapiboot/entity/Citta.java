@@ -1,9 +1,11 @@
 package it.leonardo.leonardoapiboot.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.List;
 import java.util.Set;
 
 
@@ -32,17 +34,21 @@ public class Citta implements Serializable {
     @Column(name = "cap", length = 5)
     private String cap;
 
-    @JsonIgnore
+    @JsonBackReference
     @OneToMany(mappedBy = "citta")
     private Set<Istituto> istituti;
 
-    @JsonIgnore
+    @JsonBackReference
     @OneToMany(mappedBy = "citta")
     private Set<AnnunciLibri> annunci;
 
-    @JsonIgnore
+    @JsonBackReference
     @OneToMany(mappedBy = "citta")
     private Set<Utente> utenti;
+
+    @JsonBackReference
+    @OneToMany(mappedBy = "citta")
+    private List<UtentePublicInfo> utentePublicInfos;
 
     public Integer getCittaId() {
         return cittaId;
@@ -114,6 +120,14 @@ public class Citta implements Serializable {
 
     public void setUtenti(Set<Utente> utenti) {
         this.utenti = utenti;
+    }
+
+    public List<UtentePublicInfo> getUtentePublicInfos() {
+        return utentePublicInfos;
+    }
+
+    public void setUtentePublicInfos(List<UtentePublicInfo> utentePublicInfos) {
+        this.utentePublicInfos = utentePublicInfos;
     }
 
     public Citta() {

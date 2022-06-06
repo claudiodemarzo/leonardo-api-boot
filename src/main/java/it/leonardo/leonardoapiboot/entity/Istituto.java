@@ -1,10 +1,12 @@
 package it.leonardo.leonardoapiboot.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -39,7 +41,9 @@ public class Istituto implements Serializable {
     @Column(name = "lng")
     private Float lng;
 
-
+    @JsonBackReference
+    @OneToMany(mappedBy = "istituto")
+    private List<UtentePublicInfo> utentePublicInfos;
 
     public Integer getIstitutoId() {
         return istitutoId;
@@ -103,6 +107,22 @@ public class Istituto implements Serializable {
 
     public void setUtenti(Set<Utente> utente) {
         this.utente = utente;
+    }
+
+    public Set<Utente> getUtente() {
+        return utente;
+    }
+
+    public void setUtente(Set<Utente> utente) {
+        this.utente = utente;
+    }
+
+    public List<UtentePublicInfo> getUtentePublicInfos() {
+        return utentePublicInfos;
+    }
+
+    public void setUtentePublicInfos(List<UtentePublicInfo> utentePublicInfos) {
+        this.utentePublicInfos = utentePublicInfos;
     }
 
     public Istituto() {
