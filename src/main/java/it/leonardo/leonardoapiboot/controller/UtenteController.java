@@ -4,10 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import it.leonardo.leonardoapiboot.entity.*;
-import it.leonardo.leonardoapiboot.entity.form.LoginForm;
-import it.leonardo.leonardoapiboot.entity.form.RegisterForm;
-import it.leonardo.leonardoapiboot.entity.form.UpdatePrivateForm;
-import it.leonardo.leonardoapiboot.entity.form.UpdatePublicForm;
+import it.leonardo.leonardoapiboot.entity.form.*;
 import it.leonardo.leonardoapiboot.service.*;
 import nu.pattern.OpenCV;
 import org.apache.batik.transcoder.TranscoderInput;
@@ -329,7 +326,7 @@ public class UtenteController {
 			@ApiResponse(responseCode = "500", description = "Errore generico del server")
 	})
 	public ResponseEntity<Object> updatePrivate(UpdatePrivateForm form) {
-		System.out.println("Invoked UtenteController.updatePrivate("+form+")");
+		log.info("Invoked UtenteController.updatePrivate("+form+")");
 		String token = session.getAttribute("token") == null ? null : session.getAttribute("token").toString();
 
 		if (token == null) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -365,7 +362,7 @@ public class UtenteController {
 			@ApiResponse(responseCode = "500", description = "Errore generico del server")
 	})
 	public ResponseEntity<Object> getPreferences() {
-		System.out.println("Invoked UtenteController.getPreferences()");
+		log.info("Invoked UtenteController.getPreferences()");
 		String token = session.getAttribute("token") == null ? null : session.getAttribute("token").toString();
 
 		if (token == null) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -388,7 +385,7 @@ public class UtenteController {
 			@ApiResponse(responseCode = "500", description = "Errore generico del server")
 	})
 	public ResponseEntity<Object> setPreferences(String preferences) {
-		System.out.println("Invoked UtenteController.setPreferences("+preferences+")");
+		log.info("Invoked UtenteController.setPreferences("+preferences+")");
 		String token = session.getAttribute("token") == null ? null : session.getAttribute("token").toString();
 
 		if (token == null) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -406,5 +403,36 @@ public class UtenteController {
 		}
 	}
 
+	@PatchMapping("/password")
+	@Operation(description = "Permette di aggiornare la password dell'utente")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "La modifica è stata effettuata con successo"),
+			@ApiResponse(responseCode = "401", description = "Il token di sessione non è settato, di conseguenza non è possibile accedere a questo endpoint."),
+			@ApiResponse(responseCode = "400", description = "La password fornita è errata, o le password non coincidono"),
+			@ApiResponse(responseCode = "500", description = "Errore generico del server")
+	})
+	public ResponseEntity<Object> updatePassword(UpdatePasswordForm form){
+		log.info("Invoked UtenteController.updatePassword("+form+")");
+		try{
+			String token = session.getAttribute("token") == null ? null : session.getAttribute("token").toString();
 
+			if (token == null) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+
+			if (!form.getNewPassword().equals(form.getConfirmPassword())) return ResponseEntity.badRequest().build();
+
+			Utente u = service.findById(Integer.parseInt(session.getAttribute("userID").toString())).get();
+			String password = u.getPassword();
+
+			if (!passwordEncoder.matches(form.getOldPassword(), password)) return ResponseEntity.badRequest().build();
+
+			String newPass = passwordEncoder.encode(form.getNewPassword());
+
+			u.setPassword(newPass);
+			Utente uSaved = service.save(u);
+
+			return ResponseEntity.ok("");
+		}catch (Exception e){
+			return ResponseEntity.internalServerError().build();
+		}
+	}
 }
