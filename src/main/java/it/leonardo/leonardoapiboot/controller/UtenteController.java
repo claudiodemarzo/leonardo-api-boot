@@ -3,18 +3,12 @@ package it.leonardo.leonardoapiboot.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import it.leonardo.leonardoapiboot.entity.Citta;
-import it.leonardo.leonardoapiboot.entity.Istituto;
-import it.leonardo.leonardoapiboot.entity.Utente;
-import it.leonardo.leonardoapiboot.entity.UtentiPreferences;
+import it.leonardo.leonardoapiboot.entity.*;
 import it.leonardo.leonardoapiboot.entity.form.LoginForm;
 import it.leonardo.leonardoapiboot.entity.form.RegisterForm;
 import it.leonardo.leonardoapiboot.entity.form.UpdatePrivateForm;
 import it.leonardo.leonardoapiboot.entity.form.UpdatePublicForm;
-import it.leonardo.leonardoapiboot.service.CittaService;
-import it.leonardo.leonardoapiboot.service.IstitutoService;
-import it.leonardo.leonardoapiboot.service.UtenteService;
-import it.leonardo.leonardoapiboot.service.UtentiPreferencesService;
+import it.leonardo.leonardoapiboot.service.*;
 import nu.pattern.OpenCV;
 import org.apache.batik.transcoder.TranscoderInput;
 import org.apache.batik.transcoder.TranscoderOutput;
@@ -69,6 +63,9 @@ public class UtenteController {
 
 	@Autowired
 	private UtentiPreferencesService utentiPreferencesService;
+
+	@Autowired
+	private UtentePublicInfoService utentePublicInfoService;
 
 	@PostMapping("/register")
 	@Operation(description = "Esegue la registrazione in db di un utente")
@@ -190,22 +187,31 @@ public class UtenteController {
 	}
 
 	@GetMapping("/getinfo")
-	@Operation(description = "Ottiene le informazioni dall'utente dal token di sessione.")
+	@Operation(description = "Ottiene le informazioni dall'utente dal token di sessione. Se il parametro query 'details' è presente con valore 'true', ottiene tutte le informazioni, anche quelle private. Altrimenti ritorna solo quelle pubbliche")
 	@ApiResponses(value = {
-			@ApiResponse(responseCode = "200", description = "Restituisce l'oggetto Utente in questione"),
+			@ApiResponse(responseCode = "200", description = "Restituisce l'oggetto Utente/UtentePublicInfo in questione"),
 			@ApiResponse(responseCode = "401", description = "Il token di sessione non è settato, di conseguenza non è possibile accedere a questo endpoint."),
 			@ApiResponse(responseCode = "500", description = "Errore generico del server.")
 	})
-	public ResponseEntity<Utente> getInfo() {
-		log.info("Invoked UtenteController.getInfo()");
+	public ResponseEntity<Object> getInfo(@RequestParam(required = false, defaultValue = "false") Boolean details) {
+		log.info("Invoked UtenteController.getInfo("+details+")");
 		String token = session.getAttribute("token") == null ? null : session.getAttribute("token").toString();
 
 		if (token == null) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 
+		if(details){
+			try {
+				Optional<Utente> u = service.findById(Integer.parseInt(session.getAttribute("userID").toString()));
+				if (!u.isPresent()) return ResponseEntity.internalServerError().build();
+				return ResponseEntity.ok(u.get());
+			} catch (Exception e) {
+				return ResponseEntity.internalServerError().build();
+			}
+		}
 		try {
-			Optional<Utente> u = service.findById(Integer.parseInt(session.getAttribute("userID").toString()));
-			if (!u.isPresent()) return ResponseEntity.internalServerError().build();
-			return ResponseEntity.ok(u.get());
+			Optional<UtentePublicInfo> upi = utentePublicInfoService.getById(Integer.parseInt(session.getAttribute("userID").toString()));
+			if (!upi.isPresent()) return ResponseEntity.internalServerError().build();
+			return ResponseEntity.ok(upi.get());
 		} catch (Exception e) {
 			return ResponseEntity.internalServerError().build();
 		}
