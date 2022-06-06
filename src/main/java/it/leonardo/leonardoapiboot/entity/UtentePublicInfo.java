@@ -13,39 +13,39 @@ public class UtentePublicInfo {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column
+    @Column(name = "username")
     private String username;
 
-    @Column
+    @Column(name = "bio")
     private String bio;
 
-    @Column
+    @Column(name = "nome")
     private String nome;
 
-    @Column
+    @Column(name = "cognome")
     private String cognome;
 
     @JsonManagedReference
     @ManyToOne
-    @JoinColumn
+    @JoinColumn(name = "istituto")
     private Istituto istituto;
 
-    @Column
+    @Column(name = "moreinfo")
     private String moreinfo;
 
-    @Column
+    @Column(name = "punti")
     private Integer punti;
 
-    @Column
+    @Column(name = "foto")
     private String foto;
 
-    @Column
+    @Column(name = "genere")
     private String genere;
 
-    @Column
+    @Column(name = "cap")
     private String cap;
 
-    @JoinColumn
+    @JoinColumn(name = "citta")
     @JsonManagedReference
     @ManyToOne
     private Citta citta;
