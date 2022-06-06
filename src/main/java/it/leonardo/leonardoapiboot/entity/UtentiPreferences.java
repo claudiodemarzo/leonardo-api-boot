@@ -24,7 +24,7 @@ public class UtentiPreferences implements Serializable {
 	private Utente utente;
 
 	@Column(name = "preferences")
-	private String preferences;
+	private String preferences = "{\"avatar\" : \"false\", \"avatarJson\" : {} }";
 
 	public Integer getUtenteId() {
 		return utenteId;
