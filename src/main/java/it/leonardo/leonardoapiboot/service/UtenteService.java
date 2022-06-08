@@ -16,5 +16,7 @@ public interface UtenteService {
 
     Optional<Utente> findByUsernameOrEmail(String query);
 
+    Optional<Utente> findByResetToken(String token);
+
     Utente save(Utente u);
 }

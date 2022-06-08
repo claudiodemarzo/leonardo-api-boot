@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpSession;
+import javax.xml.ws.Response;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.io.File;
@@ -468,6 +469,44 @@ public class UtenteController {
 			mailSender.send(smm);
 			Utente uSaved = service.save(u);
 			return ResponseEntity.ok("");
+		}catch (Exception e){
+			return ResponseEntity.internalServerError().build();
+		}
+	}
+
+	@PatchMapping("/resetpassword")
+	@Operation(description = "Permette di effettuare il reset della password attraverso il token di richiesta.")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "Reset effettuato con successo"),
+			@ApiResponse(responseCode = "404", description = "Non è stato possibile individuare l'utente"),
+			@ApiResponse(responseCode = "400", description = "Le password non coincidono, o manca qualche campo richiesto"),
+			@ApiResponse(responseCode = "500", description = "Errore generico del server")
+	})
+	public ResponseEntity<Object> resetPassword(ResetPasswordForm form){
+		log.info("Invoked UtenteController.resetPassword("+form+")");
+		if(form.getToken() == null) return ResponseEntity.badRequest().body("\"missingField\" : \"token\"");
+		if(form.getNewPassword() == null) return ResponseEntity.badRequest().body("\"missingField\" : \"newPassword\"");
+		if(form.getConfirmPassword() == null) return ResponseEntity.badRequest().body("\"missingField\" : \"confirmPassword\"");
+		if(!form.getConfirmPassword().equals(form.getNewPassword())) return ResponseEntity.badRequest().body("\"invalidField\" : \"confirmPassword\"");
+
+		try{
+			Optional<Utente> optionalUtente = service.findByResetToken(form.getToken());
+			if(!optionalUtente.isPresent()) return ResponseEntity.notFound().build();
+			Utente u = optionalUtente.get();
+
+			String password = passwordEncoder.encode(form.getNewPassword());
+			u.setResetToken(null);
+			u.setPassword(password);
+
+			Utente uSaved = service.save(u);
+
+			SimpleMailMessage smm = new SimpleMailMessage();
+			smm.setTo(u.getEmail());
+			smm.setSubject("Password Resettata");
+			smm.setText("Uè vedi che la password è stata resettata");
+			mailSender.send(smm);
+
+			return ResponseEntity.ok().build();
 		}catch (Exception e){
 			return ResponseEntity.internalServerError().build();
 		}

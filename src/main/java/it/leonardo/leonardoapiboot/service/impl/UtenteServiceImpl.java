@@ -40,6 +40,11 @@ public class UtenteServiceImpl implements UtenteService {
     }
 
     @Override
+    public Optional<Utente> findByResetToken(String token) {
+        return repo.findAllByResetToken(token);
+    }
+
+    @Override
     public Utente save(Utente u){
         return repo.saveAndFlush(u);
     }
