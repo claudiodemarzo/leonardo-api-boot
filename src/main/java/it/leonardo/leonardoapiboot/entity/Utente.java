@@ -78,6 +78,9 @@ public class Utente implements Serializable {
 	@Column(name = "email_confermata")
 	private Boolean email_confermata = false;
 
+	@Column(name = "reset_token")
+	private String resetToken;
+
 	@JsonManagedReference
 	@OneToMany(mappedBy = "utente")
 	private List<TagsUtente> tags;
@@ -324,6 +327,13 @@ public class Utente implements Serializable {
 		this.preferences = preferences;
 	}
 
+	public String getResetToken() {
+		return resetToken;
+	}
+
+	public void setResetToken(String resetToken) {
+		this.resetToken = resetToken;
+	}
 
 	@Override
 	public boolean equals(Object o) {
