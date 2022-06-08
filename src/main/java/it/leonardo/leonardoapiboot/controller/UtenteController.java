@@ -21,6 +21,8 @@ import org.opencv.imgcodecs.Imgcodecs;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -63,6 +65,9 @@ public class UtenteController {
 
 	@Autowired
 	private UtentePublicInfoService utentePublicInfoService;
+
+	@Autowired
+	private JavaMailSender mailSender;
 
 	@PostMapping("/register")
 	@Operation(description = "Esegue la registrazione in db di un utente")
@@ -432,6 +437,36 @@ public class UtenteController {
 			u.setPassword(newPass);
 			Utente uSaved = service.save(u);
 
+			return ResponseEntity.ok("");
+		}catch (Exception e){
+			return ResponseEntity.internalServerError().build();
+		}
+	}
+
+	@PostMapping("/resetpassword")
+	@Operation(description = "Permette di effettuare il reset della password attraverso l'username o l'email dell'utente.")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "Richiesta di reset effettuata con successo, email inviata"),
+			@ApiResponse(responseCode = "404", description = "Non è stato possibile individuare l'utente"),
+			@ApiResponse(responseCode = "500", description = "Errore generico del server")
+	})
+	public ResponseEntity<Object> resetPassword(String query){
+		log.info("Invoked UtenteController.resetPassword("+query+")");
+		try{
+			Optional<Utente> utenteOpt = service.findByUsernameOrEmail(query);
+			if(!utenteOpt.isPresent()) return ResponseEntity.notFound().build();
+			Utente u = utenteOpt.get();
+
+			SimpleMailMessage smm = new SimpleMailMessage();
+			String uuid = String.valueOf(UUID.randomUUID());
+			u.setResetToken(uuid);
+
+			smm.setTo(u.getEmail());
+			smm.setSubject("Reset Password");
+			smm.setText("Ecco il link di reset password: https://leonardostart.tk/reset-password?token="+uuid);
+
+			mailSender.send(smm);
+			Utente uSaved = service.save(u);
 			return ResponseEntity.ok("");
 		}catch (Exception e){
 			return ResponseEntity.internalServerError().build();

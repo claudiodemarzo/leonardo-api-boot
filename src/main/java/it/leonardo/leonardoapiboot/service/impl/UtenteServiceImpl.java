@@ -35,6 +35,11 @@ public class UtenteServiceImpl implements UtenteService {
     }
 
     @Override
+    public Optional<Utente> findByUsernameOrEmail(String query) {
+        return repo.findAllByUsernameOrEmail(query, query);
+    }
+
+    @Override
     public Utente save(Utente u){
         return repo.saveAndFlush(u);
     }

@@ -14,5 +14,7 @@ public interface UtenteService {
 
     Optional<Utente> findByUsernameAndPassword(String username, String hashedPass);
 
+    Optional<Utente> findByUsernameOrEmail(String query);
+
     Utente save(Utente u);
 }
