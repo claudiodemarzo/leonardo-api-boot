@@ -8,10 +8,7 @@ import it.leonardo.leonardoapiboot.entity.AnnunciLibri;
 import it.leonardo.leonardoapiboot.entity.Citta;
 import it.leonardo.leonardoapiboot.entity.Libro;
 import it.leonardo.leonardoapiboot.entity.Utente;
-import it.leonardo.leonardoapiboot.service.AnnunciLibriService;
-import it.leonardo.leonardoapiboot.service.CittaService;
-import it.leonardo.leonardoapiboot.service.LibroService;
-import it.leonardo.leonardoapiboot.service.UtenteService;
+import it.leonardo.leonardoapiboot.service.*;
 import it.leonardo.leonardoapiboot.utils.AnnunciComparator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -45,6 +42,9 @@ public class AnnunciLibriController {
 
 	@Autowired
 	private HttpSession session;
+
+	@Autowired
+	private UtentePublicInfoService utentePublicInfoService;
 
 	@Operation(description = "Restituisce tutti gli annunci")
 	@ApiResponses(value = {
@@ -232,7 +232,7 @@ public class AnnunciLibriController {
 
 			if (token == null) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 
-			al.setUtente(utenteService.findById(Integer.parseInt(session.getAttribute("userID").toString())).get());
+			al.setUtente(utentePublicInfoService.getById(Integer.parseInt(session.getAttribute("userID").toString())).get());
 			AnnunciLibri alSaved = service.save(al);
 			alSaved.setUtente(null);
 			alSaved.getLibro().setAnnunci(null);
