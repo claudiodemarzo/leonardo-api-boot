@@ -1,5 +1,7 @@
 package it.leonardo.leonardoapiboot.entity.form;
 
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import java.util.Date;
 
 public class RegisterForm {
@@ -8,7 +10,10 @@ public class RegisterForm {
 	private String password;
 	private String nome;
 	private String cognome;
+
+	@Temporal(TemporalType.DATE)
 	private Date dataNascita;
+
 	private String genere;
 
 	public String getUsername() {
