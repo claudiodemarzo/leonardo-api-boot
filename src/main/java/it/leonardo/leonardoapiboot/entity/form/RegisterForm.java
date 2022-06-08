@@ -1,9 +1,5 @@
 package it.leonardo.leonardoapiboot.entity.form;
 
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import java.util.Date;
-
 public class RegisterForm {
 	private String username;
 	private String email;

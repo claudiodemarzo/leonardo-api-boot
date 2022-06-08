@@ -358,8 +358,8 @@ public class Utente implements Serializable {
 		this.email = rf.getEmail();
 		this.genere = rf.getGenere();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-		Date d = sdf.parse(rf.getDataNascita());
-		this.dataNascita = d;
+		sdf.setLenient(true);
+		this.dataNascita = sdf.parse(rf.getDataNascita());
 	}
 
 	public void copyFromPublicUpdateForm(UpdatePublicForm upf) {
