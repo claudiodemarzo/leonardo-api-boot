@@ -131,7 +131,7 @@ public class UtenteController {
 				return ResponseEntity.badRequest().body("{\"missingField\" : \"password\"}");
 			Optional<Utente> u;
 			try {
-				u = service.findByUsername(data.getUsername());
+				u = service.findByUsernameOrEmail(data.getUsername());
 				if (!u.isPresent()) return ResponseEntity.notFound().build();
 				if (!passwordEncoder.matches(data.getPassword(), u.get().getPassword()))
 					return ResponseEntity.notFound().build();
