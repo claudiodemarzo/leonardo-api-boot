@@ -12,6 +12,8 @@ import org.json.JSONPropertyName;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Entity
@@ -348,14 +350,16 @@ public class Utente implements Serializable {
 		return Objects.hash(getUtenteId(), getCreatedAt(), getUsername(), getEmail(), getPassword(), getTelefono(), getBio(), getNome(), getCognome(), getIstituto(), getPunti(), getFoto(), getEmail_confermata(), getTags(), getAnnunciLibri(), getCarrello(), getRecensioniRicevute(), getRecensioniFatte());
 	}
 
-	public void copyFromRegisterForm(RegisterForm rf) {
+	public void copyFromRegisterForm(RegisterForm rf) throws ParseException {
 		this.username = rf.getUsername();
 		this.password = rf.getPassword();
 		this.nome = rf.getNome();
 		this.cognome = rf.getCognome();
 		this.email = rf.getEmail();
 		this.genere = rf.getGenere();
-		this.dataNascita = rf.getDataNascita();
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		Date d = sdf.parse(rf.getDataNascita());
+		this.dataNascita = d;
 	}
 
 	public void copyFromPublicUpdateForm(UpdatePublicForm upf) {

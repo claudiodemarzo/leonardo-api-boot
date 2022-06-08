@@ -10,10 +10,7 @@ public class RegisterForm {
 	private String password;
 	private String nome;
 	private String cognome;
-
-	@Temporal(TemporalType.DATE)
-	private Date dataNascita;
-
+	private String dataNascita;
 	private String genere;
 
 	public String getUsername() {
@@ -56,11 +53,11 @@ public class RegisterForm {
 		this.cognome = cognome;
 	}
 
-	public Date getDataNascita() {
+	public String getDataNascita() {
 		return dataNascita;
 	}
 
-	public void setDataNascita(Date dataNascita) {
+	public void setDataNascita(String dataNascita) {
 		this.dataNascita = dataNascita;
 	}
 
