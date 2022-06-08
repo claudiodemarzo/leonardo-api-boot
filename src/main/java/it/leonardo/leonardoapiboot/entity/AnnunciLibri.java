@@ -38,8 +38,7 @@ public class AnnunciLibri{
 
 	@ManyToOne
 	@JoinColumn(name = "utente")
-	@JsonIgnoreProperties({"email","telefono"})
-	private Utente utente;
+	private UtentePublicInfo utente;
 
 	@JsonBackReference
 	@ManyToOne
@@ -98,11 +97,11 @@ public class AnnunciLibri{
 		this.citta = citta;
 	}
 
-	public Utente getUtente() {
+	public UtentePublicInfo getUtente() {
 		return utente;
 	}
 
-	public void setUtente(Utente utente) {
+	public void setUtente(UtentePublicInfo utente) {
 		this.utente = utente;
 	}
 
