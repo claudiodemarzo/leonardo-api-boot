@@ -78,6 +78,8 @@ public class UtenteController {
 		if (form.getPassword() == null) return ResponseEntity.badRequest().body("{\"missingField\" : \"password\"}");
 		if (form.getNome() == null) return ResponseEntity.badRequest().body("{\"missingField\" : \"nome\"}");
 		if (form.getCognome() == null) return ResponseEntity.badRequest().body("{\"missingField\" : \"cognome\"}");
+		if (form.getDataNascita() == null) return ResponseEntity.badRequest().body("{\"missingField\" : \"dataNascita\"}");
+		if (form.getGenere() == null) return ResponseEntity.badRequest().body("{\"missingField\" : \"genere\"}");
 		if (form.getUsername().length() < 3)
 			return ResponseEntity.badRequest().body("{\"invalidField\" : \"username\"}");
 

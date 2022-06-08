@@ -1,11 +1,15 @@
 package it.leonardo.leonardoapiboot.entity.form;
 
+import java.util.Date;
+
 public class RegisterForm {
 	private String username;
 	private String email;
 	private String password;
 	private String nome;
 	private String cognome;
+	private Date dataNascita;
+	private String genere;
 
 	public String getUsername() {
 		return username;
@@ -47,6 +51,22 @@ public class RegisterForm {
 		this.cognome = cognome;
 	}
 
+	public Date getDataNascita() {
+		return dataNascita;
+	}
+
+	public void setDataNascita(Date dataNascita) {
+		this.dataNascita = dataNascita;
+	}
+
+	public String getGenere() {
+		return genere;
+	}
+
+	public void setGenere(String genere) {
+		this.genere = genere;
+	}
+
 	@Override
 	public String toString() {
 		return "RegisterForm{" +
@@ -55,6 +75,8 @@ public class RegisterForm {
 				", password='" + password + '\'' +
 				", nome='" + nome + '\'' +
 				", cognome='" + cognome + '\'' +
+				", dataNascita=" + dataNascita +
+				", genere='" + genere + '\'' +
 				'}';
 	}
 

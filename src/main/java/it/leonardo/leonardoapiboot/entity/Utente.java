@@ -344,6 +344,8 @@ public class Utente implements Serializable {
 		this.nome = rf.getNome();
 		this.cognome = rf.getCognome();
 		this.email = rf.getEmail();
+		this.genere = rf.getGenere();
+		this.dataNascita = rf.getDataNascita();
 	}
 
 	public void copyFromPublicUpdateForm(UpdatePublicForm upf) {
