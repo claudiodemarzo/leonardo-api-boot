@@ -15,4 +15,6 @@ public interface UtentiRepository extends JpaRepository<Utente, Integer> {
     Optional<Utente> findAllByUsernameOrEmail(String u, String e);
 
     Optional<Utente> findAllByResetToken(String s);
+
+    Optional<Utente> findAllByConfirmToken(String s);
 }

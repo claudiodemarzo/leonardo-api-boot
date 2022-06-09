@@ -18,5 +18,7 @@ public interface UtenteService {
 
     Optional<Utente> findByResetToken(String token);
 
+    Optional<Utente> findByConfirmToken(String token);
+
     Utente save(Utente u);
 }

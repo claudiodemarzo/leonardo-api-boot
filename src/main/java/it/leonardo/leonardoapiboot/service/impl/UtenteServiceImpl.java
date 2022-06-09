@@ -45,6 +45,11 @@ public class UtenteServiceImpl implements UtenteService {
     }
 
     @Override
+    public Optional<Utente> findByConfirmToken(String token) {
+        return repo.findAllByConfirmToken(token);
+    }
+
+    @Override
     public Utente save(Utente u){
         return repo.saveAndFlush(u);
     }
