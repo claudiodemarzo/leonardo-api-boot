@@ -101,6 +101,7 @@ public class UtenteController {
 			Utente u = new Utente();
 			u.copyFromRegisterForm(form);
 			u.setPassword(passwordEncoder.encode(u.getPassword()));
+			u.getPreferences().setPreferences("{\"avatar\" : false, \"avatarJson\" : {} }");
 			uSaved = service.save(u);
 
 			String token = UUID.randomUUID().toString();

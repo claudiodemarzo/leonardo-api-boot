@@ -80,8 +80,13 @@ public class Utente implements Serializable {
 	@Column(name = "email_confermata")
 	private Boolean email_confermata = false;
 
+	@JsonIgnore
 	@Column(name = "reset_token")
 	private String resetToken;
+
+	@JsonIgnore
+	@Column(name = "confirm_token")
+	private String confirmToken;
 
 	@JsonManagedReference
 	@OneToMany(mappedBy = "utente")
@@ -335,6 +340,14 @@ public class Utente implements Serializable {
 
 	public void setResetToken(String resetToken) {
 		this.resetToken = resetToken;
+	}
+
+	public String getConfirmToken() {
+		return confirmToken;
+	}
+
+	public void setConfirmToken(String confirmToken) {
+		this.confirmToken = confirmToken;
 	}
 
 	@Override
