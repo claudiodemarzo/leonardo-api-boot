@@ -1,10 +1,7 @@
 package it.leonardo.leonardoapiboot.entity;
 
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.*;
 import it.leonardo.leonardoapiboot.entity.form.RegisterForm;
 import it.leonardo.leonardoapiboot.entity.form.UpdatePrivateForm;
 import it.leonardo.leonardoapiboot.entity.form.UpdatePublicForm;
@@ -27,6 +24,7 @@ public class Utente implements Serializable {
 
 	@Column(name = "created_at")
 	@Temporal(TemporalType.DATE)
+	@JsonFormat(pattern="yyyy-MM-dd")
 	private Date createdAt = Calendar.getInstance().getTime();
 
 	@Column(name = "username")
@@ -70,6 +68,7 @@ public class Utente implements Serializable {
 
 	@Column(name = "datanascita")
 	@Temporal(TemporalType.DATE)
+	@JsonFormat(pattern="yyyy-MM-dd")
 	private Date dataNascita;
 
 	@Column(name = "genere")
@@ -383,15 +382,13 @@ public class Utente implements Serializable {
 		this.moreInfo = upf.getMoreInfo();
 	}
 
-	public void copyFromPrivateUpdateForm(UpdatePrivateForm upf) throws ParseException {
+	public void copyFromPrivateUpdateForm(UpdatePrivateForm upf) {
 		if(!email.equals(upf.getEmail())){
 			email_confermata = false;
 		}
 		this.email = upf.getEmail();
 		this.genere = upf.getGenere();
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.ITALY);
-		sdf.setLenient(true);
-		this.dataNascita = sdf.parse(upf.getDataNascita());
+		this.dataNascita = upf.getDataNascita();
 		this.telefono = upf.getTelefono();
 		this.cap = upf.getCap();
 		this.indirizzo = upf.getIndirizzo();

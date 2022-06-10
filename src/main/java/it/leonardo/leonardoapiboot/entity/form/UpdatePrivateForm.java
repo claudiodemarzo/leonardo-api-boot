@@ -7,9 +7,8 @@ import java.util.Date;
 public class UpdatePrivateForm {
 	private String email;
 	private String genere;
-
 	@Temporal(TemporalType.DATE)
-	private String dataNascita;
+	private Date dataNascita;
 	private String telefono;
 	private Integer citta;
 	private String cap;
@@ -31,11 +30,11 @@ public class UpdatePrivateForm {
 		this.genere = genere;
 	}
 
-	public String getDataNascita() {
+	public Date getDataNascita() {
 		return dataNascita;
 	}
 
-	public void setDataNascita(String dataNascita) {
+	public void setDataNascita(Date dataNascita) {
 		this.dataNascita = dataNascita;
 	}
 
