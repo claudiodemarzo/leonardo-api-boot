@@ -107,7 +107,7 @@ public class UtenteController {
             SimpleMailMessage smm = new SimpleMailMessage();
             smm.setTo(u.getEmail());
             smm.setSubject("Conferma Email");
-            smm.setText("Pijate sto token de conferma zi: " + confirmToken);
+            smm.setText("Pijate sto token de conferma zi: " + confirmToken+"\n oppure segui questo collegamento: https://leonardostart.tk/confirmemail?token="+confirmToken);
             mailSender.send(smm);
 
             uSaved = service.save(u);
@@ -473,7 +473,7 @@ public class UtenteController {
             u.setPassword(newPass);
             Utente uSaved = service.save(u);
 
-            return ResponseEntity.ok("");
+            return ResponseEntity.ok("{}");
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
         }
@@ -503,7 +503,7 @@ public class UtenteController {
 
             mailSender.send(smm);
             Utente uSaved = service.save(u);
-            return ResponseEntity.ok("");
+            return ResponseEntity.ok("{}");
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
         }
@@ -577,11 +577,11 @@ public class UtenteController {
             SimpleMailMessage smm = new SimpleMailMessage();
             smm.setTo(u.getEmail());
             smm.setSubject("Conferma Email");
-            smm.setText("Pijate sto token de conferma zi: " + confirmToken);
+            smm.setText("Pijate sto token de conferma zi: " + confirmToken+"\n oppure segui questo collegamento: https://leonardostart.tk/confirmemail?token="+confirmToken);
             mailSender.send(smm);
 
             Utente uSaved = service.save(u);
-            return ResponseEntity.ok("");
+            return ResponseEntity.ok("{}");
         }catch (Exception e){
             return ResponseEntity.internalServerError().build();
         }
