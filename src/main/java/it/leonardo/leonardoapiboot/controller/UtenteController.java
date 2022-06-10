@@ -122,6 +122,7 @@ public class UtenteController {
             session.setAttribute("userID", u.getUtenteId());
             return ResponseEntity.ok(uSaved);
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.internalServerError().build();
         }
     }
