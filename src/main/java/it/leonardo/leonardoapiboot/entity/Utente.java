@@ -35,6 +35,7 @@ public class Utente implements Serializable {
 	@Column(name = "email")
 	private String email;
 
+	@JsonIgnore
 	@Column(name = "password")
 	private String password;
 
