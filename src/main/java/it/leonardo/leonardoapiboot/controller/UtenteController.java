@@ -279,6 +279,7 @@ public class UtenteController {
             Utente uSaved = service.save(u);
             return ResponseEntity.ok(uSaved);
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.internalServerError().build();
         }
     }
