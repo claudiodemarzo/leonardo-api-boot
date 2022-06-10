@@ -380,9 +380,11 @@ public class UtenteController {
         try {
             Utente u = service.findById(Integer.parseInt(session.getAttribute("userID").toString())).get();
             u.copyFromPrivateUpdateForm(form);
-            Optional<Citta> c = cittaService.getById(form.getCitta());
-            if (!c.isPresent()) return ResponseEntity.badRequest().body("{\"invalidField\" : \"citta\"}");
-            u.setCitta(c.get());
+            if(form.getCitta() != null) {
+                Optional<Citta> c = cittaService.getById(form.getCitta());
+                if (!c.isPresent()) return ResponseEntity.badRequest().body("{\"invalidField\" : \"citta\"}");
+                u.setCitta(c.get());
+            }
             Utente uSaved = service.save(u);
             return ResponseEntity.ok(uSaved);
         } catch (Exception e) {
