@@ -100,7 +100,7 @@ public class UtenteController {
             Utente u = new Utente();
             u.copyFromRegisterForm(form);
             u.setPassword(passwordEncoder.encode(u.getPassword()));
-            u.getPreferences().setPreferences("{\"avatar\" : false, \"avatarJson\" : {} }");
+
             String confirmToken = UUID.randomUUID().toString();
             u.setConfirmToken(confirmToken);
 
@@ -112,13 +112,16 @@ public class UtenteController {
 
             uSaved = service.save(u);
 
+            uSaved.getPreferences().setPreferences("{\"avatar\" : false, \"avatarJson\" : {} }");
+
+            uSaved = service.save(uSaved);
+
             String token = UUID.randomUUID().toString();
 
             session.setAttribute("token", token);
             session.setAttribute("userID", u.getUtenteId());
             return ResponseEntity.ok(uSaved);
         } catch (Exception e) {
-            e.printStackTrace();
             return ResponseEntity.internalServerError().build();
         }
     }
