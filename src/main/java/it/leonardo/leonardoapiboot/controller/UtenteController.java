@@ -131,6 +131,7 @@ public class UtenteController {
             @ApiResponse(responseCode = "500", description = "Errore generico del server")
     })
     public ResponseEntity<Object> confirmEmail(String token) {
+        log.info("Invoked UtenteController.confirmEmail("+token+")");
         if (token.equals("")) return ResponseEntity.badRequest().body("{\"invalidField\" : \"token\"}");
 
         try{
