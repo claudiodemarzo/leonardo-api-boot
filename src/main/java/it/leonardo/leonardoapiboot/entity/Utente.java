@@ -371,7 +371,7 @@ public class Utente implements Serializable {
 		this.cognome = rf.getCognome();
 		this.email = rf.getEmail();
 		this.genere = rf.getGenere();
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.ITALY);
 		sdf.setLenient(true);
 		this.dataNascita = sdf.parse(rf.getDataNascita());
 	}
@@ -389,7 +389,7 @@ public class Utente implements Serializable {
 		}
 		this.email = upf.getEmail();
 		this.genere = upf.getGenere();
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.ITALY);
 		sdf.setLenient(true);
 		this.dataNascita = sdf.parse(upf.getDataNascita());
 		this.telefono = upf.getTelefono();
