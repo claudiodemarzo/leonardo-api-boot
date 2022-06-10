@@ -1,10 +1,14 @@
 package it.leonardo.leonardoapiboot.entity.form;
 
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import java.util.Date;
 
 public class UpdatePrivateForm {
 	private String email;
 	private String genere;
+
+	@Temporal(TemporalType.DATE)
 	private Date dataNascita;
 	private String telefono;
 	private Integer citta;

@@ -26,7 +26,7 @@ public class Utente implements Serializable {
 	private Integer utenteId;
 
 	@Column(name = "created_at")
-	@Temporal(TemporalType.TIMESTAMP)
+	@Temporal(TemporalType.DATE)
 	private Date createdAt = Calendar.getInstance().getTime();
 
 	@Column(name = "username")
