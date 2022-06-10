@@ -24,7 +24,7 @@ public class Utente implements Serializable {
 
 	@Column(name = "created_at")
 	@Temporal(TemporalType.DATE)
-	@JsonFormat(pattern="yyyy-MM-dd")
+	@JsonFormat(pattern="yyyy-MM-dd", timezone = "Europe/Rome")
 	private Date createdAt = Calendar.getInstance().getTime();
 
 	@Column(name = "username")
@@ -68,7 +68,7 @@ public class Utente implements Serializable {
 
 	@Column(name = "datanascita")
 	@Temporal(TemporalType.DATE)
-	@JsonFormat(pattern="yyyy-MM-dd")
+	@JsonFormat(pattern="yyyy-MM-dd", timezone = "Europe/Rome")
 	private Date dataNascita;
 
 	@Column(name = "genere")
