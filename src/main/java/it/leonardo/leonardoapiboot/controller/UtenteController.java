@@ -141,7 +141,7 @@ public class UtenteController {
             u.setEmail_confermata(true);
             Utente uSaved = service.save(u);
 
-            return ResponseEntity.ok().build();
+            return ResponseEntity.ok("{}");
         }catch (Exception e){
             return ResponseEntity.internalServerError().build();
         }
