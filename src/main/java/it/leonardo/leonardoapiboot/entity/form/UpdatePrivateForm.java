@@ -9,7 +9,7 @@ public class UpdatePrivateForm {
 	private String genere;
 
 	@Temporal(TemporalType.DATE)
-	private Date dataNascita;
+	private String dataNascita;
 	private String telefono;
 	private Integer citta;
 	private String cap;
@@ -31,11 +31,11 @@ public class UpdatePrivateForm {
 		this.genere = genere;
 	}
 
-	public Date getDataNascita() {
+	public String getDataNascita() {
 		return dataNascita;
 	}
 
-	public void setDataNascita(Date dataNascita) {
+	public void setDataNascita(String dataNascita) {
 		this.dataNascita = dataNascita;
 	}
 

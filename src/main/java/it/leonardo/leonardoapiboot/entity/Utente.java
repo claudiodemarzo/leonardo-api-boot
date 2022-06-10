@@ -383,13 +383,15 @@ public class Utente implements Serializable {
 		this.moreInfo = upf.getMoreInfo();
 	}
 
-	public void copyFromPrivateUpdateForm(UpdatePrivateForm upf) {
+	public void copyFromPrivateUpdateForm(UpdatePrivateForm upf) throws ParseException {
 		if(!email.equals(upf.getEmail())){
 			email_confermata = false;
 		}
 		this.email = upf.getEmail();
 		this.genere = upf.getGenere();
-		this.dataNascita = upf.getDataNascita();
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		sdf.setLenient(true);
+		this.dataNascita = sdf.parse(upf.getDataNascita());
 		this.telefono = upf.getTelefono();
 		this.cap = upf.getCap();
 		this.indirizzo = upf.getIndirizzo();
