@@ -265,7 +265,7 @@ public class UtenteController {
             @ApiResponse(responseCode = "500", description = "Errore generico del server")
     })
     public ResponseEntity<Object> updatePublic(UpdatePublicForm form) {
-        log.info("Invoked UtenteController.updatePublic()");
+        log.info("Invoked UtenteController.updatePublic("+form+")");
         String token = session.getAttribute("token") == null ? null : session.getAttribute("token").toString();
 
         if (token == null) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -273,9 +273,11 @@ public class UtenteController {
         try {
             Utente u = service.findById(Integer.parseInt(session.getAttribute("userID").toString())).get();
             u.copyFromPublicUpdateForm(form);
-            Optional<Istituto> ist = istitutoService.getById(form.getIstituto());
-            if (!ist.isPresent()) return ResponseEntity.badRequest().body("{\"invalidFields\" : \"istituto\"}");
-            u.setIstituto(ist.get());
+            if(form.getIstituto() != null) {
+                Optional<Istituto> ist = istitutoService.getById(form.getIstituto());
+                if (!ist.isPresent()) return ResponseEntity.badRequest().body("{\"invalidFields\" : \"istituto\"}");
+                u.setIstituto(ist.get());
+            }
             Utente uSaved = service.save(u);
             return ResponseEntity.ok(uSaved);
         } catch (Exception e) {
