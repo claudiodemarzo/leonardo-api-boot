@@ -112,17 +112,12 @@ public class UtenteController {
 
             uSaved = service.save(u);
 
-            uSaved.getPreferences().setPreferences("{\"avatar\" : false, \"avatarJson\" : {} }");
-
-            uSaved = service.save(uSaved);
-
             String token = UUID.randomUUID().toString();
 
             session.setAttribute("token", token);
             session.setAttribute("userID", u.getUtenteId());
             return ResponseEntity.ok(uSaved);
         } catch (Exception e) {
-            e.printStackTrace();
             return ResponseEntity.internalServerError().build();
         }
     }
