@@ -2,9 +2,11 @@ package it.leonardo.leonardoapiboot.controller;
 
 
 import it.leonardo.leonardoapiboot.entity.Citta;
+import it.leonardo.leonardoapiboot.entity.CittaSimple;
 import it.leonardo.leonardoapiboot.entity.Provincia;
 import it.leonardo.leonardoapiboot.entity.Regione;
 import it.leonardo.leonardoapiboot.service.CittaService;
+import it.leonardo.leonardoapiboot.service.CittaSimpleService;
 import it.leonardo.leonardoapiboot.service.ProvinciaService;
 import it.leonardo.leonardoapiboot.service.RegioneService;
 import org.apache.commons.logging.Log;
@@ -34,42 +36,55 @@ public class CittaController {
     @Autowired
     private RegioneService regServ;
 
+    @Autowired
+    private CittaSimpleService cittaSimpleService;
+
     @GetMapping
-    public ResponseEntity<List<Citta>> getAll() {
-        log.info("Invoked CittaController.getAll()");
-        ResponseEntity<List<Citta>> resp = null;
+    public ResponseEntity<List> getAll(@RequestParam(required = false, defaultValue = "true") Boolean details) {
+        log.info("Invoked CittaController.getAll(" + details + ")");
 
         try {
-            List<Citta> list = service.getAll();
-            if (list.isEmpty()) {
-                resp = new ResponseEntity<>(HttpStatus.NO_CONTENT);
-            } else {
-                resp = new ResponseEntity<>(list, HttpStatus.OK);
+            if (details) {
+                List<Citta> list = service.getAll();
+                if (list.isEmpty()) {
+                    return ResponseEntity.noContent().build();
+                }
+                return ResponseEntity.ok(list);
             }
-        } catch (Exception e) {
-            resp = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
 
-        return resp;
+            List<CittaSimple> list = cittaSimpleService.findAll();
+            if (list.isEmpty()) {
+                return ResponseEntity.noContent().build();
+            }
+            return ResponseEntity.ok(list);
+
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<Object> getById(@PathVariable("id") Integer id) {
-        log.info("Invoked CittaController.getById(" + id + ")");
-        ResponseEntity<Object> resp = null;
+    public ResponseEntity<Object> getById(@PathVariable("id") Integer id, @RequestParam(required = false, defaultValue = "true") Boolean details) {
+        log.info("Invoked CittaController.getById(" + id + ", " + details + ")");
 
         try {
-            Optional<Citta> prov = service.getById(id);
-            if (prov.isPresent()) {
-                resp = new ResponseEntity<>(prov.get(), HttpStatus.OK);
-            } else {
-                resp = new ResponseEntity<>("{\"invalidField\" : \"id\"}", HttpStatus.NOT_FOUND);
+            if (details) {
+                Optional<Citta> citta = service.getById(id);
+                if (!citta.isPresent()) {
+                    return ResponseEntity.notFound().build();
+                }
+                return ResponseEntity.ok(citta.get());
             }
-        } catch (Exception e) {
-            resp = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
 
-        return resp;
+            Optional<CittaSimple> citta = cittaSimpleService.findAllById(id);
+            if (!citta.isPresent()) {
+                return ResponseEntity.notFound().build();
+            }
+            return ResponseEntity.ok(citta.get());
+
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
     @GetMapping("/by-provincia/{id}")
