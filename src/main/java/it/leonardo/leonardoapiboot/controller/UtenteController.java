@@ -549,4 +549,41 @@ public class UtenteController {
             return ResponseEntity.internalServerError().build();
         }
     }
+
+    @PostMapping("/sendconfirmemail")
+    @Operation(description = "Invia una mail di conferma all'utente preso dalla sessione")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Richiesta andata a buon fine, email inviata"),
+            @ApiResponse(responseCode = "401", description = "Il token di sessione non è settato, di conseguenza non è possibile accedere a questo endpoint."),
+            @ApiResponse(responseCode = "409", description = "Si sta cercando di mandare una email di conferma per un utente la quale email è già stata confermata."),
+            @ApiResponse(responseCode = "500", description = "Errore generico del server")
+    })
+    public ResponseEntity<Object> sendConfirmEmail(){
+        log.info("Invoked UtenteController.sendConfirmEmail()");
+        try{
+            String token = session.getAttribute("token") == null ? null : session.getAttribute("token").toString();
+            if (token == null) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+
+            String userID = session.getAttribute("userID").toString();
+            Optional<Utente> utenteOptional = service.findById(Integer.parseInt(userID));
+            if(!utenteOptional.isPresent()) return ResponseEntity.internalServerError().build();
+
+            Utente u = utenteOptional.get();
+            if(u.getEmail_confermata()) return new ResponseEntity<>(HttpStatus.CONFLICT);
+
+            String confirmToken = UUID.randomUUID().toString();
+            u.setConfirmToken(confirmToken);
+
+            SimpleMailMessage smm = new SimpleMailMessage();
+            smm.setTo(u.getEmail());
+            smm.setSubject("Conferma Email");
+            smm.setText("Pijate sto token de conferma zi: " + confirmToken);
+            mailSender.send(smm);
+
+            Utente uSaved = service.save(u);
+            return ResponseEntity.ok("");
+        }catch (Exception e){
+            return ResponseEntity.internalServerError().build();
+        }
+    }
 }
