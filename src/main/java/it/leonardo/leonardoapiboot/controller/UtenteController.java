@@ -33,6 +33,7 @@ import java.awt.image.DataBufferByte;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.util.GregorianCalendar;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -100,6 +101,7 @@ public class UtenteController {
             Utente u = new Utente();
             u.copyFromRegisterForm(form);
             u.setPassword(passwordEncoder.encode(u.getPassword()));
+            if(u.getDataNascita().getTime() + 441796964000L >= new GregorianCalendar().getTimeInMillis()) return ResponseEntity.badRequest().body("{\"invalidField\" : \"dataNascita\"}");
 
             String confirmToken = UUID.randomUUID().toString();
             u.setConfirmToken(confirmToken);
@@ -389,6 +391,8 @@ public class UtenteController {
 
             if (!arrayContains(form.getGenere(), new String[]{"m", "f", "b", "a", "n"}))
                 return ResponseEntity.badRequest().body("{\"invalidField\" : \"genere\"}");
+            if(form.getDataNascita().getTime() + 441796964000L >= new GregorianCalendar().getTimeInMillis()) return ResponseEntity.badRequest().body("{\"invalidField\" : \"dataNascita\"}");
+
             Utente uSaved = service.save(u);
             return ResponseEntity.ok(uSaved);
         } catch (Exception e) {
