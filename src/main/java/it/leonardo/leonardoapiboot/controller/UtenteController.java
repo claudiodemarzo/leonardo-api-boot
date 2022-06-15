@@ -107,7 +107,7 @@ public class UtenteController {
             SimpleMailMessage smm = new SimpleMailMessage();
             smm.setTo(u.getEmail());
             smm.setSubject("Conferma Email");
-            smm.setText("Pijate sto token de conferma zi: " + confirmToken+"\n oppure segui questo collegamento: https://leonardostart.tk/confirmemail?token="+confirmToken);
+            smm.setText("Pijate sto token de conferma zi: " + confirmToken + "\n oppure segui questo collegamento: https://leonardostart.tk/confirmemail?token=" + confirmToken);
             mailSender.send(smm);
 
             uSaved = service.save(u);
@@ -131,19 +131,19 @@ public class UtenteController {
             @ApiResponse(responseCode = "500", description = "Errore generico del server")
     })
     public ResponseEntity<Object> confirmEmail(String token) {
-        log.info("Invoked UtenteController.confirmEmail("+token+")");
+        log.info("Invoked UtenteController.confirmEmail(" + token + ")");
         if (token.equals("")) return ResponseEntity.badRequest().body("{\"invalidField\" : \"token\"}");
 
-        try{
+        try {
             Optional<Utente> utenteOptional = service.findByConfirmToken(token);
-            if(!utenteOptional.isPresent()) return ResponseEntity.notFound().build();
+            if (!utenteOptional.isPresent()) return ResponseEntity.notFound().build();
 
             Utente u = utenteOptional.get();
             u.setEmail_confermata(true);
             Utente uSaved = service.save(u);
 
             return ResponseEntity.ok("{}");
-        }catch (Exception e){
+        } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
         }
     }
@@ -266,7 +266,7 @@ public class UtenteController {
             @ApiResponse(responseCode = "500", description = "Errore generico del server")
     })
     public ResponseEntity<Object> updatePublic(UpdatePublicForm form) {
-        log.info("Invoked UtenteController.updatePublic("+form+")");
+        log.info("Invoked UtenteController.updatePublic(" + form + ")");
         String token = session.getAttribute("token") == null ? null : session.getAttribute("token").toString();
 
         if (token == null) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -274,7 +274,7 @@ public class UtenteController {
         try {
             Utente u = service.findById(Integer.parseInt(session.getAttribute("userID").toString())).get();
             u.copyFromPublicUpdateForm(form);
-            if(form.getIstituto() != null) {
+            if (form.getIstituto() != null) {
                 Optional<Istituto> ist = istitutoService.getById(form.getIstituto());
                 if (!ist.isPresent()) return ResponseEntity.badRequest().body("{\"invalidFields\" : \"istituto\"}");
                 u.setIstituto(ist.get());
@@ -381,16 +381,25 @@ public class UtenteController {
         try {
             Utente u = service.findById(Integer.parseInt(session.getAttribute("userID").toString())).get();
             u.copyFromPrivateUpdateForm(form);
-            if(form.getCitta() != null) {
+            if (form.getCitta() != null) {
                 Optional<Citta> c = cittaService.getById(form.getCitta());
                 if (!c.isPresent()) return ResponseEntity.badRequest().body("{\"invalidField\" : \"citta\"}");
                 u.setCitta(c.get());
             }
+
+            if (!arrayContains(form.getGenere(), new String[]{"m", "f", "b", "a", "n"}))
+                return ResponseEntity.badRequest().body("{\"invalidField\" : \"genere\"}");
             Utente uSaved = service.save(u);
             return ResponseEntity.ok(uSaved);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
         }
+    }
+
+    private boolean arrayContains(String needle, String[] haystack) {
+        for (String hay : haystack)
+            if (needle.equals(hay)) return true;
+        return false;
     }
 
     private byte[] encodeWebp(Mat image, int quality) {
@@ -564,18 +573,18 @@ public class UtenteController {
             @ApiResponse(responseCode = "409", description = "Si sta cercando di mandare una email di conferma per un utente la quale email è già stata confermata."),
             @ApiResponse(responseCode = "500", description = "Errore generico del server")
     })
-    public ResponseEntity<Object> sendConfirmEmail(){
+    public ResponseEntity<Object> sendConfirmEmail() {
         log.info("Invoked UtenteController.sendConfirmEmail()");
-        try{
+        try {
             String token = session.getAttribute("token") == null ? null : session.getAttribute("token").toString();
             if (token == null) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 
             String userID = session.getAttribute("userID").toString();
             Optional<Utente> utenteOptional = service.findById(Integer.parseInt(userID));
-            if(!utenteOptional.isPresent()) return ResponseEntity.internalServerError().build();
+            if (!utenteOptional.isPresent()) return ResponseEntity.internalServerError().build();
 
             Utente u = utenteOptional.get();
-            if(u.getEmail_confermata()) return new ResponseEntity<>(HttpStatus.CONFLICT);
+            if (u.getEmail_confermata()) return new ResponseEntity<>(HttpStatus.CONFLICT);
 
             String confirmToken = UUID.randomUUID().toString();
             u.setConfirmToken(confirmToken);
@@ -583,12 +592,12 @@ public class UtenteController {
             SimpleMailMessage smm = new SimpleMailMessage();
             smm.setTo(u.getEmail());
             smm.setSubject("Conferma Email");
-            smm.setText("Pijate sto token de conferma zi: " + confirmToken+"\n oppure segui questo collegamento: https://leonardostart.tk/confirmemail?token="+confirmToken);
+            smm.setText("Pijate sto token de conferma zi: " + confirmToken + "\n oppure segui questo collegamento: https://leonardostart.tk/confirmemail?token=" + confirmToken);
             mailSender.send(smm);
 
             Utente uSaved = service.save(u);
             return ResponseEntity.ok("{}");
-        }catch (Exception e){
+        } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
         }
     }
