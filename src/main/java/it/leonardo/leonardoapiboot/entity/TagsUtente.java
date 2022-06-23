@@ -10,9 +10,9 @@ import javax.persistence.*;
 public class TagsUtente {
 
     @EmbeddedId
+    @JsonIgnore
     private TagsUtenteKey id;
 
-    @JsonIgnore
     @ManyToOne
     @MapsId("tag")
     @JoinColumn(name = "tag")
