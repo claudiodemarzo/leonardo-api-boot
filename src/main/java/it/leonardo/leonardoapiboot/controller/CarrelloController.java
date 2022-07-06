@@ -114,7 +114,7 @@ public class CarrelloController {
             @ApiResponse(responseCode = "500", description = "Errore generico del server")
     })
     @PostMapping("/multiple")
-    public ResponseEntity<Object> insertMultiple(Integer[] annunci) {
+    public ResponseEntity<Object> insertMultiple(@RequestBody Integer[] annunci) {
         String annunciStr = "";
         if(annunci.length > 0)
         for (Integer ann : annunci) {
