@@ -49,11 +49,11 @@ public class Tag {
         this.descrizione = descrizione;
     }
 
-    public List<TagsUtente> getTagsUtenti() {
+    public List<TagsUtente> getTagsUtente() {
         return tagsUtente;
     }
 
-    public void setTagsUtenti(List<TagsUtente> tagsUtente) {
+    public void setTagsUtente(List<TagsUtente> tagsUtente) {
         this.tagsUtente = tagsUtente;
     }
 
