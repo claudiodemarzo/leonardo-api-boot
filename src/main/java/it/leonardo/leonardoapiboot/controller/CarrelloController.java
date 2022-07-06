@@ -116,6 +116,7 @@ public class CarrelloController {
     @PostMapping("/multiple")
     public ResponseEntity<Object> insertMultiple(Integer[] annunci) {
         String annunciStr = "";
+        if(annunci.length > 0)
         for (Integer ann : annunci) {
             annunciStr += "" + ann + ", ";
         }
