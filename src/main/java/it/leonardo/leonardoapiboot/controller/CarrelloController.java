@@ -114,16 +114,16 @@ public class CarrelloController {
             @ApiResponse(responseCode = "500", description = "Errore generico del server")
     })
     @PostMapping("/multiple")
-    public ResponseEntity<Object> insertMultiple(@RequestBody Integer[] annunci) {
+    public ResponseEntity<Object> insertMultiple(@RequestBody List<Integer> annunci) {
         String annunciStr = "";
-        if(annunci.length > 0)
+        if(annunci.size() > 0)
         for (Integer ann : annunci) {
             annunciStr += "" + ann + ", ";
         }
         annunciStr = annunciStr.substring(0, annunciStr.length() - 2);
         log.info("Invoked CarrelloController.insert(" + annunciStr + ")");
 
-        if (annunci.length == 0) return ResponseEntity.badRequest().build();
+        if (annunci.size() == 0) return ResponseEntity.badRequest().build();
 
         String token = session.getAttribute("token") == null ? null : session.getAttribute("token").toString();
 
