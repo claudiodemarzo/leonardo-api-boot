@@ -115,18 +115,15 @@ public class CarrelloController {
             @ApiResponse(responseCode = "500", description = "Errore generico del server")
     })
     @PostMapping("/multiple")
-    public ResponseEntity<Object> insertMultiple(String annunci) {
+    public ResponseEntity<Object> insertMultiple(@RequestBody List<Integer> annunci) {
         log.info("Invoked CarrelloController.insertMultiple(" + annunci+ ")");
-        List<Integer> annunciLst = new ArrayList<>();
-        new JSONArray(annunci).forEach((val) -> {
-            annunciLst.add((Integer) val);
-        });
-        if (annunciLst.size() == 0) return ResponseEntity.badRequest().build();
+
+        if (annunci.size() == 0) return ResponseEntity.badRequest().build();
 
         String token = session.getAttribute("token") == null ? null : session.getAttribute("token").toString();
 
         if (token != null) {
-            for (Integer annuncio : annunciLst) {
+            for (Integer annuncio : annunci) {
                 Optional<AnnunciLibri> annOpt = annunciLibriService.findById(annuncio);
                 if (annOpt.isPresent()) {
                     try {
