@@ -116,18 +116,11 @@ public class CarrelloController {
     })
     @PostMapping("/multiple")
     public ResponseEntity<Object> insertMultiple(String annunciIn) {
-        String annunciStr = "";
+        log.info("Invoked CarrelloController.insert(" + annunciIn+ ")");
         List<Integer> annunci = new ArrayList<>();
         new JSONArray(annunciIn).forEach((val) -> {
             annunci.add((Integer) val);
         });
-        if(annunci.size() > 0)
-        for (Integer ann : annunci) {
-            annunciStr += "" + ann + ", ";
-        }
-        annunciStr = annunciStr.substring(0, annunciStr.length() - 2);
-        log.info("Invoked CarrelloController.insert(" + annunciStr + ")");
-
         if (annunci.size() == 0) return ResponseEntity.badRequest().build();
 
         String token = session.getAttribute("token") == null ? null : session.getAttribute("token").toString();
