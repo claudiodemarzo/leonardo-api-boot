@@ -12,6 +12,7 @@ import it.leonardo.leonardoapiboot.service.LibroService;
 import it.leonardo.leonardoapiboot.service.UtenteService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -114,8 +115,12 @@ public class CarrelloController {
             @ApiResponse(responseCode = "500", description = "Errore generico del server")
     })
     @PostMapping("/multiple")
-    public ResponseEntity<Object> insertMultiple(@RequestBody List<Integer> annunci) {
+    public ResponseEntity<Object> insertMultiple(String annunciIn) {
         String annunciStr = "";
+        List<Integer> annunci = new ArrayList<>();
+        new JSONArray(annunciIn).forEach((val) -> {
+            annunci.add((Integer) val);
+        });
         if(annunci.size() > 0)
         for (Integer ann : annunci) {
             annunciStr += "" + ann + ", ";
