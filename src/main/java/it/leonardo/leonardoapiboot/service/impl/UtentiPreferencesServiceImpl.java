@@ -21,6 +21,6 @@ public class UtentiPreferencesServiceImpl implements UtentiPreferencesService {
 
 	@Override
 	public UtentiPreferences save(UtentiPreferences up) {
-		return repo.saveAndFlush(up);
+		return repo.save(up);
 	}
 }

@@ -13,6 +13,8 @@ import org.apache.batik.transcoder.image.PNGTranscoder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.tomcat.util.codec.binary.Base64;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfByte;
@@ -423,8 +425,9 @@ public class UtenteController {
             @ApiResponse(responseCode = "401", description = "Il token di sessione non è settato, di conseguenza non è possibile accedere a questo endpoint."),
             @ApiResponse(responseCode = "500", description = "Errore generico del server")
     })
-    public ResponseEntity<Object> getPreferences() {
-        log.info("Invoked UtenteController.getPreferences()");
+    public ResponseEntity<Object> getPreferences(@RequestParam(required = false, defaultValue = "") String key) {
+        if(key != null)
+            log.info("Invoked UtenteController.getPreferences()");
         String token = session.getAttribute("token") == null ? null : session.getAttribute("token").toString();
 
         if (token == null) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -433,8 +436,18 @@ public class UtenteController {
             int userId = Integer.parseInt(session.getAttribute("userID").toString());
 
             Optional<UtentiPreferences> utentiPreferencesOptional = utentiPreferencesService.getById(userId);
-            return ResponseEntity.ok(utentiPreferencesOptional.get());
+            if (key == null || key.isEmpty()) {
+                return ResponseEntity.ok(utentiPreferencesOptional.get());
+            } else {
+                JSONObject preferences = new JSONObject(utentiPreferencesOptional.get().getPreferences());
+                try{
+                    return ResponseEntity.ok(preferences.get(key));
+                }catch (JSONException e) {
+                    return ResponseEntity.internalServerError().body("'"+key+"' not found");
+                }
+            }
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.internalServerError().build();
         }
     }
@@ -446,8 +459,8 @@ public class UtenteController {
             @ApiResponse(responseCode = "401", description = "Il token di sessione non è settato, di conseguenza non è possibile accedere a questo endpoint."),
             @ApiResponse(responseCode = "500", description = "Errore generico del server")
     })
-    public ResponseEntity<Object> setPreferences(String preferences) {
-        log.info("Invoked UtenteController.setPreferences(" + preferences + ")");
+    public ResponseEntity<Object> setPreferences(@RequestParam String key, @RequestParam String preferences) {
+        log.info("Invoked UtenteController.setPreferences(" + key + "," + preferences + ")");
         String token = session.getAttribute("token") == null ? null : session.getAttribute("token").toString();
 
         if (token == null) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -456,11 +469,18 @@ public class UtenteController {
             int userId = Integer.parseInt(session.getAttribute("userID").toString());
 
             UtentiPreferences up = utentiPreferencesService.getById(userId).get();
-            up.setPreferences(preferences);
-
+            if (key == null || key.isEmpty()) {
+                return ResponseEntity.badRequest().body("{\"error\" : \"key cannot be empty\"}");
+            } else {
+                UtentiPreferences op = ((UtentiPreferences) getPreferences(null).getBody());
+                JSONObject oldPreferences = new JSONObject(op.getPreferences());
+                oldPreferences.put(key, preferences);
+                up.setPreferences(oldPreferences.toString());
+            }
             UtentiPreferences upSaved = utentiPreferencesService.save(up);
             return ResponseEntity.ok(upSaved);
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.internalServerError().build();
         }
     }
