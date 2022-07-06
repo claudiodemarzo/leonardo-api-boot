@@ -81,7 +81,7 @@ public class CarrelloController {
             @ApiResponse(responseCode = "401", description = "Sessione non settata e/o token invalido")
     })
     @PostMapping
-    public ResponseEntity<Object> insert(@RequestParam Integer annuncio) {
+    public ResponseEntity<Object> insert(Integer annuncio) {
         log.info("Invoked CarrelloController.insert(" + annuncio + ")");
 
         String token = session.getAttribute("token") == null ? null : session.getAttribute("token").toString();
@@ -114,7 +114,7 @@ public class CarrelloController {
             @ApiResponse(responseCode = "500", description = "Errore generico del server")
     })
     @PostMapping("/multiple")
-    public ResponseEntity<Object> insertMultiple(@RequestParam List<Integer> annunci) {
+    public ResponseEntity<Object> insertMultiple(List<Integer> annunci) {
         String annunciStr = "";
         for (Integer ann : annunci) {
             annunciStr += "" + ann + ", ";
