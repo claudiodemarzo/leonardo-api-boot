@@ -113,7 +113,7 @@ public class CarrelloController {
             @ApiResponse(responseCode = "401", description = "Sessione non settata e/o token invalido"),
             @ApiResponse(responseCode = "500", description = "Errore generico del server")
     })
-    @PostMapping
+    @PostMapping("/multiple")
     public ResponseEntity<Object> insertMultiple(@RequestParam List<Integer> annunci) {
         String annunciStr = "";
         for (Integer ann : annunci) {
