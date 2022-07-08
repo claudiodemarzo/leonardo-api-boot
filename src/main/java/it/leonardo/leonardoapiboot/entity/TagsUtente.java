@@ -24,7 +24,7 @@ public class TagsUtente {
     @MapsId("utente")
     @JsonBackReference
     @ManyToOne
-    @JoinColumn(name = "utente", insertable = false, updatable = false)
+    @JoinColumn(name = "utente")
     private Utente utente;
 
     @Column(name = "active")
@@ -68,10 +68,10 @@ public class TagsUtente {
     @Embeddable
     public static class TagsUtenteKey implements Serializable {
 
-        @Column(name = "tag")
+        @Column(name = "tag", insertable = false, updatable = false)
         private Integer tag;
 
-        @Column(name = "utente")
+        @Column(name = "utente", insertable = false, updatable = false)
         private Integer utente;
 
         public Integer getTag() {

@@ -18,7 +18,6 @@ public class TagsUtenteServiceImpl implements TagsUtenteService {
     @Autowired
     TagsUtenteRepository repo;
 
-
     @Override
     public List<Tag> getTagsByUtente(Utente u) {
         List<TagsUtente> tagsUtente = repo.findTagsUtenteByUtente(u);
