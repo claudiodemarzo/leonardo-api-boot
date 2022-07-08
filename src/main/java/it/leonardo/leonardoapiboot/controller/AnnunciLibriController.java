@@ -277,12 +277,13 @@ public class AnnunciLibriController {
             if (json.getInt("totalItems") == 0) return ResponseEntity.notFound().build();
             JSONArray items = json.getJSONArray("items");
             JSONArray tmp = new JSONArray();
-            for (int i = 0; i < 10; i++) {
+            for (int i = 0; i < Math.min(items.length(), 10); i++) {
                 tmp.put(items.getJSONObject(i));
             }
 
             return ResponseEntity.ok(tmp.toString());
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.internalServerError().build();
         }
     }
