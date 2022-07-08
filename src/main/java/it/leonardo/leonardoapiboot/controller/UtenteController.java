@@ -482,8 +482,10 @@ public class UtenteController {
             preferencesJson.put(key, preferences);
             up.setPreferences(preferencesJson.toString());
             log.info("Preferences: " + up.getPreferences());
-            UtentiPreferences upSaved = utentiPreferencesService.save(up);
-            return ResponseEntity.ok(upSaved);
+            Utente u = service.findById(userId).get();
+            u.copyFromUtentiPreferences(up);
+            Utente uSaved = service.save(u);
+            return ResponseEntity.ok(uSaved.getPreferencesStr());
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.internalServerError().build();
