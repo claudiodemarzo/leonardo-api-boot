@@ -24,7 +24,6 @@ public class TagsUtente {
     @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "utente")
-    @JsonIgnore
     private Utente utente;
 
     @Column(name = "active")
