@@ -257,7 +257,7 @@ public class AnnunciLibriController {
             @ApiResponse(responseCode = "500", description = "Errore generico del server")
     })
     @GetMapping("/verify-isbn")
-    public ResponseEntity<List<Object>> verifyIsbn(@RequestParam("isbn") String isbn) {
+    public ResponseEntity<String> verifyIsbn(@RequestParam("isbn") String isbn) {
         log.info("Invoked AnnunciLibriController.verifyIsbn(" + isbn + ")");
         try {
             String url = "https://www.googleapis.com/books/v1/volumes?q=isbn:" + isbn;
@@ -266,24 +266,22 @@ public class AnnunciLibriController {
 
             JSONObject json = new JSONObject(response);
             if (json.getInt("totalItems") != 0) {
-                List<Object> lst = new ArrayList<>();
-                lst.add(json.getJSONArray("items").getJSONObject(0));
-                return ResponseEntity.ok(lst);
+                JSONArray arr = new JSONArray(json.getJSONArray("items").getJSONObject(0));
+                return ResponseEntity.ok(arr.toString());
             }
 
-            List<Object> possbileIsbn = new ArrayList<>();
             url = "https://www.googleapis.com/books/v1/volumes?q=" + isbn;
             response = restTemplate.getForObject(url, String.class);
 
             json = new JSONObject(response);
             if (json.getInt("totalItems") == 0) return ResponseEntity.notFound().build();
             JSONArray items = json.getJSONArray("items");
-
+            JSONArray tmp = new JSONArray();
             for (int i = 0; i < 10; i++) {
-                possbileIsbn.add(items.getJSONObject(i));
+                tmp.put(items.getJSONObject(i));
             }
 
-            return ResponseEntity.ok(possbileIsbn);
+            return ResponseEntity.ok(tmp.toString());
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
         }
