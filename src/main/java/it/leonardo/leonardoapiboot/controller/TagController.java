@@ -101,6 +101,7 @@ public class TagController {
             if (tagsUtente.isEmpty()) return ResponseEntity.noContent().build();
             else return ResponseEntity.ok(tagsUtente);
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.internalServerError().build();
         }
     }
