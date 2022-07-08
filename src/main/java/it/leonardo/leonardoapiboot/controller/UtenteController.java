@@ -481,6 +481,7 @@ public class UtenteController {
             JSONObject preferencesJson = new JSONObject(up.getPreferences());
             preferencesJson.put(key, preferences);
             up.setPreferences(preferencesJson.toString());
+            log.info("Preferences: " + up.getPreferences());
             UtentiPreferences upSaved = utentiPreferencesService.save(up);
             return ResponseEntity.ok(upSaved);
         } catch (Exception e) {
