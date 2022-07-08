@@ -103,7 +103,8 @@ public class UtenteController {
             Utente u = new Utente();
             u.copyFromRegisterForm(form);
             u.setPassword(passwordEncoder.encode(u.getPassword()));
-            if(u.getDataNascita().getTime() + 441796964000L >= new GregorianCalendar().getTimeInMillis()) return ResponseEntity.badRequest().body("{\"invalidField\" : \"dataNascita\"}");
+            if (u.getDataNascita().getTime() + 441796964000L >= new GregorianCalendar().getTimeInMillis())
+                return ResponseEntity.badRequest().body("{\"invalidField\" : \"dataNascita\"}");
 
             String confirmToken = UUID.randomUUID().toString();
             u.setConfirmToken(confirmToken);
@@ -393,7 +394,8 @@ public class UtenteController {
 
             if (!arrayContains(form.getGenere(), new String[]{"m", "f", "b", "a", "n"}))
                 return ResponseEntity.badRequest().body("{\"invalidField\" : \"genere\"}");
-            if(form.getDataNascita().getTime() + 441796964000L >= new GregorianCalendar().getTimeInMillis()) return ResponseEntity.badRequest().body("{\"invalidField\" : \"dataNascita\"}");
+            if (form.getDataNascita().getTime() + 441796964000L >= new GregorianCalendar().getTimeInMillis())
+                return ResponseEntity.badRequest().body("{\"invalidField\" : \"dataNascita\"}");
 
             Utente uSaved = service.save(u);
             return ResponseEntity.ok(uSaved);
@@ -426,24 +428,28 @@ public class UtenteController {
             @ApiResponse(responseCode = "500", description = "Errore generico del server")
     })
     public ResponseEntity<Object> getPreferences(@RequestParam(required = false, defaultValue = "") String key) {
-        if(key != null)
-            log.info("Invoked UtenteController.getPreferences()");
+        log.info("Invoked UtenteController.getPreferences(" + key + ")");
         String token = session.getAttribute("token") == null ? null : session.getAttribute("token").toString();
 
         if (token == null) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 
         try {
             int userId = Integer.parseInt(session.getAttribute("userID").toString());
-
             Optional<UtentiPreferences> utentiPreferencesOptional = utentiPreferencesService.getById(userId);
-            if (key == null || key.isEmpty()) {
-                return ResponseEntity.ok(utentiPreferencesOptional.get());
+
+            if (key.isEmpty()) {
+                return ResponseEntity.ok(utentiPreferencesOptional.get().getPreferences());
             } else {
                 JSONObject preferences = new JSONObject(utentiPreferencesOptional.get().getPreferences());
-                try{
-                    return ResponseEntity.ok(preferences.get(key));
-                }catch (JSONException e) {
-                    return ResponseEntity.internalServerError().body("'"+key+"' not found");
+                try {
+                    Object value = preferences.get(key);
+                    if (value instanceof JSONObject) {
+                        return ResponseEntity.ok(((JSONObject) value).toString());
+                    } else {
+                        return ResponseEntity.ok(value);
+                    }
+                } catch (JSONException e) {
+                    return ResponseEntity.internalServerError().body("'" + key + "' not found");
                 }
             }
         } catch (Exception e) {
@@ -460,7 +466,7 @@ public class UtenteController {
             @ApiResponse(responseCode = "500", description = "Errore generico del server")
     })
     public ResponseEntity<Object> setPreferences(@RequestParam String key, @RequestParam String preferences) {
-        log.info("Invoked UtenteController.setPreferences(" + key + "," + preferences + ")");
+        log.info("Invoked UtenteController.setPreferences(" + key + ", " + preferences + ")");
         String token = session.getAttribute("token") == null ? null : session.getAttribute("token").toString();
 
         if (token == null) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -469,14 +475,12 @@ public class UtenteController {
             int userId = Integer.parseInt(session.getAttribute("userID").toString());
 
             UtentiPreferences up = utentiPreferencesService.getById(userId).get();
-            if (key == null || key.isEmpty()) {
+            if (key.isEmpty()) {
                 return ResponseEntity.badRequest().body("{\"error\" : \"key cannot be empty\"}");
-            } else {
-                UtentiPreferences op = ((UtentiPreferences) getPreferences(null).getBody());
-                JSONObject oldPreferences = new JSONObject(op.getPreferences());
-                oldPreferences.put(key, preferences);
-                up.setPreferences(oldPreferences.toString());
             }
+            JSONObject preferencesJson = new JSONObject(up.getPreferences());
+            preferencesJson.put(key, preferences);
+            up.setPreferences(preferencesJson.toString());
             UtentiPreferences upSaved = utentiPreferencesService.save(up);
             return ResponseEntity.ok(upSaved);
         } catch (Exception e) {
