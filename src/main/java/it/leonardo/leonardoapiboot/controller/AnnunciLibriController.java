@@ -283,6 +283,7 @@ public class AnnunciLibriController {
 
             return ResponseEntity.ok(tmp.toString());
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.internalServerError().build();
         }
     }
