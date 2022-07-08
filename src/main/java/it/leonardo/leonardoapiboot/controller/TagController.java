@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @RestController
@@ -89,4 +90,36 @@ public class TagController {
         }
     }
 
+    @Operation(description = "Imposta un tag come attivo per l'utente loggato")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Richiesta andata a buon fine"),
+            @ApiResponse(responseCode = "401", description = "Il token di sessione non è settato, di conseguenza non è possibile accedere a questo endpoint."),
+            @ApiResponse(responseCode = "404", description = "Tag non trovato"),
+            @ApiResponse(responseCode = "500", description = "Errore generico del server")
+    })
+    @PatchMapping("/active")
+    public ResponseEntity<Object> setActiveTag(@RequestBody Integer tag) {
+        log.info("Invoked TagController.setActiveTag(" + tag + ")");
+
+        String token = session.getAttribute("token") == null ? null : session.getAttribute("token").toString();
+        if (token == null) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+
+        String userid = session.getAttribute("userID").toString();
+        try {
+            Optional<Tag> tagOpt = service.getById(tag);
+            if (!tagOpt.isPresent()) return ResponseEntity.notFound().build();
+
+            List<TagsUtente> tagsUtente = tagsUtenteService.getTagsByUserId(Integer.parseInt(userid));
+            if (tagsUtente.isEmpty()) return ResponseEntity.internalServerError().build();
+
+            tagsUtente.forEach(t -> {
+                t.setActive(t.getTag().getTagId() == tagOpt.get().getTagId());
+            });
+
+            tagsUtenteService.saveAll(tagsUtente);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
 }

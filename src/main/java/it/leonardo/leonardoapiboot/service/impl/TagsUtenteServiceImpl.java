@@ -18,4 +18,9 @@ public class TagsUtenteServiceImpl implements TagsUtenteService {
     public List<TagsUtente> getTagsByUserId(Integer userID) {
         return repo.findById_Utente(userID);
     }
+
+    @Override
+    public void saveAll(List<TagsUtente> tags) {
+        repo.saveAll(tags);
+    }
 }

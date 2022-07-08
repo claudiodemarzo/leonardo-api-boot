@@ -7,4 +7,6 @@ import java.util.List;
 public interface TagsUtenteService {
 
     List<TagsUtente> getTagsByUserId(Integer userID);
+
+    void saveAll(List<TagsUtente> tagsUtentes);
 }
