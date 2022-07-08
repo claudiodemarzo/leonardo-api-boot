@@ -7,6 +7,7 @@ import it.leonardo.leonardoapiboot.entity.Tag;
 import it.leonardo.leonardoapiboot.entity.TagsUtente;
 import it.leonardo.leonardoapiboot.service.TagService;
 import it.leonardo.leonardoapiboot.service.TagsUtenteService;
+import it.leonardo.leonardoapiboot.service.UtenteService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,9 +33,18 @@ public class TagController {
     private TagsUtenteService tagsUtenteService;
 
     @Autowired
+    private UtenteService utenteService;
+
+    @Autowired
     private HttpSession session;
 
-    @GetMapping
+    @Operation(description = "Restituisce tutti i tag presenti nel database")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Richiesta andata a buon fine, l'array è restituito"),
+            @ApiResponse(responseCode = "204", description = "Richiesta ok, lista vuota"),
+            @ApiResponse(responseCode = "500", description = "Errore interno del server")
+    })
+    @GetMapping("/all")
     public ResponseEntity<List<Tag>> getAll() {
         log.info("Invoked TagController.getAll()");
         ResponseEntity<List<Tag>> resp = null;
@@ -50,6 +60,12 @@ public class TagController {
         return resp;
     }
 
+    @Operation(description = "Restituisce il tag con l'id specificato")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Richiesta andata a buon fine"),
+            @ApiResponse(responseCode = "404", description = "Tag non trovato"),
+            @ApiResponse(responseCode = "500", description = "Errore interno del server")
+    })
     @GetMapping("{id}")
     public ResponseEntity<Tag> getById(@PathVariable("id") Integer id) {
         log.info("Invoked TagController.getById(" + id + ")");
@@ -72,7 +88,7 @@ public class TagController {
             @ApiResponse(responseCode = "401", description = "Il token di sessione non è settato, di conseguenza non è possibile accedere a questo endpoint."),
             @ApiResponse(responseCode = "500", description = "Errore generico del server")
     })
-    @GetMapping("/current")
+    @GetMapping
     public ResponseEntity<List<TagsUtente>> getTagsByLoggedUser() {
         log.info("Invoked TagController.getTagsByLoggedUser()");
 
@@ -81,9 +97,9 @@ public class TagController {
 
         String userid = session.getAttribute("userID").toString();
         try {
-            List<TagsUtente> list = tagsUtenteService.getTagsByUserId(Integer.parseInt(userid));
-            if (list.isEmpty()) return ResponseEntity.noContent().build();
-            else return ResponseEntity.ok(list);
+            List<TagsUtente> tagsUtente = tagsUtenteService.getTagsUtenteByUtente(utenteService.findById(Integer.parseInt(userid)).get());
+            if (tagsUtente.isEmpty()) return ResponseEntity.noContent().build();
+            else return ResponseEntity.ok(tagsUtente);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
         }
