@@ -539,14 +539,13 @@ public class UtenteController {
     @Operation(description = "Permette di effettuare il reset della password attraverso l'username o l'email dell'utente.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Richiesta di reset effettuata con successo, email inviata"),
-            @ApiResponse(responseCode = "404", description = "Non è stato possibile individuare l'utente"),
             @ApiResponse(responseCode = "500", description = "Errore generico del server")
     })
     public ResponseEntity<Object> resetPassword(String query) {
         log.info("Invoked UtenteController.resetPassword(" + query + ")");
         try {
             Optional<Utente> utenteOpt = service.findByUsernameOrEmail(query);
-            if (!utenteOpt.isPresent()) return ResponseEntity.notFound().build();
+            if (!utenteOpt.isPresent()) return ResponseEntity.ok().build();
             Utente u = utenteOpt.get();
 
             SimpleMailMessage smm = new SimpleMailMessage();
