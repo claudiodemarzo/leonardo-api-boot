@@ -12,10 +12,13 @@ import it.leonardo.leonardoapiboot.service.*;
 import it.leonardo.leonardoapiboot.utils.AnnunciComparator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpSession;
 import java.util.*;
@@ -214,8 +217,9 @@ public class AnnunciLibriController {
 		Optional<Citta> optCitt;
 		try {
 			optLibr = libroService.findByIsbn(isbn);
-			if (!optLibr.isPresent())
-				return new ResponseEntity<>("{\"invalidField\" : \"isbn\"}", HttpStatus.NOT_FOUND);
+			if (!optLibr.isPresent()) {
+
+			}
 
 			optCitt = cittaService.getById(citta);
 			if (!optCitt.isPresent())
@@ -239,6 +243,45 @@ public class AnnunciLibriController {
 			return new ResponseEntity<>(alSaved, HttpStatus.CREATED);
 
 
+		} catch (Exception e) {
+			return ResponseEntity.internalServerError().build();
+		}
+	}
+
+	@Operation(description = "Verifica la correttezza dell'isbn, restituendo una o più possibilità")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "La richiesta è andata a buon fine, la lista delle possibilità è stata popolata"),
+			@ApiResponse(responseCode = "404", description = "Non sono stati ottenuti riscontri dalle API di Google Books"),
+			@ApiResponse(responseCode = "500", description = "Errore generico del server")
+	})
+	@GetMapping("/verify-isbn/{isbn}")
+	public ResponseEntity<List<String>> verifyIsbn(@PathVariable("isbn") String isbn) {
+		log.info("Invoked AnnunciLibriController.verifyIsbn(" + isbn + ")");
+		try {
+			String url = "https://www.googleapis.com/books/v1/volumes?q=isbn:" + isbn;
+			RestTemplate restTemplate = new RestTemplate();
+			String response = restTemplate.getForObject(url, String.class);
+
+			JSONObject json = new JSONObject(response);
+			if(json.getInt("totalItems") != 0) {
+				List<String> lst = new ArrayList<>();
+				lst.add(json.getJSONArray("items").getJSONObject(0).toString());
+				return ResponseEntity.ok(lst);
+			}
+
+			List<String> possbileIsbn = new ArrayList<>();
+			url = "https://www.googleapis.com/books/v1/volumes?q="+isbn;
+			response = restTemplate.getForObject(url, String.class);
+
+			json = new JSONObject(response);
+			if(json.getInt("totalItems") == 0) return ResponseEntity.notFound().build();
+			JSONArray items = json.getJSONArray("items");
+
+			for(int i = 0; i < 10; i++){
+				possbileIsbn.add(items.getJSONObject(i).toString());
+			}
+
+			return ResponseEntity.ok(possbileIsbn);
 		} catch (Exception e) {
 			return ResponseEntity.internalServerError().build();
 		}
