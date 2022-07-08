@@ -264,6 +264,8 @@ public class AnnunciLibriController {
             RestTemplate restTemplate = new RestTemplate();
             String response = restTemplate.getForObject(url, String.class);
 
+            log.debug("Response by isbn: " + response);
+
             JSONObject json = new JSONObject(response);
             if (json.getInt("totalItems") != 0) {
                 List<String> lst = new ArrayList<>();
@@ -271,9 +273,12 @@ public class AnnunciLibriController {
                 return ResponseEntity.ok(lst);
             }
 
+
             List<String> possbileIsbn = new ArrayList<>();
             url = "https://www.googleapis.com/books/v1/volumes?q=" + isbn;
             response = restTemplate.getForObject(url, String.class);
+
+            log.debug("Response (all): " + response);
 
             json = new JSONObject(response);
             if (json.getInt("totalItems") == 0) return ResponseEntity.notFound().build();
