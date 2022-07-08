@@ -250,6 +250,20 @@ public class AnnunciLibriController {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 
+    @Operation(description = "Verifica se un libro è presente nel database, dato il suo isbn")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "La richiesta è andata a buon fine, il libro è presente e le informazioni sono restituite"),
+            @ApiResponse(responseCode = "404", description = "Il libro non è presente nel database"),
+            @ApiResponse(responseCode = "500", description = "Errore generico del server")
+    })
+    @GetMapping("/present")
+    public ResponseEntity<Libro> isPresent(@RequestParam("isbn") String isbn) {
+        log.info("Invoked AnnunciLibriController.isPresent(" + isbn + ")");
+        Optional<Libro> opt = libroService.findByIsbn(isbn);
+        if (!opt.isPresent()) return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(opt.get());
+    }
+
     @Operation(description = "Verifica la correttezza dell'isbn, restituendo una o più possibilità")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "La richiesta è andata a buon fine, la lista delle possibilità è stata popolata"),
