@@ -266,7 +266,8 @@ public class AnnunciLibriController {
 
             JSONObject json = new JSONObject(response);
             if (json.getInt("totalItems") != 0) {
-                JSONArray arr = new JSONArray(json.getJSONArray("items").getJSONObject(0));
+                JSONArray arr = new JSONArray();
+                arr.put(json.getJSONArray("items").getJSONObject(0));
                 return ResponseEntity.ok(arr.toString());
             }
 
