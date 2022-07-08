@@ -10,7 +10,6 @@ import java.util.Optional;
 public interface TagsUtenteService {
 
     List<Tag> getTagsByUtente(Utente u);
-    Optional<TagsUtente> getTagsUtenteById(TagsUtente.TagsUtenteKey id);
 
     List<TagsUtente> getTagsUtenteByUtente(Utente u);
 }

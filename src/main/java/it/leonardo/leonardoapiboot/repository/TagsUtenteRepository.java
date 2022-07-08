@@ -6,8 +6,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface TagsUtenteRepository extends JpaRepository<TagsUtente, TagsUtente.TagsUtenteKey> {
-    List<TagsUtente> findById_Utente(Integer utente);
+
+public interface TagsUtenteRepository extends JpaRepository<TagsUtente, Integer> {
 
     List<TagsUtente> findTagsUtenteByUtente(Utente u);
 

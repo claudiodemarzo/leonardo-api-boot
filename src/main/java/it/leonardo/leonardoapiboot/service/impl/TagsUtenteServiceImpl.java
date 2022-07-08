@@ -27,11 +27,6 @@ public class TagsUtenteServiceImpl implements TagsUtenteService {
     }
 
     @Override
-    public Optional<TagsUtente> getTagsUtenteById(TagsUtente.TagsUtenteKey id) {
-        return repo.findById(id);
-    }
-
-    @Override
     public List<TagsUtente> getTagsUtenteByUtente(Utente u) {
         return repo.findTagsUtenteByUtente(u);
     }
