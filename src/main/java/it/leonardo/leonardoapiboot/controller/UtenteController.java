@@ -299,8 +299,8 @@ public class UtenteController {
             @ApiResponse(responseCode = "401", description = "Il token di sessione non è settato, di conseguenza non è possibile accedere a questo endpoint."),
             @ApiResponse(responseCode = "500", description = "Errore generico del server")
     })
-    public ResponseEntity<Object> updatePropic(@RequestParam String base64, @RequestParam(required = false, defaultValue = "true") Boolean isAvatar) {
-        log.info("Invoked UtenteController.updatePropic(" + base64 + ")");
+    public ResponseEntity<Object> updatePropic(@RequestParam String base64, @RequestParam(required = false, defaultValue = "true") Boolean isAvatar, @RequestParam(required = false, defaultValue = "") String avatarJson) {
+        log.info("Invoked UtenteController.updatePropic(" + base64 + ", "+isAvatar+", "+avatarJson+")");
         String token = session.getAttribute("token") == null ? null : session.getAttribute("token").toString();
 
         if (token == null) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -308,7 +308,6 @@ public class UtenteController {
         String userID = session.getAttribute("userID").toString();
         Optional<Utente> utente = service.findById(Integer.parseInt(userID));
         if (!utente.isPresent()) return ResponseEntity.internalServerError().build();
-
 
         OpenCV.loadLocally();
 
@@ -360,6 +359,16 @@ public class UtenteController {
 
             Utente u = utente.get();
             u.setFoto(filePath.replace("/var/www/html", ""));
+
+            if(isAvatar){
+                UtentiPreferences up = utentiPreferencesService.getById(Integer.parseInt(userID)).get();
+                JSONObject preferencesJson = new JSONObject(up.getPreferences());
+                preferencesJson.put("avatar", "true");
+                preferencesJson.put("avatarJson", avatarJson);
+                up.setPreferences(preferencesJson.toString());
+                u.copyFromUtentiPreferences(up);
+            }
+
             Utente uSaved = service.save(u);
 
             return ResponseEntity.ok("{}");
