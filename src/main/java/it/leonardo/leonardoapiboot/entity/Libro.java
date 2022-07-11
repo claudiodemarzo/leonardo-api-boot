@@ -68,9 +68,9 @@ public class Libro implements Serializable {
         l.setCopertina(volumeInfo.has("imageLinks") ? volumeInfo.getJSONObject("imageLinks").getString("thumbnail") : "");
         l.setAutori(volumeInfo.has("authors") ? volumeInfo.getJSONArray("authors").join(", ") : "");
         l.setCasaed(volumeInfo.has("publisher") ? volumeInfo.getJSONObject("publisher").getString("name") : "");
-        l.setPagine(volumeInfo.has("pageCount") ? volumeInfo.getInt("pageCount"): 0);
+        l.setPagine(volumeInfo.has("pageCount") ? volumeInfo.getInt("pageCount"): 1);
         l.setCategoria(volumeInfo.has("categories") ? volumeInfo.getJSONArray("categories").join(", ") : "");
-        l.setPrezzolistino((json.has("saleInfo") && json.getJSONObject("saleInfo").has("listPrice") ? json.getJSONObject("saleInfo").getJSONObject("listPrice").getFloat("amount") : 0));
+        l.setPrezzolistino((json.has("saleInfo") && json.getJSONObject("saleInfo").has("listPrice") ? json.getJSONObject("saleInfo").getJSONObject("listPrice").getFloat("amount") : 1));
         l.setAnno_pubblicazione(volumeInfo.has("publishedDate") ? volumeInfo.getString("publishedDate").substring(0, 4) : "0000");
         return l;
     }
