@@ -11,7 +11,7 @@ import java.util.Objects;
 @Entity
 @Table(name = "libri")
 public class Libro implements Serializable {
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+
     @Id
     @Column(name = "isbn")
     private String isbn;
@@ -48,7 +48,7 @@ public class Libro implements Serializable {
     private float prezzolistino;
 
     @Column(name = "anno_pubblicazione")
-    private int anno_pubblicazione ;
+    private int anno_pubblicazione;
 
     @JsonManagedReference
     @OneToMany(mappedBy = "libro")
