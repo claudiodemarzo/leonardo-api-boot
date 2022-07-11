@@ -221,6 +221,7 @@ public class LibroController {
             Libro lSaved = service.save(libro);
             return ResponseEntity.ok(lSaved);
         }catch (Exception e){
+            e.printStackTrace();
             return ResponseEntity.badRequest().build();
         }
 
