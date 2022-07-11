@@ -1,14 +1,19 @@
 package it.leonardo.leonardoapiboot.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import it.leonardo.leonardoapiboot.entity.Libro;
 import it.leonardo.leonardoapiboot.service.LibroService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,6 +26,9 @@ public class LibroController {
 
     @Autowired
     private LibroService service;
+
+    @Autowired
+    private HttpSession session;
 
     @GetMapping
     public ResponseEntity<List<Libro>> getAll() {
@@ -184,9 +192,37 @@ public class LibroController {
         return resp;
     }
 
-    @PostMapping
-    public ResponseEntity<Libro> insert() {
-        log.info("Invoked LibroController.insert()");
-        return null;
+    @Operation(description = "Inserisce un libro in db a partire da un JSON di Google Books")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Libro inserito con successo"),
+            @ApiResponse(responseCode = "400", description = "Richiesta malformata, verificare i parametri"),
+            @ApiResponse(responseCode = "401", description = "Utente non loggato"),
+            @ApiResponse(responseCode = "409", description = "Libro già presente"),
+            @ApiResponse(responseCode = "500", description = "Errore interno del server")
+    }
+    )
+    @PostMapping("/booksAPI")
+    public ResponseEntity<Libro> insert(@RequestParam String data) {
+        log.info("Invoked LibroController.insert(" + data + ")");
+        String token = session.getAttribute("token") == null ? null : session.getAttribute("token").toString();
+        if (token == null) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+
+        String userid = session.getAttribute("userID").toString();
+
+        JSONObject json;
+        try{
+            json = new JSONObject(data);
+            if(!json.has("volumeInfo")) return ResponseEntity.badRequest().build();
+            Libro libro = Libro.fromJSON(json);
+
+            Optional<Libro> lOpt = service.findByIsbn(libro.getIsbn());
+            if(!lOpt.isPresent()) return new ResponseEntity<>(HttpStatus.CONFLICT);
+
+            Libro lSaved = service.save(libro);
+            return ResponseEntity.ok(lSaved);
+        }catch (Exception e){
+            return ResponseEntity.badRequest().build();
+        }
+
     }
 }
