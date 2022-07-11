@@ -30,4 +30,14 @@ public class TagsUtenteServiceImpl implements TagsUtenteService {
     public List<TagsUtente> getTagsUtenteByUtente(Utente u) {
         return repo.findTagsUtenteByUtente(u);
     }
+
+    @Override
+    public TagsUtente save(TagsUtente tu) {
+        return repo.save(tu);
+    }
+
+    @Override
+    public List<TagsUtente> saveAll(List<TagsUtente> tuList) {
+        return repo.saveAll(tuList);
+    }
 }
