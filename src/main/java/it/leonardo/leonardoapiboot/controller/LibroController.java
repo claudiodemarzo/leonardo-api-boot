@@ -216,7 +216,7 @@ public class LibroController {
             Libro libro = Libro.fromJSON(json);
 
             Optional<Libro> lOpt = service.findByIsbn(libro.getIsbn());
-            if(!lOpt.isPresent()) return new ResponseEntity<>(HttpStatus.CONFLICT);
+            if(lOpt.isPresent()) return new ResponseEntity<>(HttpStatus.CONFLICT);
 
             Libro lSaved = service.save(libro);
             return ResponseEntity.ok(lSaved);

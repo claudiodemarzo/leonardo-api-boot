@@ -65,13 +65,13 @@ public class Libro implements Serializable {
         }
         l.setNome(volumeInfo.getString("title") + " " + (volumeInfo.has("subtitle") ? ": " + volumeInfo.getString("subtitle") : ""));
         l.setDescrizione(volumeInfo.has("description") ? volumeInfo.getString("description") : "");
-        l.setCopertina(volumeInfo.getJSONObject("imageLinks").getString("thumbnail"));
-        l.setAutori(volumeInfo.getJSONArray("authors").join(", "));
-        l.setCasaed(volumeInfo.getJSONObject("publisher").getString("name"));
-        l.setPagine(volumeInfo.getInt("pageCount"));
-        l.setCategoria(volumeInfo.getJSONArray("categories").join(", "));
+        l.setCopertina(volumeInfo.has("imageLinks") ? volumeInfo.getJSONObject("imageLinks").getString("thumbnail") : "");
+        l.setAutori(volumeInfo.has("authors") ? volumeInfo.getJSONArray("authors").join(", ") : "");
+        l.setCasaed(volumeInfo.has("publisher") ? volumeInfo.getJSONObject("publisher").getString("name") : "");
+        l.setPagine(volumeInfo.has("pageCount") ? volumeInfo.getInt("pageCount"): 0);
+        l.setCategoria(volumeInfo.has("categories") ? volumeInfo.getJSONArray("categories").join(", ") : "");
         l.setPrezzolistino((json.has("saleInfo") && json.getJSONObject("saleInfo").has("listPrice") ? json.getJSONObject("saleInfo").getJSONObject("listPrice").getFloat("amount") : 0));
-        l.setAnno_pubblicazione(volumeInfo.getString("publishedDate").substring(0, 4));
+        l.setAnno_pubblicazione(volumeInfo.has("publishedDate") ? volumeInfo.getString("publishedDate").substring(0, 4) : "0000");
         return l;
     }
 
