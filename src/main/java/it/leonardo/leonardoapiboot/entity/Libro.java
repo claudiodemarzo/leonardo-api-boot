@@ -1,6 +1,8 @@
 package it.leonardo.leonardoapiboot.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -35,9 +37,6 @@ public class Libro implements Serializable {
     @Column(name = "casaed")
     private String casaed;
 
-    @Column(name = "edizione")
-    private int edizione;
-
     @Column(name = "pagine")
     private int pagine;
 
@@ -48,17 +47,39 @@ public class Libro implements Serializable {
     private float prezzolistino;
 
     @Column(name = "anno_pubblicazione")
-    private int anno_pubblicazione;
+    private String anno_pubblicazione;
 
     @JsonManagedReference
     @OneToMany(mappedBy = "libro")
     private List<AnnunciLibri> annunci;
 
-    public int getAnno_pubblicazione() {
+    public static Libro fromJSON(JSONObject json) {
+        Libro l = new Libro();
+        JSONObject volumeInfo = json.getJSONObject("volumeInfo");
+        JSONArray industryIdentifiers = volumeInfo.getJSONArray("industryIdentifiers");
+        for (int i = 0; i < industryIdentifiers.length(); i++) {
+            JSONObject id = industryIdentifiers.getJSONObject(i);
+            if (id.getString("type").equals("ISBN_13")) {
+                l.setIsbn(id.getString("identifier"));
+            }
+        }
+        l.setNome(volumeInfo.getString("title") + " " + (volumeInfo.has("subtitle") ? ": " + volumeInfo.getString("subtitle") : ""));
+        l.setDescrizione(volumeInfo.has("description") ? volumeInfo.getString("description") : "");
+        l.setCopertina(volumeInfo.getJSONObject("imageLinks").getString("thumbnail"));
+        l.setAutori(volumeInfo.getJSONArray("authors").join(", "));
+        l.setCasaed(volumeInfo.getJSONObject("publisher").getString("name"));
+        l.setPagine(volumeInfo.getInt("pageCount"));
+        l.setCategoria(volumeInfo.getJSONArray("categories").join(", "));
+        l.setPrezzolistino((json.has("saleInfo") && json.getJSONObject("saleInfo").has("listPrice") ? json.getJSONObject("saleInfo").getJSONObject("listPrice").getFloat("amount") : 0));
+        l.setAnno_pubblicazione(volumeInfo.getString("publishedDate").substring(0, 4));
+        return l;
+    }
+
+    public String getAnno_pubblicazione() {
         return anno_pubblicazione;
     }
 
-    public void setAnno_pubblicazione(int anno_pubblicazione) {
+    public void setAnno_pubblicazione(String anno_pubblicazione) {
         this.anno_pubblicazione = anno_pubblicazione;
     }
 
@@ -110,14 +131,6 @@ public class Libro implements Serializable {
         this.casaed = casaed;
     }
 
-    public int getEdizione() {
-        return edizione;
-    }
-
-    public void setEdizione(int edizione) {
-        this.edizione = edizione;
-    }
-
     public int getPagine() {
         return pagine;
     }
@@ -155,12 +168,12 @@ public class Libro implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Libro libro = (Libro) o;
-        return edizione == libro.edizione && pagine == libro.pagine && Float.compare(libro.prezzolistino, prezzolistino) == 0 && Objects.equals(isbn, libro.isbn) && Objects.equals(nome, libro.nome) && Objects.equals(descrizione, libro.descrizione) && Objects.equals(copertina, libro.copertina) && Objects.equals(autori, libro.autori) && Objects.equals(casaed, libro.casaed) && Objects.equals(categoria, libro.categoria);
+        return pagine == libro.pagine && Float.compare(libro.prezzolistino, prezzolistino) == 0 && Objects.equals(isbn, libro.isbn) && Objects.equals(nome, libro.nome) && Objects.equals(descrizione, libro.descrizione) && Objects.equals(copertina, libro.copertina) && Objects.equals(autori, libro.autori) && Objects.equals(casaed, libro.casaed) && Objects.equals(categoria, libro.categoria);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(isbn, nome, descrizione, copertina, autori, casaed, edizione, pagine, categoria, prezzolistino);
+        return Objects.hash(isbn, nome, descrizione, copertina, autori, casaed, pagine, categoria, prezzolistino);
     }
 
     public Integer getLibroId() {
