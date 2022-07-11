@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpSession;
+import java.net.URLEncoder;
 import java.util.*;
 
 @RestController
@@ -264,17 +265,17 @@ public class AnnunciLibriController {
         return ResponseEntity.ok(opt.get());
     }
 
-    @Operation(description = "Verifica la correttezza dell'isbn, restituendo una o più possibilità")
+    @Operation(description = "Verifica la correttezza di una query, restituendo una o più possibilità")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "La richiesta è andata a buon fine, la lista delle possibilità è stata popolata"),
             @ApiResponse(responseCode = "404", description = "Non sono stati ottenuti riscontri dalle API di Google Books"),
             @ApiResponse(responseCode = "500", description = "Errore generico del server")
     })
-    @GetMapping("/verify-isbn")
-    public ResponseEntity<String> verifyIsbn(@RequestParam("isbn") String isbn) {
-        log.info("Invoked AnnunciLibriController.verifyIsbn(" + isbn + ")");
+    @GetMapping("/verify")
+        public ResponseEntity<String> verify(@RequestParam("q") String q) {
+        log.info("Invoked AnnunciLibriController.verify(" + q + ")");
         try {
-            String url = "https://www.googleapis.com/books/v1/volumes?q=isbn:" + isbn;
+            String url = "https://www.googleapis.com/books/v1/volumes?q=isbn:" + q;
             RestTemplate restTemplate = new RestTemplate();
             String response = restTemplate.getForObject(url, String.class);
 
@@ -285,7 +286,7 @@ public class AnnunciLibriController {
                 return ResponseEntity.ok(arr.toString());
             }
 
-            url = "https://www.googleapis.com/books/v1/volumes?q=" + isbn;
+            url = "https://www.googleapis.com/books/v1/volumes?q=" + URLEncoder.encode(q, "UTF-8");
             response = restTemplate.getForObject(url, String.class);
 
             json = new JSONObject(response);
