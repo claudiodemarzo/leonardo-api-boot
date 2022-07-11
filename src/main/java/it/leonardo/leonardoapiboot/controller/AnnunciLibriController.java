@@ -254,12 +254,17 @@ public class AnnunciLibriController {
     @Operation(description = "Verifica se un libro è presente nel database, dato il suo isbn")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "La richiesta è andata a buon fine, il libro è presente e le informazioni sono restituite"),
+            @ApiResponse(responseCode = "401", description = "Sessione non settata e/o token invalido"),
             @ApiResponse(responseCode = "404", description = "Il libro non è presente nel database"),
             @ApiResponse(responseCode = "500", description = "Errore generico del server")
     })
     @GetMapping("/present")
     public ResponseEntity<Libro> isPresent(@RequestParam("isbn") String isbn) {
         log.info("Invoked AnnunciLibriController.isPresent(" + isbn + ")");
+        String token = session.getAttribute("token") == null ? null : session.getAttribute("token").toString();
+        if (token == null) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+
+        String userid = session.getAttribute("userID").toString();
         Optional<Libro> opt = libroService.findByIsbn(isbn);
         if (!opt.isPresent()) return ResponseEntity.notFound().build();
         return ResponseEntity.ok(opt.get());
@@ -268,12 +273,19 @@ public class AnnunciLibriController {
     @Operation(description = "Verifica la correttezza di una query, restituendo una o più possibilità")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "La richiesta è andata a buon fine, la lista delle possibilità è stata popolata"),
+            @ApiResponse(responseCode = "401", description = "Sessione non settata e/o token invalido"),
             @ApiResponse(responseCode = "404", description = "Non sono stati ottenuti riscontri dalle API di Google Books"),
             @ApiResponse(responseCode = "500", description = "Errore generico del server")
     })
     @GetMapping("/verify")
         public ResponseEntity<String> verify(@RequestParam("q") String q) {
         log.info("Invoked AnnunciLibriController.verify(" + q + ")");
+
+        String token = session.getAttribute("token") == null ? null : session.getAttribute("token").toString();
+        if (token == null) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+
+        String userid = session.getAttribute("userID").toString();
+
         try {
             String url = "https://www.googleapis.com/books/v1/volumes?q=isbn:" + q;
             RestTemplate restTemplate = new RestTemplate();
