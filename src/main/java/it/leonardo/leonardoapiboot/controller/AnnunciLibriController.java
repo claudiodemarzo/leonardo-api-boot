@@ -314,7 +314,7 @@ public class AnnunciLibriController {
     @PatchMapping("{id}")
     public ResponseEntity<Object> update(@PathVariable Integer id, @RequestParam(required = false) Float prezzo, @RequestParam(required = false) Integer citta, @RequestParam(required = false) Integer stato, @RequestParam(required = false) Character livello_usura) {
         log.info("Invoked AnnunciLibriController.update(" + id + ", " + prezzo + ", " + citta + ", " + stato + ", " + livello_usura + ")");
-        String token = session.getAttribute("token") == null ? null : session.getAttribute("token").toString();
+        /*String token = session.getAttribute("token") == null ? null : session.getAttribute("token").toString();
 
         if (token == null) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 
@@ -345,7 +345,8 @@ public class AnnunciLibriController {
 
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
-        }
+        }*/
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
 
     }
 }
