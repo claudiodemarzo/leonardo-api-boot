@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.*;
 import it.leonardo.leonardoapiboot.entity.form.RegisterForm;
 import it.leonardo.leonardoapiboot.entity.form.UpdatePrivateForm;
 import it.leonardo.leonardoapiboot.entity.form.UpdatePublicForm;
-import org.json.JSONPropertyName;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -125,6 +124,14 @@ public class Utente implements Serializable {
     @OneToOne(mappedBy = "utente")
     @PrimaryKeyJoinColumn
     private UtentiPreferences preferences;
+
+    @OneToMany(mappedBy = "utenteMit")
+    @JsonBackReference
+    private List<Chatroom> chatroomsAsMit;
+
+    @OneToMany(mappedBy = "utenteDest")
+    @JsonBackReference
+    private List<Chatroom> chatroomsAsDest;
 
     public Integer getUtenteId() {
         return utenteId;
@@ -360,6 +367,22 @@ public class Utente implements Serializable {
 
     public void setPreferencesStr(String preferencesStr) {
         this.preferencesStr = preferencesStr;
+    }
+
+    public List<Chatroom> getChatroomsAsMit() {
+        return chatroomsAsMit;
+    }
+
+    public void setChatroomsAsMit(List<Chatroom> chatroomsAsMit) {
+        this.chatroomsAsMit = chatroomsAsMit;
+    }
+
+    public List<Chatroom> getChatroomsAsDest() {
+        return chatroomsAsDest;
+    }
+
+    public void setChatroomsAsDest(List<Chatroom> chatroomsAsDest) {
+        this.chatroomsAsDest = chatroomsAsDest;
     }
 
     @Override
