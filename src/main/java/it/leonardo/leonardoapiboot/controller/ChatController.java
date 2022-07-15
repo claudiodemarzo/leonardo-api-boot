@@ -131,7 +131,7 @@ public class ChatController {
             @ApiResponse(responseCode = "500", description = "Errore interno del server")
     })
     @PostMapping("/{id}")
-    public ResponseEntity<Object> sendMessage(@PathVariable Integer id, @RequestBody String message){
+    public ResponseEntity<Object> sendMessage(@PathVariable Integer id, @RequestParam String message){
         log.info("Invoked ChatController.sendMessage(" + id + ")");
         String token = session.getAttribute("token") == null ? null : session.getAttribute("token").toString();
 
