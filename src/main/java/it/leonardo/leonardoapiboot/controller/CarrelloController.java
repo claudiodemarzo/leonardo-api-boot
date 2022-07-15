@@ -47,7 +47,7 @@ public class CarrelloController {
     @Autowired
     private HttpSession session;
 
-    @Operation(description = "Restituisce una lista di oggetti Carrello che rappresenta il carrello associato all'utente, ricavato dal token di sessione")
+    @Operation(description = "Restituisce una lista di oggetti Libro che rappresenta il carrello associato all'utente, ricavato dal token di sessione")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "La richiesta è andata a buon fine, nel body è presente la lista popolata."),
             @ApiResponse(responseCode = "204", description = "La richiesta è andata a buon fine, ma la lista è vuota"),
