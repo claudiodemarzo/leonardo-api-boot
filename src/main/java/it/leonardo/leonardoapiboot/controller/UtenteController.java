@@ -315,8 +315,10 @@ public class UtenteController {
         File file = new File(filePath);
         File pngFile = new File(filePath + ".png");
         OutputStream png_ostream = null;
+        boolean isSVG = base64.contains("data:image/svg");
+        if(!isAvatar) base64 = base64.split(",")[1];
         try {
-            if (isAvatar) {
+            if (isAvatar || isSVG) {
                 OutputStream stream = new FileOutputStream(filePath);
                 byte[] svgBytes = Base64.decodeBase64(base64);
                 stream.write(svgBytes);
