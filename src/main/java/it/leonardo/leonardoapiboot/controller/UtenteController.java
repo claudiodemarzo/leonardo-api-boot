@@ -316,43 +316,50 @@ public class UtenteController {
         File pngFile = new File(filePath + ".png");
         OutputStream png_ostream = null;
         boolean isSVG = base64.contains("data:image/svg");
-        if(!isAvatar) base64 = base64.split(",")[1];
+        boolean isWEBP = base64.contains("data:image/webp");
+        if (!isAvatar) base64 = base64.split(",")[1];
         try {
-            if (isAvatar || isSVG) {
-                OutputStream stream = new FileOutputStream(filePath);
-                byte[] svgBytes = Base64.decodeBase64(base64);
-                stream.write(svgBytes);
-                TranscoderInput input_svg_image = new TranscoderInput(file.toURI().toURL().toString());
-                png_ostream = new FileOutputStream(pngFile);
-                TranscoderOutput output_png_image = new TranscoderOutput(png_ostream);
-                PNGTranscoder my_converter = new PNGTranscoder();
-                my_converter.transcode(input_svg_image, output_png_image);
-                png_ostream.flush();
-                png_ostream.close();
-                stream.flush();
-                stream.close();
-                file.delete();
+            if (!isWEBP) {
+                if (isAvatar || isSVG) {
+                    OutputStream stream = new FileOutputStream(filePath);
+                    byte[] svgBytes = Base64.decodeBase64(base64);
+                    stream.write(svgBytes);
+                    TranscoderInput input_svg_image = new TranscoderInput(file.toURI().toURL().toString());
+                    png_ostream = new FileOutputStream(pngFile);
+                    TranscoderOutput output_png_image = new TranscoderOutput(png_ostream);
+                    PNGTranscoder my_converter = new PNGTranscoder();
+                    my_converter.transcode(input_svg_image, output_png_image);
+                    png_ostream.flush();
+                    png_ostream.close();
+                    stream.flush();
+                    stream.close();
+                    file.delete();
+                } else {
+                    OutputStream stream = new FileOutputStream(pngFile);
+                    byte[] imageBytes = Base64.decodeBase64(base64);
+                    stream.write(imageBytes);
+                    stream.flush();
+                    stream.close();
+                }
+                BufferedImage image = ImageIO.read(pngFile);
+                BufferedImage imageCopy = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
+
+                imageCopy.getGraphics().drawImage(image, 0, 0, null);
+                byte[] imageCopyBytes = ((DataBufferByte) imageCopy.getRaster().getDataBuffer()).getData();
+
+                Mat imageMatrix = new Mat(image.getHeight(), image.getWidth(), CvType.CV_8UC3);
+                imageMatrix.put(0, 0, imageCopyBytes);
+
+                imageCopyBytes = encodeWebp(imageMatrix, 300);
+                OutputStream webpOutputStream = new FileOutputStream(filePath);
+                webpOutputStream.write(imageCopyBytes);
+                pngFile.delete();
             } else {
-                OutputStream stream = new FileOutputStream(pngFile);
-                byte[] imageBytes = Base64.decodeBase64(base64);
-                stream.write(imageBytes);
-                stream.flush();
-                stream.close();
+                byte[] webpBytes = Base64.decodeBase64(base64);
+                try(OutputStream webpOutputStream = new FileOutputStream(filePath)) {
+                    webpOutputStream.write(webpBytes);
+                }
             }
-            BufferedImage image = ImageIO.read(pngFile);
-            BufferedImage imageCopy = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
-
-            imageCopy.getGraphics().drawImage(image, 0, 0, null);
-            byte[] imageCopyBytes = ((DataBufferByte) imageCopy.getRaster().getDataBuffer()).getData();
-
-            Mat imageMatrix = new Mat(image.getHeight(), image.getWidth(), CvType.CV_8UC3);
-            imageMatrix.put(0, 0, imageCopyBytes);
-
-            imageCopyBytes = encodeWebp(imageMatrix, 300);
-
-            OutputStream webpOutputStream = new FileOutputStream(filePath);
-            webpOutputStream.write(imageCopyBytes);
-            pngFile.delete();
 
             if (isAvatar) {
                 png_ostream.flush();
