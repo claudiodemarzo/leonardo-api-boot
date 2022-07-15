@@ -342,7 +342,7 @@ public class UtenteController {
                     stream.close();
                 }
                 BufferedImage image = ImageIO.read(pngFile);
-                BufferedImage imageCopy = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
+                BufferedImage imageCopy = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
 
                 imageCopy.getGraphics().drawImage(image, 0, 0, null);
                 byte[] imageCopyBytes = ((DataBufferByte) imageCopy.getRaster().getDataBuffer()).getData();
