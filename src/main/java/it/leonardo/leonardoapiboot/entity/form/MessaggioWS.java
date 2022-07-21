@@ -3,18 +3,9 @@ package it.leonardo.leonardoapiboot.entity.form;
 import java.util.Date;
 
 public class MessaggioWS {
-    private Integer chatroom;
     private String messaggio;
     private Date timestamp;
     private Integer utenteDest;
-
-    public Integer getChatroom() {
-        return chatroom;
-    }
-
-    public void setChatroom(Integer chatroom) {
-        this.chatroom = chatroom;
-    }
 
     public String getMessaggio() {
         return messaggio;
