@@ -3,6 +3,8 @@ package it.leonardo.leonardoapiboot.configuration;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.leonardo.leonardoapiboot.handlers.WebSocketHandshakeHandler;
 import it.leonardo.leonardoapiboot.service.UtenteService;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.converter.DefaultContentTypeResolver;
@@ -28,10 +30,7 @@ import java.util.List;
 @Configuration
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
-
-    public static HashMap<Integer, WebSocketSession> users = new HashMap<>();
-    @Autowired
-    private UtenteService utenteService;
+    private static Log log = LogFactory.getLog(WebSocketConfig.class);
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
@@ -59,7 +58,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         converter.setContentTypeResolver(resolver);
         messageConverters.add(converter);
         return false;
-}
+    }
 
     @Override
     public void configureWebSocketTransport(WebSocketTransportRegistration registry) {
@@ -69,30 +68,25 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 return new WebSocketHandlerDecorator(handler) {
                     @Override
                     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-                        if(session.getAttributes().containsKey("userID")){
-                            String username = utenteService.findById((int)session.getAttributes().get("userID")).get().getUsername();
-                            System.out.println(username+" connesso");
-                            users.put((int)session.getAttributes().get("userID"),session);
-                        }else{
-                            System.out.println("Connessione rifiutata");
+                        if (session.getAttributes().containsKey("userID")) {
+                            log.info("Utente collegato: " + session.getAttributes().get("userID"));
+                        } else {
+                            log.warn("Connessione non autorizzata");
                             session.close(CloseStatus.NOT_ACCEPTABLE);
                         }
-                        System.out.println(users.keySet());
                         super.afterConnectionEstablished(session);
                     }
+
                     @Override
                     public void afterConnectionClosed(WebSocketSession session, CloseStatus closeStatus) throws Exception {
-                        if (CloseStatus.NOT_ACCEPTABLE != closeStatus){
-                            users.remove(session.getAttributes().get("userID"));
-                            System.out.println("RIP "+utenteService.findById((int)session.getAttributes().get("userID")).get().getUsername());
+                        if (CloseStatus.NOT_ACCEPTABLE != closeStatus) {
+                            log.info("Utente " + session.getAttributes().get("userID") + " disconnesso da WS");
                         }
-                        System.out.println(users.keySet());
-                        super.afterConnectionClosed(session,closeStatus);
+                        super.afterConnectionClosed(session, closeStatus);
                     }
 
                     @Override
                     public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) throws Exception {
-                        System.out.println(message.getPayload());
                         super.handleMessage(session, message);
                     }
                 };
