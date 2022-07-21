@@ -124,35 +124,4 @@ public class ChatController {
         }
     }
 
-    @Operation(description = "Invia un messaggio all'utente specificato")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Messaggio inviato"),
-            @ApiResponse(responseCode = "404", description = "Utente non esistente"),
-            @ApiResponse(responseCode = "500", description = "Errore interno del server")
-    })
-    @PostMapping("/{id}")
-    public ResponseEntity<Object> sendMessage(@PathVariable Integer id, @RequestParam String message){
-        log.info("Invoked ChatController.sendMessage(" + id + ")");
-        String token = session.getAttribute("token") == null ? null : session.getAttribute("token").toString();
-
-        if (token == null) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-
-        String userID = session.getAttribute("userID").toString();
-        try {
-
-            Optional<Utente> otherUtenteOptional = utenteService.findById(id);
-            if (!otherUtenteOptional.isPresent()) return ResponseEntity.notFound().build();
-            Utente mit = utenteService.findById(Integer.parseInt(userID)).get(), dest = otherUtenteOptional.get();
-            Chatroom c = chatroomService.getOrCreate(mit,dest);
-            Messaggio m = new Messaggio();
-            m.setChatroom(c);
-            m.setStatus(false);
-            m.setMessaggio(message);
-            m.setTimestamp(Date.from(Instant.now()));
-            Messaggio mSaved = messaggioService.save(m);
-            return ResponseEntity.ok(mSaved);
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
-        }
-    }
 }
