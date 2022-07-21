@@ -6,6 +6,7 @@ import it.leonardo.leonardoapiboot.entity.Messaggio;
 import it.leonardo.leonardoapiboot.entity.Utente;
 import it.leonardo.leonardoapiboot.entity.form.MessaggioWS;
 import it.leonardo.leonardoapiboot.service.ChatroomService;
+import it.leonardo.leonardoapiboot.service.MessaggioService;
 import it.leonardo.leonardoapiboot.service.UtenteService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -28,6 +29,9 @@ public class ChatWSController {
     private final SimpMessagingTemplate messagingTemplate;
     @Autowired
     private ChatroomService chatroomService;
+
+    @Autowired
+    private MessaggioService messaggioService;
     @Autowired
     private UtenteService utenteService;
 
@@ -58,6 +62,8 @@ public class ChatWSController {
         m.setStatus(false);
         m.setTimestamp(Date.from(Instant.now()));
         m.setMessaggio(message.getMessaggio());
+
+        m = messaggioService.save(m);
 
         messagingTemplate.convertAndSendToUser(utenteDest.toString(), "/topic/private-message", m);
     }
