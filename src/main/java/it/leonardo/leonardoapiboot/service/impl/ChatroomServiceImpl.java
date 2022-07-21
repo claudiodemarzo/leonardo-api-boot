@@ -7,6 +7,7 @@ import it.leonardo.leonardoapiboot.service.ChatroomService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -27,6 +28,11 @@ public class ChatroomServiceImpl implements ChatroomService {
         Chatroom c1Saved = repo.save(c1);
         repo.save(c2);
         return c1Saved;
+    }
+
+    @Override
+    public List<Chatroom> getByUtenteMit(Utente mit) {
+        return repo.findAllByUtenteMit(mit);
     }
 }
 

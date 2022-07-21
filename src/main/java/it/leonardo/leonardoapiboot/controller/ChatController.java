@@ -17,7 +17,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
-import java.time.Instant;
 import java.util.*;
 
 @RestController
@@ -119,6 +118,30 @@ public class ChatController {
             Utente dest = utenteService.findById(Integer.parseInt(userID)).get(), mit = otherUtenteOptional.get();
             messaggioService.setMessagesAsRead(mit, dest);
             return ResponseEntity.ok("{}");
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @Operation(description = "Restituisce tutte le chat nel quale l'utente è coinvolto")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Chat trovate"),
+            @ApiResponse(responseCode = "204", description = "Nessuna chat ancora aperta"),
+            @ApiResponse(responseCode = "401", description = "Login non effettuato"),
+            @ApiResponse(responseCode = "500", description = "Errore interno del server")
+    })
+    @GetMapping("/open")
+    public ResponseEntity<List<Chatroom>> getOpenChatrooms(){
+        log.info("Invoked ChatController.getOpenChatrooms()");
+        String token = session.getAttribute("token") == null ? null : session.getAttribute("token").toString();
+
+        if (token == null) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+
+        String userID = session.getAttribute("userID").toString();
+        try {
+            List<Chatroom> chatrooms = chatroomService.getByUtenteMit(utenteService.findById(Integer.parseInt(userID)).get());
+            if(chatrooms.isEmpty()) return ResponseEntity.notFound().build();
+            return ResponseEntity.ok(chatrooms);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
         }
