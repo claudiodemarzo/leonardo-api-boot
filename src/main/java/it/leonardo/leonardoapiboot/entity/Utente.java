@@ -411,6 +411,7 @@ public class Utente implements Serializable {
     }
 
     public void copyFromPublicUpdateForm(UpdatePublicForm upf) {
+        this.username = upf.getUsername();
         this.nome = upf.getNome();
         this.cognome = upf.getCognome();
         this.bio = upf.getBio();

@@ -1,11 +1,21 @@
 package it.leonardo.leonardoapiboot.entity.form;
 
 public class UpdatePublicForm {
+
+	private String username;
 	private String nome;
 	private String cognome;
 	private String bio;
 	private Integer istituto;
 	private String moreInfo;
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
 
 	public String getNome() {
 		return nome;
