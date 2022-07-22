@@ -356,7 +356,7 @@ public class UtenteController {
                 pngFile.delete();
             } else {
                 byte[] webpBytes = Base64.decodeBase64(base64);
-                try(OutputStream webpOutputStream = new FileOutputStream(filePath)) {
+                try (OutputStream webpOutputStream = new FileOutputStream(filePath)) {
                     webpOutputStream.write(webpBytes);
                 }
             }
@@ -405,7 +405,9 @@ public class UtenteController {
 
         try {
             Utente u = service.findById(Integer.parseInt(session.getAttribute("userID").toString())).get();
+            String oldEmail = u.getEmail();
             u.copyFromPrivateUpdateForm(form);
+            String newEmail = u.getEmail();
             if (form.getCitta() != null) {
                 Optional<Citta> c = cittaService.getById(form.getCitta());
                 if (!c.isPresent()) return ResponseEntity.badRequest().body("{\"invalidField\" : \"citta\"}");
@@ -417,7 +419,19 @@ public class UtenteController {
             if (form.getDataNascita().getTime() + 441796964000L >= new GregorianCalendar().getTimeInMillis())
                 return ResponseEntity.badRequest().body("{\"invalidField\" : \"dataNascita\"}");
 
+            if (!oldEmail.equalsIgnoreCase(newEmail)) {
+                String confirmToken = UUID.randomUUID().toString();
+                u.setConfirmToken(confirmToken);
+
+                SimpleMailMessage smm = new SimpleMailMessage();
+                smm.setTo(u.getEmail());
+                smm.setSubject("Conferma Email");
+                smm.setText("Pijate sto token de conferma zi: " + confirmToken + "\n oppure segui questo collegamento: https://leonardostart.tk/confirmemail?token=" + confirmToken);
+                mailSender.send(smm);
+            }
+
             Utente uSaved = service.save(u);
+
             return ResponseEntity.ok(uSaved);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
