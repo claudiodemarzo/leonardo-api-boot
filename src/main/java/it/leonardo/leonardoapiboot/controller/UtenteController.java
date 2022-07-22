@@ -429,7 +429,9 @@ public class UtenteController {
 
             if (!arrayContains(form.getGenere(), new String[]{"m", "f", "b", "a", "n"}))
                 return ResponseEntity.badRequest().body("{\"invalidField\" : \"genere\"}");
-            if (form.getDataNascita().getTime() + 441796964000L >= new GregorianCalendar().getTimeInMillis())
+            GregorianCalendar now = new GregorianCalendar(), dataNascita = new GregorianCalendar();
+            dataNascita.setTime(form.getDataNascita());
+            if (form.getDataNascita().getTime() + 441796964000L >= new GregorianCalendar().getTimeInMillis() || dataNascita.get(GregorianCalendar.YEAR) < now.get(GregorianCalendar.YEAR) - 100 || dataNascita.get(GregorianCalendar.YEAR) > now.get(GregorianCalendar.YEAR))
                 return ResponseEntity.badRequest().body("{\"invalidField\" : \"dataNascita\"}");
 
             if (!oldEmail.equalsIgnoreCase(newEmail)) {
