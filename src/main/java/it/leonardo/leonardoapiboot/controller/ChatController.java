@@ -8,6 +8,7 @@ import it.leonardo.leonardoapiboot.entity.Messaggio;
 import it.leonardo.leonardoapiboot.entity.Utente;
 import it.leonardo.leonardoapiboot.service.ChatroomService;
 import it.leonardo.leonardoapiboot.service.MessaggioService;
+import it.leonardo.leonardoapiboot.service.UtentePublicInfoService;
 import it.leonardo.leonardoapiboot.service.UtenteService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -34,6 +35,9 @@ public class ChatController {
 
     @Autowired
     private UtenteService utenteService;
+
+    @Autowired
+    private UtentePublicInfoService utentePublicInfoService;
 
     private final Log log = LogFactory.getLog(ChatController.class);
 
@@ -90,7 +94,7 @@ public class ChatController {
             if (!otherUtenteOptional.isPresent()) return ResponseEntity.notFound().build();
             Utente dest = otherUtenteOptional.get(), mit = utenteService.findById(Integer.parseInt(userID)).get();
             Integer count = messaggioService.getUnreadMessagesCount(mit, dest);
-            if(count == null) return ResponseEntity.notFound().build();
+            if (count == null) return ResponseEntity.notFound().build();
             return ResponseEntity.ok(count);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
@@ -131,7 +135,7 @@ public class ChatController {
             @ApiResponse(responseCode = "500", description = "Errore interno del server")
     })
     @GetMapping("/open")
-    public ResponseEntity<List<Chatroom>> getOpenChatrooms(){
+    public ResponseEntity<List<Chatroom>> getOpenChatrooms() {
         log.info("Invoked ChatController.getOpenChatrooms()");
         String token = session.getAttribute("token") == null ? null : session.getAttribute("token").toString();
 
@@ -140,7 +144,11 @@ public class ChatController {
         String userID = session.getAttribute("userID").toString();
         try {
             List<Chatroom> chatrooms = chatroomService.getByUtenteMit(utenteService.findById(Integer.parseInt(userID)).get());
-            if(chatrooms.isEmpty()) return ResponseEntity.notFound().build();
+            if (chatrooms.isEmpty()) return ResponseEntity.notFound().build();
+
+            for (Chatroom c : chatrooms)
+                c.setUtenteDestPublicInfo(utentePublicInfoService.getById(c.getUtenteDest().getUtenteId()).get());
+
             return ResponseEntity.ok(chatrooms);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();

@@ -24,6 +24,9 @@ public class Chatroom {
     @ManyToOne
     private Utente utenteDest;
 
+    @Transient
+    private UtentePublicInfo utenteDestPublicInfo;
+
     @JsonBackReference
     @OneToMany(mappedBy = "chatroom")
     private List<Messaggio> messaggi;
@@ -58,6 +61,14 @@ public class Chatroom {
 
     public void setMessaggi(List<Messaggio> messaggi) {
         this.messaggi = messaggi;
+    }
+
+    public UtentePublicInfo getUtenteDestPublicInfo() {
+        return utenteDestPublicInfo;
+    }
+
+    public void setUtenteDestPublicInfo(UtentePublicInfo utenteDestPublicInfo) {
+        this.utenteDestPublicInfo = utenteDestPublicInfo;
     }
 
     public Chatroom() {

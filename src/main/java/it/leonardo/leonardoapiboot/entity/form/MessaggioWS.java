@@ -31,6 +31,15 @@ public class MessaggioWS {
         this.utenteDest = utenteDest;
     }
 
+    @Override
+    public String toString() {
+        return "MessaggioWS{" +
+                "messaggio='" + messaggio + '\'' +
+                ", timestamp=" + timestamp +
+                ", utenteDest=" + utenteDest +
+                '}';
+    }
+
     public MessaggioWS() {
     }
 }
