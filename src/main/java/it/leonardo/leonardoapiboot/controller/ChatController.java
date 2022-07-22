@@ -66,6 +66,9 @@ public class ChatController {
             if (!tmp.isEmpty()) messaggi.addAll(tmp);
             tmp = messaggioService.findByUtenteMitAndUtenteDest(dest, mit);
             if (!tmp.isEmpty()) messaggi.addAll(tmp);
+            for(Messaggio m : messaggi){
+                m.getChatroom().setUtenteMitPublicInfo(utentePublicInfoService.getById(m.getChatroom().getUtenteMit().getUtenteId()).get());
+            }
 
             return ResponseEntity.ok(messaggi);
         } catch (Exception e) {

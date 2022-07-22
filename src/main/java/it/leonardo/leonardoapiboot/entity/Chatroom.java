@@ -25,6 +25,9 @@ public class Chatroom {
     private Utente utenteDest;
 
     @Transient
+    private UtentePublicInfo utenteMitPublicInfo;
+
+    @Transient
     private UtentePublicInfo utenteDestPublicInfo;
 
     @JsonBackReference
@@ -65,6 +68,14 @@ public class Chatroom {
 
     public UtentePublicInfo getUtenteDestPublicInfo() {
         return utenteDestPublicInfo;
+    }
+
+    public UtentePublicInfo getUtenteMitPublicInfo() {
+        return utenteMitPublicInfo;
+    }
+
+    public void setUtenteMitPublicInfo(UtentePublicInfo utenteMitPublicInfo) {
+        this.utenteMitPublicInfo = utenteMitPublicInfo;
     }
 
     public void setUtenteDestPublicInfo(UtentePublicInfo utenteDestPublicInfo) {
