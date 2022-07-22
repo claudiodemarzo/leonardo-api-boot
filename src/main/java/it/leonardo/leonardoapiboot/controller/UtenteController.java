@@ -268,6 +268,8 @@ public class UtenteController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "La modifica è stata effettuata, l'utente aggiornato è restituito"),
             @ApiResponse(responseCode = "401", description = "Il token di sessione non è settato, di conseguenza non è possibile accedere a questo endpoint."),
+            @ApiResponse(responseCode = "400", description = "Alcuni campi non sono validi, vedi il campo 'invalidField' per ulteriori informazioni"),
+            @ApiResponse(responseCode = "409", description = "Campi duplicati trovati, vedi il campo 'duplicatedField' per ulteriori informazioni"),
             @ApiResponse(responseCode = "500", description = "Errore generico del server")
     })
     public ResponseEntity<Object> updatePublic(UpdatePublicForm form) {
@@ -278,6 +280,10 @@ public class UtenteController {
 
         try {
             Utente u = service.findById(Integer.parseInt(session.getAttribute("userID").toString())).get();
+
+            Optional<Utente> opt = service.findByUsername(form.getUsername());
+            if(opt.isPresent()) return ResponseEntity.status(HttpStatus.CONFLICT).body("{\"duplicatedField\":\"username\"}");
+
             u.copyFromPublicUpdateForm(form);
             if (form.getIstituto() != null) {
                 Optional<Istituto> ist = istitutoService.getById(form.getIstituto());
