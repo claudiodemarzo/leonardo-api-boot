@@ -68,7 +68,7 @@ public class ChatController {
             tmp = messaggioService.findByUtenteMitAndUtenteDest(dest, mit);
             if (!tmp.isEmpty()) messaggi.addAll(tmp);
             for(Messaggio m : messaggi){
-                m.getChatroom().setUtenteMitPublicInfo(utentePublicInfoService.getById(m.getChatroom().getUtenteMit().getUtenteId()).get());
+                m.getChatroom().setUtenteMitInfo(m.getChatroom().getUtenteMit().getUtenteId());
             }
 
             messaggi.sort(new MessaggiComparator());
@@ -153,7 +153,7 @@ public class ChatController {
             if (chatrooms.isEmpty()) return ResponseEntity.notFound().build();
 
             for (Chatroom c : chatrooms)
-                c.setUtenteDestPublicInfo(utentePublicInfoService.getById(c.getUtenteDest().getUtenteId()).get());
+                c.setUtenteDestInfo(utentePublicInfoService.getById(c.getUtenteDest().getUtenteId()).get());
 
             return ResponseEntity.ok(chatrooms);
         } catch (Exception e) {

@@ -25,10 +25,10 @@ public class Chatroom {
     private Utente utenteDest;
 
     @Transient
-    private UtentePublicInfo utenteMitPublicInfo;
+    private Object utenteMitInfo;
 
     @Transient
-    private UtentePublicInfo utenteDestPublicInfo;
+    private Object utenteDestInfo;
 
     @JsonBackReference
     @OneToMany(mappedBy = "chatroom")
@@ -66,20 +66,20 @@ public class Chatroom {
         this.messaggi = messaggi;
     }
 
-    public UtentePublicInfo getUtenteDestPublicInfo() {
-        return utenteDestPublicInfo;
+    public Object getUtenteMitInfo() {
+        return utenteMitInfo;
     }
 
-    public UtentePublicInfo getUtenteMitPublicInfo() {
-        return utenteMitPublicInfo;
+    public void setUtenteMitInfo(Object utenteMitInfo) {
+        this.utenteMitInfo = utenteMitInfo;
     }
 
-    public void setUtenteMitPublicInfo(UtentePublicInfo utenteMitPublicInfo) {
-        this.utenteMitPublicInfo = utenteMitPublicInfo;
+    public Object getUtenteDestInfo() {
+        return utenteDestInfo;
     }
 
-    public void setUtenteDestPublicInfo(UtentePublicInfo utenteDestPublicInfo) {
-        this.utenteDestPublicInfo = utenteDestPublicInfo;
+    public void setUtenteDestInfo(Object utenteDestInfo) {
+        this.utenteDestInfo = utenteDestInfo;
     }
 
     public Chatroom() {
