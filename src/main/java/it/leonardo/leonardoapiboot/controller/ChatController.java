@@ -10,6 +10,7 @@ import it.leonardo.leonardoapiboot.service.ChatroomService;
 import it.leonardo.leonardoapiboot.service.MessaggioService;
 import it.leonardo.leonardoapiboot.service.UtentePublicInfoService;
 import it.leonardo.leonardoapiboot.service.UtenteService;
+import it.leonardo.leonardoapiboot.utils.MessaggiComparator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,6 +70,8 @@ public class ChatController {
             for(Messaggio m : messaggi){
                 m.getChatroom().setUtenteMitPublicInfo(utentePublicInfoService.getById(m.getChatroom().getUtenteMit().getUtenteId()).get());
             }
+
+            messaggi.sort(new MessaggiComparator());
 
             return ResponseEntity.ok(messaggi);
         } catch (Exception e) {
