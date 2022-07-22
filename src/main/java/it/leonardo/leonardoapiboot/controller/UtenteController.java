@@ -394,6 +394,7 @@ public class UtenteController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "La modifica è stata effettuata, l'utente aggiornato è restituito"),
             @ApiResponse(responseCode = "400", description = "Alcuni campi non sono validi, vedi il campo 'invalidField' per ulteriori informazioni"),
+            @ApiResponse(responseCode = "409", description = "Campi duplicati trovati, vedi il campo 'duplicatedField' per ulteriori informazioni"),
             @ApiResponse(responseCode = "401", description = "Il token di sessione non è settato, di conseguenza non è possibile accedere a questo endpoint."),
             @ApiResponse(responseCode = "500", description = "Errore generico del server")
     })
@@ -408,6 +409,12 @@ public class UtenteController {
             String oldEmail = u.getEmail();
             u.copyFromPrivateUpdateForm(form);
             String newEmail = u.getEmail();
+
+            Optional<Utente> utente = service.findByEmail(newEmail);
+            if(utente.isPresent()){
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("{\"duplicatedField\":\"email\"}");
+            }
+
             if (form.getCitta() != null) {
                 Optional<Citta> c = cittaService.getById(form.getCitta());
                 if (!c.isPresent()) return ResponseEntity.badRequest().body("{\"invalidField\" : \"citta\"}");
