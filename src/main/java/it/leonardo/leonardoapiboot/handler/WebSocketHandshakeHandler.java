@@ -1,4 +1,4 @@
-package it.leonardo.leonardoapiboot.handlers;
+package it.leonardo.leonardoapiboot.handler;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

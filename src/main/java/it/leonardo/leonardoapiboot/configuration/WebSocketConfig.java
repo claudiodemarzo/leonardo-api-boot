@@ -1,11 +1,9 @@
 package it.leonardo.leonardoapiboot.configuration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import it.leonardo.leonardoapiboot.handlers.WebSocketHandshakeHandler;
-import it.leonardo.leonardoapiboot.service.UtenteService;
+import it.leonardo.leonardoapiboot.handler.WebSocketHandshakeHandler;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.converter.DefaultContentTypeResolver;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
@@ -24,7 +22,6 @@ import org.springframework.web.socket.handler.WebSocketHandlerDecorator;
 import org.springframework.web.socket.handler.WebSocketHandlerDecoratorFactory;
 import org.springframework.web.socket.server.support.HttpSessionHandshakeInterceptor;
 
-import java.util.HashMap;
 import java.util.List;
 
 @Configuration
