@@ -261,7 +261,5 @@ public class LibroController {
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
         }
-
-
     }
 }

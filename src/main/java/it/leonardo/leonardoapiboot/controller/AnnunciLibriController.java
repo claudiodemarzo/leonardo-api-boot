@@ -213,62 +213,14 @@ public class AnnunciLibriController {
             @ApiResponse(responseCode = "500", description = "Errore generico del server")})
     @PostMapping
     public ResponseEntity<Object> insert(CreateAnnuncioForm form) {
-        /*log.info("Invoked AnnunciLibriController.insert(" + form + ")");
-        AnnunciLibri al = new AnnunciLibri();
-        Optional<Libro> optLibr;
-        Optional<Citta> optCitt;
-        try {
-            optLibr = libroService.findByIsbn(isbn);
-            if (!optLibr.isPresent()) {
-
-            }
-
-            optCitt = cittaService.getById(citta);
-            if (!optCitt.isPresent())
-                return new ResponseEntity<>("{\"invalidField\" : \"citta\"}", HttpStatus.NOT_FOUND);
-
-            al.setLibro(optLibr.get());
-            al.setCitta(optCitt.get());
-            al.setPrezzo(prezzo);
-            al.setCreated_at(new GregorianCalendar().getTime());
-            al.setLivello_usura(livello_usura);
-            al.setStato(1);
-
-            String token = session.getAttribute("token") == null ? null : session.getAttribute("token").toString();
-
-            if (token == null) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-
-            al.setUtente(utentePublicInfoService.getById(Integer.parseInt(session.getAttribute("userID").toString())).get());
-            AnnunciLibri alSaved = service.save(al);
-            alSaved.setUtente(null);
-            alSaved.getLibro().setAnnunci(null);
-            return new ResponseEntity<>(alSaved, HttpStatus.CREATED);
-
-
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
-        }*/
-        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
-    }
-
-    @Operation(description = "Verifica se un libro è presente nel database, dato il suo isbn")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "La richiesta è andata a buon fine, il libro è presente e le informazioni sono restituite"),
-            @ApiResponse(responseCode = "401", description = "Sessione non settata e/o token invalido"),
-            @ApiResponse(responseCode = "404", description = "Il libro non è presente nel database"),
-            @ApiResponse(responseCode = "500", description = "Errore generico del server")
-    })
-    @GetMapping("/present")
-    public ResponseEntity<Libro> isPresent(@RequestParam("isbn") String isbn) {
-        log.info("Invoked AnnunciLibriController.isPresent(" + isbn + ")");
+        log.info("Invoked AnnunciLibriController.insert(" + form + ")");
         String token = session.getAttribute("token") == null ? null : session.getAttribute("token").toString();
         if (token == null) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 
         String userid = session.getAttribute("userID").toString();
-        Optional<Libro> opt = libroService.findByIsbn(isbn);
-        if (!opt.isPresent()) return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(opt.get());
+        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
     }
+
 
     @Operation(description = "Verifica la correttezza di una query, restituendo una o più possibilità")
     @ApiResponses(value = {
@@ -278,7 +230,7 @@ public class AnnunciLibriController {
             @ApiResponse(responseCode = "500", description = "Errore generico del server")
     })
     @GetMapping("/verify")
-        public ResponseEntity<String> verify(@RequestParam("q") String q) {
+    public ResponseEntity<String> verify(@RequestParam("q") String q) {
         log.info("Invoked AnnunciLibriController.verify(" + q + ")");
 
         String token = session.getAttribute("token") == null ? null : session.getAttribute("token").toString();
