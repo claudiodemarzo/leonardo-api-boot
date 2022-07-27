@@ -1,6 +1,7 @@
 package it.leonardo.leonardoapiboot.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 
 import javax.persistence.*;
@@ -26,7 +27,7 @@ public class Citta implements Serializable {
     @JsonBackReference
     private Provincia provincia;
 
-    @JsonBackReference
+    @JsonManagedReference
     @OneToMany(mappedBy = "citta")
     private List<CAP> caps;
 
