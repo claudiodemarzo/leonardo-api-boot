@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import it.leonardo.leonardoapiboot.entity.Libro;
+import it.leonardo.leonardoapiboot.entity.form.InsertLibroForm;
 import it.leonardo.leonardoapiboot.service.LibroService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -202,28 +203,65 @@ public class LibroController {
     }
     )
     @PostMapping("/booksAPI")
-    public ResponseEntity<Libro> insert(@RequestParam String data) {
-        log.info("Invoked LibroController.insert(" + data + ")");
+    public ResponseEntity<Libro> insertFromGbooks(@RequestParam String data) {
+        log.info("Invoked LibroController.insertFromGbooks(" + data + ")");
         String token = session.getAttribute("token") == null ? null : session.getAttribute("token").toString();
         if (token == null) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 
         String userid = session.getAttribute("userID").toString();
 
         JSONObject json;
-        try{
+        try {
             json = new JSONObject(data);
-            if(!json.has("volumeInfo")) return ResponseEntity.badRequest().build();
+            if (!json.has("volumeInfo")) return ResponseEntity.badRequest().build();
             Libro libro = Libro.fromJSON(json);
 
             Optional<Libro> lOpt = service.findByIsbn(libro.getIsbn());
-            if(lOpt.isPresent()) return new ResponseEntity<>(HttpStatus.CONFLICT);
+            if (lOpt.isPresent()) return new ResponseEntity<>(HttpStatus.CONFLICT);
 
             Libro lSaved = service.save(libro);
             return ResponseEntity.ok(lSaved);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.badRequest().build();
         }
+
+    }
+
+    @Operation(description = "Inserisce un libro in db a partire dal form di inserimento del sito")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Libro inserito con successo"),
+            @ApiResponse(responseCode = "400", description = "Richiesta malformata, verificare i parametri"),
+            @ApiResponse(responseCode = "401", description = "Utente non loggato"),
+            @ApiResponse(responseCode = "409", description = "Libro già presente"),
+            @ApiResponse(responseCode = "500", description = "Errore interno del server")
+    })
+    @PostMapping
+    public ResponseEntity<Object> insert(InsertLibroForm form) {
+        log.info("Invoked LibroController.insert(" + form + ")");
+        String token = session.getAttribute("token") == null ? null : session.getAttribute("token").toString();
+        if (token == null) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+
+        String userid = session.getAttribute("userID").toString();
+
+        Optional<Libro> lOpt = service.findByIsbn(form.getIsbn());
+        if (lOpt.isPresent()) return new ResponseEntity<>(HttpStatus.CONFLICT);
+
+        if(form.getIsbn() == null || form.getIsbn().isEmpty()) return ResponseEntity.badRequest().body("{\"invalidField\" : \"isbn\"}");
+        for(char c : form.getIsbn().toCharArray()) {
+            if(!Character.isDigit(c)) return ResponseEntity.badRequest().body("{\"invalidField\" : \"isbn\"}");
+        }
+        if(form.getPrezzo() != null && form.getPrezzo() <= 0) return ResponseEntity.badRequest().body("{\"invalidField\" : \"prezzo\"}");
+        if(form.getNpag() != null && form.getNpag() <= 0) return ResponseEntity.badRequest().body("{\"invalidField\" : \"npag\"}");
+
+        try {
+            Libro l = Libro.fromForm(form);
+            Libro lSaved = service.save(l);
+            return new ResponseEntity<>(lSaved, HttpStatus.CREATED);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+
 
     }
 }

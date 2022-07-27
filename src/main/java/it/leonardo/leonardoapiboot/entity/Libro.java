@@ -1,6 +1,7 @@
 package it.leonardo.leonardoapiboot.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import it.leonardo.leonardoapiboot.entity.form.InsertLibroForm;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -182,5 +183,19 @@ public class Libro implements Serializable {
 
     public void setLibroId(Integer libroId) {
         this.libroId = libroId;
+    }
+
+    public static Libro fromForm(InsertLibroForm form){
+        Libro l = new Libro();
+        l.setIsbn(form.getIsbn());
+        l.setNome(form.getTitolo());
+        l.setDescrizione(form.getDescrizione());
+        l.setPrezzolistino(form.getPrezzo());
+        l.setAutori(form.getAutori());
+        l.setCasaed(form.getEditore());
+        l.setPagine(form.getNpag());
+        l.setCategoria(form.getCategoria());
+        l.setAnno_pubblicazione(form.getAnno());
+        return l;
     }
 }
