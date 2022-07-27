@@ -24,7 +24,7 @@ public class Citta implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "provincia")
-    @JsonBackReference
+    @JsonManagedReference
     private Provincia provincia;
 
     @JsonManagedReference
