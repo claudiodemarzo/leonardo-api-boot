@@ -23,8 +23,10 @@ public class Citta implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "provincia")
+    @JsonBackReference
     private Provincia provincia;
 
+    @JsonBackReference
     @OneToMany(mappedBy = "citta")
     private List<CAP> caps;
 
