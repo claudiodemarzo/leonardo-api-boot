@@ -1,7 +1,7 @@
 package it.leonardo.leonardoapiboot.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -21,18 +21,12 @@ public class Citta implements Serializable {
     @Column(name = "nome")
     private String nome;
 
-    @Column(name = "lat")
-    private Float lat;
-
-    @Column(name = "lng")
-    private Float lng;
-
     @ManyToOne
     @JoinColumn(name = "provincia")
     private Provincia provincia;
 
-    @Column(name = "cap", length = 5)
-    private String cap;
+    @OneToMany(mappedBy = "citta")
+    private List<CAP> caps;
 
     @JsonBackReference
     @OneToMany(mappedBy = "citta")
@@ -66,36 +60,12 @@ public class Citta implements Serializable {
         this.nome = nome;
     }
 
-    public Float getLat() {
-        return lat;
-    }
-
-    public void setLat(Float lat) {
-        this.lat = lat;
-    }
-
-    public Float getLng() {
-        return lng;
-    }
-
-    public void setLng(Float lng) {
-        this.lng = lng;
-    }
-
     public Provincia getProvincia() {
         return provincia;
     }
 
     public void setProvincia(Provincia provincia) {
         this.provincia = provincia;
-    }
-
-    public String getCap() {
-        return cap;
-    }
-
-    public void setCap(String cap) {
-        this.cap = cap;
     }
 
     public Set<Istituto> getIstituti() {
@@ -128,6 +98,14 @@ public class Citta implements Serializable {
 
     public void setUtentePublicInfos(List<UtentePublicInfo> utentePublicInfos) {
         this.utentePublicInfos = utentePublicInfos;
+    }
+
+    public List<CAP> getCaps() {
+        return caps;
+    }
+
+    public void setCaps (List<CAP> caps) {
+        this.caps = caps;
     }
 
     public Citta() {

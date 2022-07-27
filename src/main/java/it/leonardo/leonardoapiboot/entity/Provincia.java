@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -25,7 +26,7 @@ public class Provincia implements Serializable {
     private Regione regione;
 
     @OneToMany(mappedBy = "provincia")
-    private Set<Citta> cittas = new LinkedHashSet<>();
+    private List<Citta> cittas;
 
     public Integer getProvinciaId() {
         return provinciaId;
@@ -43,7 +44,7 @@ public class Provincia implements Serializable {
         this.nome = nome;
     }
 
-    /*public Regione getRegione() {
+    public Regione getRegione() {
         return regione;
     }
 
@@ -51,13 +52,13 @@ public class Provincia implements Serializable {
         this.regione = regione;
     }
 
-    public Set<Citta> getCittas() {
+    public List<Citta> getCittas() {
         return cittas;
     }
 
-    public void setCittas(Set<Citta> cittas) {
+    public void setCittas(List<Citta> cittas) {
         this.cittas = cittas;
-    }*/
+    }
 
     public Provincia() {
     }
