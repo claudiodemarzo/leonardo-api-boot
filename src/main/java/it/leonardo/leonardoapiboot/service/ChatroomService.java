@@ -9,4 +9,6 @@ public interface ChatroomService {
     Chatroom getOrCreate(Utente mit, Utente dest);
 
     List<Chatroom> getByUtenteMit(Utente mit);
+
+    Chatroom save(Chatroom c);
 }

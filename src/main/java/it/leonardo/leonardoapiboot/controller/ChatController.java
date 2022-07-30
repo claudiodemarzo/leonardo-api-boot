@@ -127,6 +127,11 @@ public class ChatController {
             if (!otherUtenteOptional.isPresent()) return ResponseEntity.notFound().build();
             Utente dest = utenteService.findById(Integer.parseInt(userID)).get(), mit = otherUtenteOptional.get();
             messaggioService.setMessagesAsRead(mit, dest);
+
+            Chatroom chatroom = chatroomService.getOrCreate(mit, dest);
+            chatroom.setMarkedUnread(false);
+            chatroomService.save(chatroom);
+
             return ResponseEntity.ok("{}");
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
@@ -156,6 +161,37 @@ public class ChatController {
                 c.setUtenteDestInfo(utentePublicInfoService.getById(c.getUtenteDest().getUtenteId()).get());
 
             return ResponseEntity.ok(chatrooms);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @Operation(description = "Imposta una chat come non letta")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Chat impostata come non letta"),
+            @ApiResponse(responseCode = "404", description = "Chat/Utente non trovati"),
+            @ApiResponse(responseCode = "401", description = "Login non effettuato"),
+            @ApiResponse(responseCode = "500", description = "Errore interno del server")
+    })
+    @GetMapping("/{id}/mark-unread")
+    public ResponseEntity<Object> setUnread(@PathVariable Integer id) {
+        log.info("Invoked ChatController.setUnread()");
+        String token = session.getAttribute("token") == null ? null : session.getAttribute("token").toString();
+
+        if (token == null) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+
+        String userID = session.getAttribute("userID").toString();
+        try {
+            Optional<Utente> otherUtenteOptional = utenteService.findById(id);
+            if(!otherUtenteOptional.isPresent()) return new ResponseEntity<>("{\"invalidField\" : \"id\"}", HttpStatus.NOT_FOUND);
+            Utente dest = otherUtenteOptional.get(), mit = utenteService.findById(Integer.parseInt(userID)).get();
+            Chatroom chatroom = chatroomService.getOrCreate(mit,dest);
+
+            chatroom.setMarkedUnread(true);
+
+            chatroomService.save(chatroom);
+
+            return ResponseEntity.ok("{}");
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
         }

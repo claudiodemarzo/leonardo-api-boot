@@ -24,6 +24,9 @@ public class Chatroom {
     @ManyToOne
     private Utente utenteDest;
 
+    @Column(name = "marked_unread")
+    private boolean markedUnread;
+
     @Transient
     private Object utenteMitInfo;
 
@@ -80,6 +83,14 @@ public class Chatroom {
 
     public void setUtenteDestInfo(Object utenteDestInfo) {
         this.utenteDestInfo = utenteDestInfo;
+    }
+
+    public boolean isMarkedUnread() {
+        return markedUnread;
+    }
+
+    public void setMarkedUnread(boolean markedUnread) {
+        this.markedUnread = markedUnread;
     }
 
     public Chatroom() {

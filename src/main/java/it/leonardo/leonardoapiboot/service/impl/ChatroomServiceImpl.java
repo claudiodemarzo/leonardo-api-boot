@@ -34,5 +34,10 @@ public class ChatroomServiceImpl implements ChatroomService {
     public List<Chatroom> getByUtenteMit(Utente mit) {
         return repo.findAllByUtenteMit(mit);
     }
+
+    @Override
+    public Chatroom save(Chatroom c) {
+        return repo.save(c);
+    }
 }
 
