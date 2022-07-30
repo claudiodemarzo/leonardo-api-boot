@@ -222,52 +222,6 @@ public class AnnunciLibriController {
     }
 
 
-    @Operation(description = "Verifica la correttezza di una query, restituendo una o più possibilità")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "La richiesta è andata a buon fine, la lista delle possibilità è stata popolata"),
-            @ApiResponse(responseCode = "401", description = "Sessione non settata e/o token invalido"),
-            @ApiResponse(responseCode = "404", description = "Non sono stati ottenuti riscontri dalle API di Google Books"),
-            @ApiResponse(responseCode = "500", description = "Errore generico del server")
-    })
-    @GetMapping("/verify")
-    public ResponseEntity<String> verify(@RequestParam("q") String q) {
-        log.info("Invoked AnnunciLibriController.verify(" + q + ")");
-
-        String token = session.getAttribute("token") == null ? null : session.getAttribute("token").toString();
-        if (token == null) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-
-        String userid = session.getAttribute("userID").toString();
-
-        try {
-            String url = "https://www.googleapis.com/books/v1/volumes?q=isbn:" + q;
-            RestTemplate restTemplate = new RestTemplate();
-            String response = restTemplate.getForObject(url, String.class);
-
-            JSONObject json = new JSONObject(response);
-            if (json.getInt("totalItems") != 0) {
-                JSONArray arr = new JSONArray();
-                arr.put(json.getJSONArray("items").getJSONObject(0));
-                return ResponseEntity.ok(arr.toString());
-            }
-
-            url = "https://www.googleapis.com/books/v1/volumes?q=" + URLEncoder.encode(q, "UTF-8");
-            response = restTemplate.getForObject(url, String.class);
-
-            json = new JSONObject(response);
-            if (json.getInt("totalItems") == 0) return ResponseEntity.notFound().build();
-            JSONArray items = json.getJSONArray("items");
-            JSONArray tmp = new JSONArray();
-            for (int i = 0; i < Math.min(items.length(), 10); i++) {
-                tmp.put(items.getJSONObject(i));
-            }
-
-            return ResponseEntity.ok(tmp.toString());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.internalServerError().build();
-        }
-    }
-
     @Operation(description = "Aggiorna un annuncio, impostando come utente l'utente ricavato dalla sessione")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "La richiesta è andata a buon fine, l'annuncio è stato aggiornato."),

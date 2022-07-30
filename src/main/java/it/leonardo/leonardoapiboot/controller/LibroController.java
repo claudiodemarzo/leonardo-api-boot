@@ -8,13 +8,16 @@ import it.leonardo.leonardoapiboot.entity.form.InsertLibroForm;
 import it.leonardo.leonardoapiboot.service.LibroService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpSession;
+import java.net.URLEncoder;
 import java.util.List;
 import java.util.Optional;
 
@@ -226,6 +229,56 @@ public class LibroController {
             return ResponseEntity.badRequest().build();
         }
 
+    }
+
+    @Operation(description = "Verifica la correttezza di una query, restituendo una o più possibilità")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "La richiesta è andata a buon fine, la lista delle possibilità è stata popolata"),
+            @ApiResponse(responseCode = "401", description = "Sessione non settata e/o token invalido"),
+            @ApiResponse(responseCode = "404", description = "Non sono stati ottenuti riscontri dalle API di Google Books"),
+            @ApiResponse(responseCode = "500", description = "Errore generico del server")
+    })
+    @GetMapping("/verify")
+    public ResponseEntity<Object> verify(@RequestParam("q") String q) {
+        log.info("Invoked AnnunciLibriController.verify(" + q + ")");
+
+        String token = session.getAttribute("token") == null ? null : session.getAttribute("token").toString();
+        if (token == null) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+
+        String userid = session.getAttribute("userID").toString();
+
+        try {
+            Optional<Libro> libroOptional = service.findByIsbn(q);
+
+            if(libroOptional.isPresent()) return ResponseEntity.ok(libroOptional.get());
+
+            String url = "https://www.googleapis.com/books/v1/volumes?q=isbn:" + q;
+            RestTemplate restTemplate = new RestTemplate();
+            String response = restTemplate.getForObject(url, String.class);
+
+            JSONObject json = new JSONObject(response);
+            if (json.getInt("totalItems") != 0) {
+                JSONArray arr = new JSONArray();
+                arr.put(json.getJSONArray("items").getJSONObject(0));
+                return ResponseEntity.ok(arr.toString());
+            }
+
+            url = "https://www.googleapis.com/books/v1/volumes?q=" + URLEncoder.encode(q, "UTF-8");
+            response = restTemplate.getForObject(url, String.class);
+
+            json = new JSONObject(response);
+            if (json.getInt("totalItems") == 0) return ResponseEntity.notFound().build();
+            JSONArray items = json.getJSONArray("items");
+            JSONArray tmp = new JSONArray();
+            for (int i = 0; i < Math.min(items.length(), 10); i++) {
+                tmp.put(items.getJSONObject(i));
+            }
+
+            return ResponseEntity.ok(tmp.toString());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
     @Operation(description = "Inserisce un libro in db a partire dal form di inserimento del sito")
