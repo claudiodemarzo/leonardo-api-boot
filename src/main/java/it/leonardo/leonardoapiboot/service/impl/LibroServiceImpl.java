@@ -39,7 +39,7 @@ public class LibroServiceImpl implements LibroService {
 
     @Override
     public List<Libro> findByLikeNome(String nome) {
-        return repo.findAllByNomeLikeIgnoreCase(nome);
+        return repo.findAllByNomeLikeIgnoreCase("%"+nome+"%");
     }
 
     @Override
@@ -49,7 +49,7 @@ public class LibroServiceImpl implements LibroService {
 
     @Override
     public List<Libro> findByLikeCasaed(String casaed) {
-        return repo.findAllByCasaedLikeIgnoreCase(casaed);
+        return repo.findAllByCasaedLikeIgnoreCase("%"+casaed+"%");
     }
 
     @Override
@@ -59,7 +59,7 @@ public class LibroServiceImpl implements LibroService {
 
     @Override
     public List<Libro> findByLikeAutore(String autore) {
-        return repo.findAllByAutoriLikeIgnoreCase(autore);
+        return repo.findAllByAutoriLikeIgnoreCase("%"+autore+"%");
     }
 
     @Override
@@ -69,7 +69,7 @@ public class LibroServiceImpl implements LibroService {
 
     @Override
     public List<Libro> findByLikeCategoria(String categoria) {
-        return repo.findAllByCategoriaLikeIgnoreCase(categoria);
+        return repo.findAllByCategoriaLikeIgnoreCase("%"+categoria+"%");
     }
 
     @Override

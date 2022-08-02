@@ -252,6 +252,11 @@ public class LibroController {
 
             if(libroOptional.isPresent()) return ResponseEntity.ok(libroOptional.get());
 
+            List<Libro> lst = service.findByLikeNome(q);
+            lst.addAll(service.findByLikeAutore(q));
+            lst.addAll(service.findByLikeCasaed(q));
+            lst.addAll(service.findByLikeCategoria(q));
+
             String url = "https://www.googleapis.com/books/v1/volumes?q=isbn:" + q;
             RestTemplate restTemplate = new RestTemplate();
             String response = restTemplate.getForObject(url, String.class);
