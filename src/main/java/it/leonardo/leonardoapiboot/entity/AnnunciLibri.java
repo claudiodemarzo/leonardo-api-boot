@@ -4,6 +4,7 @@ package it.leonardo.leonardoapiboot.entity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import org.jetbrains.annotations.NotNull;
 
 import javax.persistence.*;
@@ -48,6 +49,11 @@ public class AnnunciLibri{
 	@JsonIgnore
 	@OneToMany(mappedBy = "annuncio")
 	private Set<Carrello> carrello;
+
+	@JsonManagedReference
+	@ManyToOne
+	@JoinColumn(name = "status_libro")
+	private StatusLibro status;
 
 	public Integer getAnnuncio_id() {
 		return annuncio_id;
@@ -119,6 +125,14 @@ public class AnnunciLibri{
 
 	public void setCarrello(Set<Carrello> carrello) {
 		this.carrello = carrello;
+	}
+
+	public StatusLibro getStatus() {
+		return status;
+	}
+
+	public void setStatus(StatusLibro status) {
+		this.status = status;
 	}
 
 	public AnnunciLibri() {
