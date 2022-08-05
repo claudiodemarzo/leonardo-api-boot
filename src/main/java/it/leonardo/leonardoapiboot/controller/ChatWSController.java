@@ -25,8 +25,8 @@ import java.util.Date;
 @Controller
 public class ChatWSController {
 
-    private final Log log = LogFactory.getLog(ChatWSController.class);
-    private final SimpMessagingTemplate messagingTemplate;
+    private static final Log log = LogFactory.getLog(ChatWSController.class);
+    private static SimpMessagingTemplate messagingTemplate;
     @Autowired
     private ChatroomService chatroomService;
 
@@ -36,7 +36,7 @@ public class ChatWSController {
     private UtenteService utenteService;
 
     public ChatWSController(SimpMessagingTemplate messagingTemplate) {
-        this.messagingTemplate = messagingTemplate;
+        ChatWSController.messagingTemplate = messagingTemplate;
     }
 
     @MessageMapping("/broad")
@@ -66,5 +66,11 @@ public class ChatWSController {
         m = messaggioService.save(m);
 
         messagingTemplate.convertAndSendToUser(utenteDest.toString(), "/topic/private-message", m);
+    }
+
+    @Operation(description = "Notifica l'utente fornito con un messaggio specificato")
+    public static void sendNotification(String userId, String message) {
+        log.info("Invoked ChatWSController.sendNotification()");
+        messagingTemplate.convertAndSendToUser(userId, "/topic/notification", message);
     }
 }
