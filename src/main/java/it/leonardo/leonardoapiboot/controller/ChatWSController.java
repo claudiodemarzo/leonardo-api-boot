@@ -3,6 +3,7 @@ package it.leonardo.leonardoapiboot.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import it.leonardo.leonardoapiboot.entity.Chatroom;
 import it.leonardo.leonardoapiboot.entity.Messaggio;
+import it.leonardo.leonardoapiboot.entity.Notifica;
 import it.leonardo.leonardoapiboot.entity.Utente;
 import it.leonardo.leonardoapiboot.entity.form.MessaggioWS;
 import it.leonardo.leonardoapiboot.service.ChatroomService;
@@ -69,8 +70,8 @@ public class ChatWSController {
     }
 
     @Operation(description = "Notifica l'utente fornito con un messaggio specificato")
-    public static void sendNotification(String userId, String message) {
+    public static void sendNotification(String userId, Notifica notifica) {
         log.info("Invoked ChatWSController.sendNotification()");
-        messagingTemplate.convertAndSendToUser(userId, "/topic/notification", message);
+        messagingTemplate.convertAndSendToUser(userId, "/topic/notification", notifica);
     }
 }
