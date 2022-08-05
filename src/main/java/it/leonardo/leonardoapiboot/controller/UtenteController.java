@@ -36,6 +36,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.util.GregorianCalendar;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -282,9 +283,11 @@ public class UtenteController {
             Utente u = service.findById(Integer.parseInt(session.getAttribute("userID").toString())).get();
 
             Optional<Utente> opt = service.findByUsername(form.getUsername());
-            if(opt.isPresent()) return ResponseEntity.status(HttpStatus.CONFLICT).body("{\"duplicatedField\":\"username\"}");
 
+            String oldUsername = u.getUsername();
             u.copyFromPublicUpdateForm(form);
+            String newUsername = u.getUsername();
+            if(opt.isPresent() && !oldUsername.equals(newUsername)) return ResponseEntity.status(HttpStatus.CONFLICT).body("{\"duplicatedField\":\"username\"}");
             if (form.getIstituto() != null) {
                 Optional<Istituto> ist = istitutoService.getById(form.getIstituto());
                 if (!ist.isPresent()) return ResponseEntity.badRequest().body("{\"invalidFields\" : \"istituto\"}");
@@ -417,7 +420,7 @@ public class UtenteController {
             String newEmail = u.getEmail();
 
             Optional<Utente> utente = service.findByEmail(newEmail);
-            if(utente.isPresent()){
+            if(utente.isPresent() && !oldEmail.equals(newEmail)) {
                 return ResponseEntity.status(HttpStatus.CONFLICT).body("{\"duplicatedField\":\"email\"}");
             }
 
