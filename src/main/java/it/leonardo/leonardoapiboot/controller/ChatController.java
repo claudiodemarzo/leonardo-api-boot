@@ -155,7 +155,7 @@ public class ChatController {
         String userID = session.getAttribute("userID").toString();
         try {
             List<Chatroom> chatrooms = chatroomService.getByUtenteMit(utenteService.findById(Integer.parseInt(userID)).get());
-            if (chatrooms.isEmpty()) return ResponseEntity.notFound().build();
+            if (chatrooms.isEmpty()) return ResponseEntity.noContent().build();
 
             for (Chatroom c : chatrooms)
                 c.setUtenteDestInfo(utentePublicInfoService.getById(c.getUtenteDest().getUtenteId()).get());
