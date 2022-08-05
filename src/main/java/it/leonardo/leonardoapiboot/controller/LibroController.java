@@ -268,7 +268,7 @@ public class LibroController {
                 return ResponseEntity.ok(arr.toString());
             }
 
-            url = "https://www.googleapis.com/books/v1/volumes?q=" + URLEncoder.encode(q, "UTF-8");
+            url = "https://www.googleapis.com/books/v1/volumes?q=" + URLEncoder.encode(q, "UTF-8")+"&printType=books";
             response = restTemplate.getForObject(url, String.class);
 
             json = new JSONObject(response);
