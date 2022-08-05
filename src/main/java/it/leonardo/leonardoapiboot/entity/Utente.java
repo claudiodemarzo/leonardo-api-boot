@@ -425,7 +425,7 @@ public class Utente implements Serializable {
         this.email = upf.getEmail();
         this.genere = upf.getGenere();
         this.dataNascita = upf.getDataNascita();
-        this.telefono = upf.getTelefono();
+        this.telefono = upf.getTelefono().equals("") ? null : upf.getTelefono();
         this.cap = upf.getCap();
         this.indirizzo = upf.getIndirizzo();
 
