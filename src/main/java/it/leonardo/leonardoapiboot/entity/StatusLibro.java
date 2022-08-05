@@ -21,10 +21,10 @@ public class StatusLibro {
     @Column(name = "sott_noncanc")
     private Integer sottNonCanc;
 
-    @Column(name = "scritt_canc")
+    @Column(name = "scrit_canc")
     private Integer scrittCanc;
 
-    @Column(name = "scritt_noncanc")
+    @Column(name = "scrit_noncanc")
     private Integer scrittNonCanc;
 
     @Column(name = "pag_manc")
