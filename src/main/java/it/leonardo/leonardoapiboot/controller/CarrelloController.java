@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import it.leonardo.leonardoapiboot.entity.AnnunciLibri;
 import it.leonardo.leonardoapiboot.entity.Carrello;
 import it.leonardo.leonardoapiboot.entity.Libro;
+import it.leonardo.leonardoapiboot.entity.Notifica;
 import it.leonardo.leonardoapiboot.service.AnnunciLibriService;
 import it.leonardo.leonardoapiboot.service.CarrelloService;
 import it.leonardo.leonardoapiboot.service.LibroService;
@@ -94,7 +95,7 @@ public class CarrelloController {
                     Carrello c = new Carrello();
                     c.setAnnuncio(annOpt.get());
                     c.setUtente(utenteService.findById(Integer.parseInt(session.getAttribute("userID").toString())).get());
-                    ChatWSController.sendNotification(annOpt.get().getUtente().getId().toString(), "Qualcuno ha aggiunto un tuo annuncio al suo carrello");
+                    ChatWSController.sendNotification(annOpt.get().getUtente().getId().toString(), new Notifica(Notifica.TipoNotifica.info, "Aggiornamento sull'annuncio", "Qualcuno ha aggiunto un tuo annuncio al suo carrello"));
                     Carrello cSaved = service.save(c);
                     return new ResponseEntity<>(cSaved, HttpStatus.CREATED);
                 } catch (DataIntegrityViolationException ex) {
@@ -131,7 +132,7 @@ public class CarrelloController {
                         Carrello c = new Carrello();
                         c.setAnnuncio(annOpt.get());
                         c.setUtente(utenteService.findById(Integer.parseInt(session.getAttribute("userID").toString())).get());
-                        ChatWSController.sendNotification(annOpt.get().getUtente().getId().toString(), "Qualcuno ha aggiunto un tuo annuncio al suo carrello");
+                        ChatWSController.sendNotification(annOpt.get().getUtente().getId().toString(), new Notifica(Notifica.TipoNotifica.info, "Aggiornamento sull'annuncio", "Qualcuno ha aggiunto un tuo annuncio al suo carrello"));
                         Carrello cSaved = service.save(c);
                     } catch (DataIntegrityViolationException ex) {
                     }
