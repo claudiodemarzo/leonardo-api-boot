@@ -72,6 +72,6 @@ public class ChatWSController {
     @Operation(description = "Notifica l'utente fornito con un messaggio specificato")
     public static void sendNotification(String userId, Notifica notifica) {
         log.info("Invoked ChatWSController.sendNotification()");
-        messagingTemplate.convertAndSendToUser(userId, "/topic/notification", notifica);
+        messagingTemplate.convertAndSendToUser(userId, "/topic/notification", notifica.toString());
     }
 }
