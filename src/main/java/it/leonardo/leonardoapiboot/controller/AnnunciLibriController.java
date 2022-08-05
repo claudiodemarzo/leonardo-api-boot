@@ -4,10 +4,7 @@ package it.leonardo.leonardoapiboot.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import it.leonardo.leonardoapiboot.entity.AnnunciLibri;
-import it.leonardo.leonardoapiboot.entity.Citta;
-import it.leonardo.leonardoapiboot.entity.Libro;
-import it.leonardo.leonardoapiboot.entity.Utente;
+import it.leonardo.leonardoapiboot.entity.*;
 import it.leonardo.leonardoapiboot.entity.form.CreateAnnuncioForm;
 import it.leonardo.leonardoapiboot.service.*;
 import it.leonardo.leonardoapiboot.utils.AnnunciComparator;
@@ -50,6 +47,9 @@ public class AnnunciLibriController {
 
     @Autowired
     private UtentePublicInfoService utentePublicInfoService;
+
+    @Autowired
+    private StatusLibroService statusLibroService;
 
     @Operation(description = "Restituisce tutti gli annunci")
     @ApiResponses(value = {
@@ -207,8 +207,7 @@ public class AnnunciLibriController {
     @Operation(description = "Inserisce un annuncio, impostando come utente l'utente ricavato dalla sessione")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "La richiesta è andata a buon fine, l'annuncio è stato creato."),
-            @ApiResponse(responseCode = "409", description = "È già presente l'annuncio specificato nel carrello dell'utente."),
-            @ApiResponse(responseCode = "404", description = "Alcuni dei campi specificati sono inesistenti. Maggiori informazioni nell'attributo 'invalidField' del body json di risposta"),
+            @ApiResponse(responseCode = "400", description = "Alcuni dei campi specificati sono non validi. Maggiori informazioni nell'attributo 'invalidField' del body json di risposta, oppure l'annuncio non è pubblicabile a causa del suo stato di usura."),
             @ApiResponse(responseCode = "401", description = "Sessione non settata e/o token invalido"),
             @ApiResponse(responseCode = "500", description = "Errore generico del server")})
     @PostMapping
@@ -218,7 +217,20 @@ public class AnnunciLibriController {
         if (token == null) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 
         String userid = session.getAttribute("userID").toString();
-        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+
+        Optional<Libro> opt = libroService.findByIsbn(form.getIsbn());
+        Libro l = null;
+        if(opt.isPresent()) l = opt.get();
+        else {
+            l = Libro.fromCreateAnnuncioForm(form);
+        }
+        StatusLibro sl = statusLibroService.getStatus(form.getSottCanc(), form.getSottNonCanc(), form.getScrittCanc(), form.getScrittNonCanc(), form.getPagManc(), form.getPagRov(), form.getPagRovMol(), form.getCopRov(), form.getInsManc()).get();
+        AnnunciLibri a = AnnunciLibri.fromCreateAnnuncioForm( l, utentePublicInfoService.getById(Integer.parseInt(userid)).get(), sl,form);
+
+        if(a.getLivello_usura() == 'x') return ResponseEntity.badRequest().build();
+
+        AnnunciLibri alSaved = service.save(a);
+        return new ResponseEntity<>(alSaved, HttpStatus.CREATED);
     }
 
 
