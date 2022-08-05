@@ -276,6 +276,7 @@ public class LibroController {
             JSONArray items = json.getJSONArray("items");
             JSONArray tmp = new JSONArray();
             for (int i = 0; i < Math.min(items.length(), 10); i++) {
+                if(items.getJSONObject(i).getString("isbn").isEmpty()) continue;
                 tmp.put(items.getJSONObject(i));
             }
 
