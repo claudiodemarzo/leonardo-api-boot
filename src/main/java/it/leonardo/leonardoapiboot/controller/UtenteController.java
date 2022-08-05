@@ -282,7 +282,7 @@ public class UtenteController {
             Utente u = service.findById(Integer.parseInt(session.getAttribute("userID").toString())).get();
 
             Optional<Utente> opt = service.findByUsername(form.getUsername());
-            if(opt.isPresent()) return ResponseEntity.status(HttpStatus.CONFLICT).body("{\"duplicatedField\":\"username\"}");
+            if(opt.isPresent() && !opt.get().getUtenteId().equals(u.getUtenteId())) return ResponseEntity.status(HttpStatus.CONFLICT).body("{\"duplicatedField\":\"username\"}");
 
             u.copyFromPublicUpdateForm(form);
             if (form.getIstituto() != null) {
@@ -417,7 +417,7 @@ public class UtenteController {
             String newEmail = u.getEmail();
 
             Optional<Utente> utente = service.findByEmail(newEmail);
-            if(utente.isPresent()){
+            if(utente.isPresent() && utente.get().getUtenteId() != u.getUtenteId()) {
                 return ResponseEntity.status(HttpStatus.CONFLICT).body("{\"duplicatedField\":\"email\"}");
             }
 
