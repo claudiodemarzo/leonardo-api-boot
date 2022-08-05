@@ -1,7 +1,7 @@
 package it.leonardo.leonardoapiboot.entity;
 
 public class Notifica {
-    public enum TipoNotifica{
+    public enum TipoNotifica {
         info,
         success,
         warning,
@@ -40,5 +40,10 @@ public class Notifica {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    @Override
+    public String toString() {
+        return "{ \"type\": \"" + type + "\", \"title\": \"" + title + "\", \"content\": \"" + content + "\" }";
     }
 }
