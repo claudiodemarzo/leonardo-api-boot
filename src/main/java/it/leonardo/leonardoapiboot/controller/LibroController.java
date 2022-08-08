@@ -1,5 +1,6 @@
 package it.leonardo.leonardoapiboot.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -269,6 +270,8 @@ public class LibroController {
             lst.addAll(service.findByLikeAutore(q));
             lst.addAll(service.findByLikeCasaed(q));
             lst.addAll(service.findByLikeCategoria(q));
+            ObjectMapper om = new ObjectMapper();
+            String jsonString = om.writeValueAsString(lst);
 
             url = "https://www.googleapis.com/books/v1/volumes?q=" + URLEncoder.encode(q, "UTF-8")+"&printType=books";
             response = restTemplate.getForObject(url, String.class);
@@ -282,7 +285,10 @@ public class LibroController {
                 tmp.put(items.getJSONObject(i));
             }
 
-            tmp.put(lst);
+            JSONArray arr = new JSONArray(jsonString);
+            for (int i = 0; i < arr.length(); i++) {
+                tmp.put(arr.getJSONObject(i));
+            }
             return ResponseEntity.ok(tmp.toString());
         } catch (Exception e) {
             e.printStackTrace();
