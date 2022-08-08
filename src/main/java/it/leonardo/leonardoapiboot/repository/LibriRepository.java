@@ -24,5 +24,7 @@ public interface LibriRepository extends JpaRepository<Libro, String> {
 
     List<Libro> findAllByCategoriaLikeIgnoreCase(String like);
 
+    List<Libro> findAllByIsbnLikeIgnoreCase(String isbn);
+
 
 }

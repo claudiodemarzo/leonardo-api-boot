@@ -73,6 +73,11 @@ public class LibroServiceImpl implements LibroService {
     }
 
     @Override
+    public List<Libro> findByLikeIsbn(String isbn) {
+        return repo.findAllByIsbnLikeIgnoreCase("%"+isbn+"%");
+    }
+
+    @Override
     public Libro save(Libro l) {
         return repo.save(l);
     }

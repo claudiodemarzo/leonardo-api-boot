@@ -253,11 +253,6 @@ public class LibroController {
 
             if(libroOptional.isPresent()) return ResponseEntity.ok(Collections.singletonList(libroOptional.get()));
 
-            List<Libro> lst = service.findByLikeNome(q);
-            lst.addAll(service.findByLikeAutore(q));
-            lst.addAll(service.findByLikeCasaed(q));
-            lst.addAll(service.findByLikeCategoria(q));
-
             String url = "https://www.googleapis.com/books/v1/volumes?q=isbn:" + q;
             RestTemplate restTemplate = new RestTemplate();
             String response = restTemplate.getForObject(url, String.class);
@@ -268,6 +263,12 @@ public class LibroController {
                 arr.put(json.getJSONArray("items").getJSONObject(0));
                 return ResponseEntity.ok(arr.toString());
             }
+
+            List<Libro> lst = service.findByLikeNome(q);
+            lst.addAll(service.findByLikeIsbn(q));
+            lst.addAll(service.findByLikeAutore(q));
+            lst.addAll(service.findByLikeCasaed(q));
+            lst.addAll(service.findByLikeCategoria(q));
 
             url = "https://www.googleapis.com/books/v1/volumes?q=" + URLEncoder.encode(q, "UTF-8")+"&printType=books";
             response = restTemplate.getForObject(url, String.class);
@@ -281,6 +282,7 @@ public class LibroController {
                 tmp.put(items.getJSONObject(i));
             }
 
+            tmp.put(lst);
             return ResponseEntity.ok(tmp.toString());
         } catch (Exception e) {
             e.printStackTrace();

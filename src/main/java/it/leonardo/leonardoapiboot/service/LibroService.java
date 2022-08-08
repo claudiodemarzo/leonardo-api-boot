@@ -2,6 +2,7 @@ package it.leonardo.leonardoapiboot.service;
 
 import it.leonardo.leonardoapiboot.entity.Libro;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,4 +30,6 @@ public interface LibroService {
     Libro save(Libro l);
 
     List<Libro> findFirstLimit(int limit);
+
+    List<Libro> findByLikeIsbn(String isbn);
 }
