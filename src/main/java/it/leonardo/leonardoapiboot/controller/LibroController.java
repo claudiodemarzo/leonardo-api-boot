@@ -18,6 +18,7 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpSession;
 import java.net.URLEncoder;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -250,7 +251,7 @@ public class LibroController {
         try {
             Optional<Libro> libroOptional = service.findByIsbn(q);
 
-            if(libroOptional.isPresent()) return ResponseEntity.ok(libroOptional.get());
+            if(libroOptional.isPresent()) return ResponseEntity.ok(Collections.singletonList(libroOptional.get()));
 
             List<Libro> lst = service.findByLikeNome(q);
             lst.addAll(service.findByLikeAutore(q));
