@@ -37,6 +37,9 @@ public class Chatroom {
     @OneToMany(mappedBy = "chatroom")
     private List<Messaggio> messaggi;
 
+    @Transient
+    private Integer unreadMessages;
+
     public Integer getChatroomId() {
         return chatroomId;
     }
@@ -91,6 +94,14 @@ public class Chatroom {
 
     public void setMarkedUnread(boolean markedUnread) {
         this.markedUnread = markedUnread;
+    }
+
+    public Integer getUnreadMessages() {
+        return unreadMessages;
+    }
+
+    public void setUnreadMessages(Integer unreadMessages) {
+        this.unreadMessages = unreadMessages;
     }
 
     public Chatroom() {

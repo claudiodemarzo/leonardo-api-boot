@@ -160,6 +160,9 @@ public class ChatController {
             for (Chatroom c : chatrooms)
                 c.setUtenteDestInfo(utentePublicInfoService.getById(c.getUtenteDest().getUtenteId()).get());
 
+            for (Chatroom c : chatrooms)
+                c.setUnreadMessages(messaggioService.getUnreadMessagesCount(c.getUtenteMit(), c.getUtenteDest()));
+
             return ResponseEntity.ok(chatrooms);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
