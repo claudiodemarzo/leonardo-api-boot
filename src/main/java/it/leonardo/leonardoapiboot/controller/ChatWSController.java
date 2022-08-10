@@ -8,6 +8,7 @@ import it.leonardo.leonardoapiboot.entity.Utente;
 import it.leonardo.leonardoapiboot.entity.form.MessaggioWS;
 import it.leonardo.leonardoapiboot.service.ChatroomService;
 import it.leonardo.leonardoapiboot.service.MessaggioService;
+import it.leonardo.leonardoapiboot.service.UtentePublicInfoService;
 import it.leonardo.leonardoapiboot.service.UtenteService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -35,6 +36,8 @@ public class ChatWSController {
     private MessaggioService messaggioService;
     @Autowired
     private UtenteService utenteService;
+    @Autowired
+    private UtentePublicInfoService utentePublicInfoService;
 
     public ChatWSController(SimpMessagingTemplate messagingTemplate) {
         ChatWSController.messagingTemplate = messagingTemplate;
@@ -58,6 +61,8 @@ public class ChatWSController {
         Utente dest = utenteService.findById(utenteDest).orElse(null);
         if(dest == null) return;
         Chatroom c = chatroomService.getOrCreate(mit, dest);
+        c.setUtenteMitInfo(utentePublicInfoService.getById(mit.getUtenteId()));
+        c.setUtenteDestInfo(utentePublicInfoService.getById(dest.getUtenteId()));
 
         m.setChatroom(c);
         m.setStatus(false);
