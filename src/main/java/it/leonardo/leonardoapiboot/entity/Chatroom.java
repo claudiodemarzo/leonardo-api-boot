@@ -3,6 +3,7 @@ package it.leonardo.leonardoapiboot.entity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import javax.persistence.*;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -36,6 +37,9 @@ public class Chatroom {
     @JsonBackReference
     @OneToMany(mappedBy = "chatroom")
     private List<Messaggio> messaggi;
+
+    @Transient
+    private Date lastMessageDate;
 
     @Transient
     private Integer unreadMessages;
@@ -102,6 +106,14 @@ public class Chatroom {
 
     public void setUnreadMessages(Integer unreadMessages) {
         this.unreadMessages = unreadMessages;
+    }
+
+    public Date getLastMessageDate() {
+        return lastMessageDate;
+    }
+
+    public void setLastMessageDate(Date lastMessageDate) {
+        this.lastMessageDate = lastMessageDate;
     }
 
     public Chatroom() {

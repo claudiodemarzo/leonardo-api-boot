@@ -10,6 +10,7 @@ import it.leonardo.leonardoapiboot.service.ChatroomService;
 import it.leonardo.leonardoapiboot.service.MessaggioService;
 import it.leonardo.leonardoapiboot.service.UtentePublicInfoService;
 import it.leonardo.leonardoapiboot.service.UtenteService;
+import it.leonardo.leonardoapiboot.utils.ChatroomComparator;
 import it.leonardo.leonardoapiboot.utils.MessaggiComparator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -157,12 +158,18 @@ public class ChatController {
             List<Chatroom> chatrooms = chatroomService.getByUtenteMit(utenteService.findById(Integer.parseInt(userID)).get());
             if (chatrooms.isEmpty()) return ResponseEntity.noContent().build();
 
+            for(Chatroom c : chatrooms) {
+                c.getMessaggi().sort(new MessaggiComparator());
+                c.setLastMessageDate(c.getMessaggi().get(0).getTimestamp());
+            }
+
             for (Chatroom c : chatrooms)
                 c.setUtenteDestInfo(utentePublicInfoService.getById(c.getUtenteDest().getUtenteId()).get());
 
             for (Chatroom c : chatrooms)
                 c.setUnreadMessages(messaggioService.getUnreadMessagesCount(c.getUtenteMit(), c.getUtenteDest()));
 
+            chatrooms.sort(new ChatroomComparator());
             return ResponseEntity.ok(chatrooms);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
