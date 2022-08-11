@@ -60,6 +60,7 @@ public class ChatWSController {
         if(mit == null) return;
         Utente dest = utenteService.findById(utenteDest).orElse(null);
         if(dest == null) return;
+        if(mit.getUtenteId().equals(dest.getUtenteId())) return;
         Chatroom c = chatroomService.getOrCreate(mit, dest);
         c.setUtenteMitInfo(utentePublicInfoService.getById(mit.getUtenteId()));
         c.setUtenteDestInfo(utentePublicInfoService.getById(dest.getUtenteId()));
