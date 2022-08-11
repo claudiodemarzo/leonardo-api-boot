@@ -172,6 +172,7 @@ public class ChatController {
             chatrooms.sort(new ChatroomComparator());
             return ResponseEntity.ok(chatrooms);
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.internalServerError().build();
         }
     }
