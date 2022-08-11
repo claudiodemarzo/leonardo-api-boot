@@ -160,7 +160,7 @@ public class ChatController {
 
             for(Chatroom c : chatrooms) {
                 c.getMessaggi().sort(new MessaggiComparator());
-                c.setLastMessageDate(c.getMessaggi().get(0).getTimestamp());
+                c.setLastMessageDate(c.getMessaggi().size() != 0 ? c.getMessaggi().get(0).getTimestamp() : null);
             }
 
             for (Chatroom c : chatrooms)
