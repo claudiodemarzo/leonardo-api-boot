@@ -1,5 +1,6 @@
 package it.leonardo.leonardoapiboot.service;
 
+import it.leonardo.leonardoapiboot.entity.Chatroom;
 import it.leonardo.leonardoapiboot.entity.Messaggio;
 import it.leonardo.leonardoapiboot.entity.Utente;
 
@@ -10,6 +11,8 @@ public interface MessaggioService {
     List<Messaggio> findByUtenteMitAndUtenteDest(Utente mit, Utente dest);
 
     Integer getUnreadMessagesCount(Utente mit, Utente dest);
+
+    Integer getUnreadMessagesCount(Chatroom c);
 
     void setMessagesAsRead(Utente mit, Utente dest);
 
