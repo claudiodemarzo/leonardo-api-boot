@@ -9,7 +9,6 @@ import java.util.Optional;
 
 public interface ChatroomRepository extends JpaRepository<Chatroom, Integer> {
     Optional<Chatroom> findByUtenteMitAndUtenteDest(Utente utenteMit, Utente utenteDest);
-
     List<Chatroom> findAllByUtenteMit(Utente utenteMit);
 }
 

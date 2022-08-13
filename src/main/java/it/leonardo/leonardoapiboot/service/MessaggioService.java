@@ -12,7 +12,7 @@ public interface MessaggioService {
 
     Integer getUnreadMessagesCount(Utente mit, Utente dest);
 
-    Integer getUnreadMessagesCount(Chatroom c);
+    Integer getUnreadMessagesCount(Integer c);
 
     void setMessagesAsRead(Utente mit, Utente dest);
 

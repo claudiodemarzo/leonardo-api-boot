@@ -167,7 +167,7 @@ public class ChatController {
                 c.setUtenteDestInfo(utentePublicInfoService.getById(c.getUtenteDest().getUtenteId()).get());
 
             for (Chatroom c : chatrooms)
-                c.setUnreadMessages(messaggioService.getUnreadMessagesCount(c));
+                c.setUnreadMessages(messaggioService.getUnreadMessagesCount(c.getChatroomId()));
 
             chatrooms.sort(new ChatroomComparator());
             return ResponseEntity.ok(chatrooms);

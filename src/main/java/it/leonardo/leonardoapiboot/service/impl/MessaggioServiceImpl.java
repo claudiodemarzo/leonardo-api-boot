@@ -34,12 +34,12 @@ public class MessaggioServiceImpl implements MessaggioService {
         Optional<Chatroom> chatroomOpt = chatroomRepository.findByUtenteMitAndUtenteDest(dest, mit);
         if (!chatroomOpt.isPresent()) return null;
 
-        return getUnreadMessagesCount(chatroomOpt.get());
+        return getUnreadMessagesCount(chatroomOpt.get().getChatroomId());
     }
 
     @Override
-    public Integer getUnreadMessagesCount(Chatroom c){
-        return Math.toIntExact(c.getMessaggi().stream().filter(m -> !m.getStatus()).count());
+    public Integer getUnreadMessagesCount(Integer c){
+        return Math.toIntExact(chatroomRepository.findById(c).get().getMessaggi().stream().filter(m -> !m.getStatus()).count());
     }
 
     @Override
