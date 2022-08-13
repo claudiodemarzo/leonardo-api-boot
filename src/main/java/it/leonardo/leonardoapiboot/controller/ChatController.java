@@ -166,7 +166,7 @@ public class ChatController {
             for (Chatroom c : chatrooms)
                 c.setUtenteDestInfo(utentePublicInfoService.getById(c.getUtenteDest().getUtenteId()).get());
 
-            chatrooms.forEach(c -> c.getMessaggi().forEach(log::warn));
+            //chatrooms.forEach(c -> c.getMessaggi().forEach(log::warn));
             for (Chatroom c : chatrooms)
                 c.setUnreadMessages(messaggioService.getUnreadMessagesCount(c.getChatroomId()));
 
