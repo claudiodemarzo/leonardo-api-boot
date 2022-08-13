@@ -39,7 +39,7 @@ public class MessaggioServiceImpl implements MessaggioService {
 
     @Override
     public Integer getUnreadMessagesCount(Integer c){
-        return Math.toIntExact(chatroomRepository.findById(c).get().getMessaggi().stream().filter(m -> !m.getStatus()).count());
+        return Math.toIntExact(chatroomRepository.findById(c).get().getMessaggi().stream().filter(m -> m.getStatus() == 0).count());
     }
 
     @Override
@@ -49,7 +49,7 @@ public class MessaggioServiceImpl implements MessaggioService {
 
         Chatroom chatroom = chatroomOpt.get();
         List<Messaggio> messaggi = messaggioRepository.findByChatroom(chatroom);
-        messaggi.forEach(m -> m.setStatus(true));
+        messaggi.forEach(m -> m.setStatus(1));
         messaggioRepository.saveAll(messaggi);
     }
 

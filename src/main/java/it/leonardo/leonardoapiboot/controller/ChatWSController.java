@@ -66,7 +66,7 @@ public class ChatWSController {
         c.setUtenteDestInfo(utentePublicInfoService.getById(dest.getUtenteId()).get());
 
         m.setChatroom(c);
-        m.setStatus(false);
+        m.setStatus(0);
         m.setTimestamp(Date.from(Instant.now()));
         m.setMessaggio(message.getMessaggio());
 

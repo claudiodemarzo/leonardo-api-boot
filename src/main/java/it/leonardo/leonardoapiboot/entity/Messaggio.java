@@ -23,7 +23,7 @@ public class Messaggio {
     private String messaggio;
 
     @Column(name = "status")
-    private Boolean status;
+    private Integer status;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "timestamp")
@@ -53,11 +53,11 @@ public class Messaggio {
         this.messaggio = messaggio;
     }
 
-    public Boolean getStatus() {
+    public Integer getStatus() {
         return status;
     }
 
-    public void setStatus(Boolean status) {
+    public void setStatus(Integer status) {
         this.status = status;
     }
 
