@@ -168,7 +168,7 @@ public class ChatController {
 
             //chatrooms.forEach(c -> c.getMessaggi().forEach(log::warn));
             for (Chatroom c : chatrooms)
-                c.setUnreadMessages(messaggioService.getUnreadMessagesCount(c.getChatroomId()));
+                c.setUnreadMessages(messaggioService.getUnreadMessagesCount(chatroomService.getOrCreate(c.getUtenteDest(), c.getUtenteMit()).getChatroomId()));
 
             chatrooms.sort(new ChatroomComparator());
             return ResponseEntity.ok(chatrooms);
