@@ -31,7 +31,6 @@ public class ChatWSController {
     private static SimpMessagingTemplate messagingTemplate;
     @Autowired
     private ChatroomService chatroomService;
-
     @Autowired
     private MessaggioService messaggioService;
     @Autowired
