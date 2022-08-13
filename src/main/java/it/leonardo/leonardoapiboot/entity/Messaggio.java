@@ -69,6 +69,17 @@ public class Messaggio {
         this.timestamp = timestamp;
     }
 
+    @Override
+    public String toString() {
+        return "Messaggio{" +
+                "messaggioId=" + messaggioId +
+                ", chatroom=" + chatroom +
+                ", messaggio='" + messaggio + '\'' +
+                ", status=" + status +
+                ", timestamp=" + timestamp +
+                '}';
+    }
+
     public Messaggio() {
     }
 }
