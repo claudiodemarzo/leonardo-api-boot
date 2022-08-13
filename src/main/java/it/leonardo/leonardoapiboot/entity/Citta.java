@@ -28,7 +28,7 @@ public class Citta implements Serializable {
     private Provincia provincia;
 
     @JsonManagedReference
-    @OneToMany(mappedBy = "citta")
+    @OneToMany(mappedBy = "citta", fetch = FetchType.EAGER)
     private List<CAP> caps;
 
     @JsonBackReference
