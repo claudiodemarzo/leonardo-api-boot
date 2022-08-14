@@ -11,4 +11,6 @@ public interface ChatroomService {
     List<Chatroom> getByUtenteMit(Utente mit);
 
     Chatroom save(Chatroom c);
+
+    List<Chatroom> getByUtenteDest(Utente dest);
 }

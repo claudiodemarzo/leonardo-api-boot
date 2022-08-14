@@ -39,5 +39,10 @@ public class ChatroomServiceImpl implements ChatroomService {
     public Chatroom save(Chatroom c) {
         return repo.save(c);
     }
+
+    @Override
+    public List<Chatroom> getByUtenteDest(Utente dest) {
+        return repo.findAllByUtenteDest(dest);
+    }
 }
 

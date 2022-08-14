@@ -155,7 +155,7 @@ public class ChatController {
 
         String userID = session.getAttribute("userID").toString();
         try {
-            List<Chatroom> chatrooms = chatroomService.getByUtenteMit(utenteService.findById(Integer.parseInt(userID)).get());
+            List<Chatroom> chatrooms = chatroomService.getByUtenteDest(utenteService.findById(Integer.parseInt(userID)).get());
             if (chatrooms.isEmpty()) return ResponseEntity.noContent().build();
 
             for(Chatroom c : chatrooms) {
@@ -164,11 +164,11 @@ public class ChatController {
             }
 
             for (Chatroom c : chatrooms)
-                c.setUtenteDestInfo(utentePublicInfoService.getById(c.getUtenteDest().getUtenteId()).get());
+                c.setUtenteMitInfo(utentePublicInfoService.getById(c.getUtenteMit().getUtenteId()).get());
 
             //chatrooms.forEach(c -> c.getMessaggi().forEach(log::warn));
             for (Chatroom c : chatrooms)
-                c.setUnreadMessages(messaggioService.getUnreadMessagesCount(chatroomService.getOrCreate(c.getUtenteDest(), c.getUtenteMit()).getChatroomId()));
+                c.setUnreadMessages(messaggioService.getUnreadMessagesCount(chatroomService.getOrCreate(c.getUtenteMit(), c.getUtenteDest()).getChatroomId()));
 
             chatrooms.sort(new ChatroomComparator());
             return ResponseEntity.ok(chatrooms);
