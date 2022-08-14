@@ -197,7 +197,7 @@ public class ChatController {
             Optional<Utente> otherUtenteOptional = utenteService.findById(id);
             if(!otherUtenteOptional.isPresent()) return new ResponseEntity<>("{\"invalidField\" : \"id\"}", HttpStatus.NOT_FOUND);
             Utente dest = otherUtenteOptional.get(), mit = utenteService.findById(Integer.parseInt(userID)).get();
-            Chatroom chatroom = chatroomService.getOrCreate(mit,dest);
+            Chatroom chatroom = chatroomService.getOrCreate(dest, mit);
 
             chatroom.setMarkedUnread(true);
 
