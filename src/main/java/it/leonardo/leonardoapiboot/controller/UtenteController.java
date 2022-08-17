@@ -35,10 +35,7 @@ import java.awt.image.DataBufferByte;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
-import java.util.GregorianCalendar;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @RestController
 @RequestMapping("/utenti")
@@ -678,6 +675,24 @@ public class UtenteController {
 
             Utente uSaved = service.save(u);
             return ResponseEntity.ok("{}");
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @Operation(description = "Ricerca le informazioni pubbliche di un utente")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Richiesta andata a buon fine"),
+            @ApiResponse(responseCode = "204", description = "Utente non trovato"),
+            @ApiResponse(responseCode = "500", description = "Errore generico del server")
+    })
+    @GetMapping("search/{username}")
+    public ResponseEntity<List<UtentePublicInfo>> searchUtente(@PathVariable String username){
+        log.info("Invoked UtenteController.searchUtente(" + username + ")");
+        try {
+            List<UtentePublicInfo> utenti = utentePublicInfoService.searchUsername(username);
+            if (utenti.isEmpty()) return ResponseEntity.noContent().build();
+            return ResponseEntity.ok(utenti);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
         }

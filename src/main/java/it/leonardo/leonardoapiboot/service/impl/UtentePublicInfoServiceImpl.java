@@ -6,6 +6,7 @@ import it.leonardo.leonardoapiboot.service.UtentePublicInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -17,5 +18,10 @@ public class UtentePublicInfoServiceImpl implements UtentePublicInfoService {
     @Override
     public Optional<UtentePublicInfo> getById(Integer id) {
         return repo.findById(id);
+    }
+
+    @Override
+    public List<UtentePublicInfo> searchUsername(String username) {
+        return repo.findAllByUsernameLikeIgnoreCase("%"+username+"%");
     }
 }
