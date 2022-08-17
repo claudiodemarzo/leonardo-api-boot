@@ -37,10 +37,6 @@ public class Citta implements Serializable {
 
     @JsonBackReference
     @OneToMany(mappedBy = "citta")
-    private Set<AnnunciLibri> annunci;
-
-    @JsonBackReference
-    @OneToMany(mappedBy = "citta")
     private Set<Utente> utenti;
 
     @JsonBackReference
@@ -77,14 +73,6 @@ public class Citta implements Serializable {
 
     public void setIstituti(Set<Istituto> istituti) {
         this.istituti = istituti;
-    }
-
-    public Set<AnnunciLibri> getAnnunci() {
-        return annunci;
-    }
-
-    public void setAnnunci(Set<AnnunciLibri> annunci) {
-        this.annunci = annunci;
     }
 
     public Set<Utente> getUtenti() {

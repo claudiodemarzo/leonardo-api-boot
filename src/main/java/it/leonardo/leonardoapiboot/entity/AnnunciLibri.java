@@ -36,10 +36,6 @@ public class AnnunciLibri {
     private Character livello_usura;
 
     @ManyToOne
-    @JoinColumn(name = "citta")
-    private Citta citta;
-
-    @ManyToOne
     @JoinColumn(name = "utente")
     private UtentePublicInfo utente;
 
@@ -97,14 +93,6 @@ public class AnnunciLibri {
         this.livello_usura = livello_usura;
     }
 
-    public Citta getCitta() {
-        return citta;
-    }
-
-    public void setCitta(Citta citta) {
-        this.citta = citta;
-    }
-
     public UtentePublicInfo getUtente() {
         return utente;
     }
@@ -156,7 +144,6 @@ public class AnnunciLibri {
         al.setPrezzo(caf.getPrezzoListino());
         al.setStato(0);
         al.setLivello_usura(AnnunciLibri.calcolaLivelloUsura(caf.getSottCanc(), caf.getSottNonCanc(), caf.getScrittCanc(), caf.getScrittNonCanc(), caf.getPagManc(), caf.getPagRov(), caf.getPagRovMol(), caf.getCopRov(), caf.getInsManc()));
-        //TODO: al.setCitta(caf);
         al.setUtente(upf);
         al.setStatus(sl);
         return al;
