@@ -279,4 +279,34 @@ public class AnnunciLibriController {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
 
     }
+
+    @Operation(description = "Imposta un annuncio come venduto")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "La richiesta è andata a buon fine, l'annuncio è stato impostato come venduto."),
+            @ApiResponse(responseCode = "404", description = "L'annuncio non esiste/non è di proprietà dell'utente"),
+            @ApiResponse(responseCode = "401", description = "Sessione non settata e/o token invalido"),
+            @ApiResponse(responseCode = "500", description = "Errore generico del server"),
+            @ApiResponse(responseCode = "409", description = "L'annuncio è già stato impostato come venduto")
+    })
+    @PostMapping("{id}/sold")
+    public ResponseEntity<Object> setSold(@PathVariable Integer id) {
+        log.info("Invoked AnnunciLibriController.setSold(" + id + ")");
+        String token = session.getAttribute("token") == null ? null : session.getAttribute("token").toString();
+        if (token == null) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        try {
+            Optional<AnnunciLibri> opt = service.findById(id);
+            if (!opt.isPresent()) return new ResponseEntity<>("{\"invalidField\" : \"id\"}", HttpStatus.NOT_FOUND);
+            AnnunciLibri ann = opt.get();
+            if (ann.getUtente().getId().equals(utenteService.findById(Integer.parseInt(session.getAttribute("userID").toString())).get().getUtenteId())) {
+                if (ann.getStato() == 1) return new ResponseEntity<>(HttpStatus.CONFLICT);
+                ann.setStato(1);
+                AnnunciLibri annUpdated = service.save(ann);
+                annUpdated.setUtente(null);
+                return ResponseEntity.ok(annUpdated);
+            }
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
 }
