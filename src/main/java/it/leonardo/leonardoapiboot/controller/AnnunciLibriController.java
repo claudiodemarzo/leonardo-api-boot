@@ -22,6 +22,7 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpSession;
 import java.net.URLEncoder;
+import java.time.Instant;
 import java.util.*;
 
 @RestController
@@ -201,6 +202,7 @@ public class AnnunciLibriController {
         }
         StatusLibro sl = statusLibroService.getStatus(form.getSottCanc(), form.getSottNonCanc(), form.getScrittCanc(), form.getScrittNonCanc(), form.getPagManc(), form.getPagRov(), form.getPagRovMol(), form.getCopRov(), form.getInsManc()).get();
         AnnunciLibri a = AnnunciLibri.fromCreateAnnuncioForm(l, utentePublicInfoService.getById(Integer.parseInt(userid)).get(), sl, form);
+        a.setCreated_at(Date.from(Instant.now()));
 
         if (a.getLivello_usura() == 'x') return ResponseEntity.badRequest().build();
 
