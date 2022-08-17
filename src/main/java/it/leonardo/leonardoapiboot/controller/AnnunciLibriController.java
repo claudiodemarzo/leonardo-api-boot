@@ -94,6 +94,7 @@ public class AnnunciLibriController {
             List<Libro> lst = libroService.findFirstLimit(amount);
             lst.forEach(libro -> {
                 List<AnnunciLibri> lstAnn = new ArrayList<>(libro.getAnnunci());
+                lstAnn.removeIf(ann -> ann.getStato() != 1);
                 lstAnn.sort(new AnnunciComparator());
                 Collections.reverse(lstAnn);
                 libro.setAnnunci(lstAnn);
