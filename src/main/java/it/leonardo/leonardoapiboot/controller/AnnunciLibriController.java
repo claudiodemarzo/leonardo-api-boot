@@ -199,6 +199,7 @@ public class AnnunciLibriController {
         if (opt.isPresent()) l = opt.get();
         else {
             l = Libro.fromCreateAnnuncioForm(form);
+            libroService.save(l);
         }
         StatusLibro sl = statusLibroService.getStatus(form.getSottCanc(), form.getSottNonCanc(), form.getScrittCanc(), form.getScrittNonCanc(), form.getPagManc(), form.getPagRov(), form.getPagRovMol(), form.getCopRov(), form.getInsManc()).get();
         AnnunciLibri a = AnnunciLibri.fromCreateAnnuncioForm(l, utentePublicInfoService.getById(Integer.parseInt(userid)).get(), sl, form);
