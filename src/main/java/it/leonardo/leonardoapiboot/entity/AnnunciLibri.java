@@ -141,7 +141,7 @@ public class AnnunciLibri {
     public static AnnunciLibri fromCreateAnnuncioForm(Libro l, UtentePublicInfo upf, StatusLibro sl, CreateAnnuncioForm caf) {
         AnnunciLibri al = new AnnunciLibri();
         al.setLibro(l);
-        al.setPrezzo(caf.getPrezzoListino());
+        al.setPrezzo(caf.getPrezzoVendita());
         al.setStato(1);
         al.setLivello_usura(AnnunciLibri.calcolaLivelloUsura(caf.getSottCanc(), caf.getSottNonCanc(), caf.getScrittCanc(), caf.getScrittNonCanc(), caf.getPagManc(), caf.getPagRov(), caf.getPagRovMol(), caf.getCopRov(), caf.getInsManc()));
         al.setUtente(upf);
