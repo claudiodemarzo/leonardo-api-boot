@@ -289,7 +289,6 @@ public class AnnunciLibriController {
                 if (ann.getStato() == 1) return new ResponseEntity<>(HttpStatus.CONFLICT);
                 ann.setStato(1);
                 AnnunciLibri annUpdated = service.save(ann);
-                annUpdated.setUtente(null);
                 return ResponseEntity.ok(annUpdated);
             }
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
