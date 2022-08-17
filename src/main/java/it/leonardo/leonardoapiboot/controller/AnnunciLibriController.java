@@ -11,6 +11,7 @@ import it.leonardo.leonardoapiboot.service.*;
 import it.leonardo.leonardoapiboot.utils.AnnunciComparator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.coyote.Response;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -292,6 +293,25 @@ public class AnnunciLibriController {
                 return ResponseEntity.ok(annUpdated);
             }
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @PostMapping("/contact")
+    public ResponseEntity<Object> contact(Integer id) {
+        log.info("Invoked AnnunciLibriController.contact(" + id + ")");
+        String token = session.getAttribute("token") == null ? null : session.getAttribute("token").toString();
+        if (token == null) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        try {
+            Optional<AnnunciLibri> opt = service.findById(id);
+            if (!opt.isPresent()) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            AnnunciLibri ann = opt.get();
+            if (ann.getUtente().getId().equals(utenteService.findById(Integer.parseInt(session.getAttribute("userID").toString())).get().getUtenteId())) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+            ChatWSController.sendNotification(ann.getUtente().getId().toString(), new Notifica(Notifica.TipoNotifica.info, "Richiesta di contatto", "@"+utenteService.findById(Integer.parseInt(session.getAttribute("userID").toString())).get().getUsername()+ " è interessato al tuo annuncio: "+ann.getLibro().getNome()));
+            return ResponseEntity.ok().body("{}");
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
         }
