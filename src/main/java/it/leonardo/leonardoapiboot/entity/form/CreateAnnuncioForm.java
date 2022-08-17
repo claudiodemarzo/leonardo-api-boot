@@ -21,6 +21,8 @@ public class CreateAnnuncioForm {
     private Integer copRov;
     private Integer insManc;
 
+    private String imgLink;
+
     public String getIsbn() {
         return isbn;
     }
@@ -173,6 +175,14 @@ public class CreateAnnuncioForm {
         this.prezzoVendita = prezzoVendita;
     }
 
+    public String getImgLink() {
+        return imgLink;
+    }
+
+    public void setImgLink(String imgLink) {
+        this.imgLink = imgLink;
+    }
+
     @Override
     public String toString() {
         return "CreateAnnuncioForm{" +
@@ -193,6 +203,7 @@ public class CreateAnnuncioForm {
                 ", pagRovMol=" + pagRovMol +
                 ", copRov=" + copRov +
                 ", insManc=" + insManc +
+                ", imgLink=\'" + imgLink + '\'' +
                 '}';
     }
 

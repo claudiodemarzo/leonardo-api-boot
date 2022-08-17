@@ -9,6 +9,7 @@ import it.leonardo.leonardoapiboot.entity.form.CreateAnnuncioForm;
 import it.leonardo.leonardoapiboot.entity.form.UpdateAnnuncioForm;
 import it.leonardo.leonardoapiboot.service.*;
 import it.leonardo.leonardoapiboot.utils.AnnunciComparator;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.coyote.Response;
@@ -21,7 +22,12 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpSession;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
 import java.time.Instant;
 import java.util.*;
 
@@ -193,22 +199,31 @@ public class AnnunciLibriController {
         if (token == null) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 
         String userid = session.getAttribute("userID").toString();
+        try {
+            Optional<Libro> opt = libroService.findByIsbn(form.getIsbn());
 
-        Optional<Libro> opt = libroService.findByIsbn(form.getIsbn());
-        Libro l = null;
-        if (opt.isPresent()) l = opt.get();
-        else {
-            l = Libro.fromCreateAnnuncioForm(form);
-            libroService.save(l);
+            Libro l = null;
+            if (opt.isPresent()) l = opt.get();
+            else {
+                l = Libro.fromCreateAnnuncioForm(form);
+                String copertinaPath = "/var/www/html/assets/imgs/libri/" + FilenameUtils.getName(new URL(form.getImgLink()).getPath());
+                downloadFile(form.getImgLink(), copertinaPath);
+                l.setCopertina(copertinaPath.replace("/var/www/html", ""));
+                libroService.save(l);
+            }
+            StatusLibro sl = statusLibroService.getStatus(form.getSottCanc(), form.getSottNonCanc(), form.getScrittCanc(), form.getScrittNonCanc(), form.getPagManc(), form.getPagRov(), form.getPagRovMol(), form.getCopRov(), form.getInsManc()).get();
+            AnnunciLibri a = AnnunciLibri.fromCreateAnnuncioForm(l, utentePublicInfoService.getById(Integer.parseInt(userid)).get(), sl, form);
+            a.setCreated_at(Date.from(Instant.now()));
+
+            if (a.getLivello_usura() == 'x') return ResponseEntity.badRequest().build();
+
+            AnnunciLibri alSaved = service.save(a);
+
+            return new ResponseEntity<>(alSaved, HttpStatus.CREATED);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        StatusLibro sl = statusLibroService.getStatus(form.getSottCanc(), form.getSottNonCanc(), form.getScrittCanc(), form.getScrittNonCanc(), form.getPagManc(), form.getPagRov(), form.getPagRovMol(), form.getCopRov(), form.getInsManc()).get();
-        AnnunciLibri a = AnnunciLibri.fromCreateAnnuncioForm(l, utentePublicInfoService.getById(Integer.parseInt(userid)).get(), sl, form);
-        a.setCreated_at(Date.from(Instant.now()));
-
-        if (a.getLivello_usura() == 'x') return ResponseEntity.badRequest().build();
-
-        AnnunciLibri alSaved = service.save(a);
-        return new ResponseEntity<>(alSaved, HttpStatus.CREATED);
     }
 
 
@@ -298,5 +313,14 @@ public class AnnunciLibriController {
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
         }
+    }
+
+    private static void downloadFile(String urlStr, String file) throws IOException {
+        URL url = new URL(urlStr);
+        ReadableByteChannel rbc = Channels.newChannel(url.openStream());
+        FileOutputStream fos = new FileOutputStream(file);
+        fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+        fos.close();
+        rbc.close();
     }
 }
