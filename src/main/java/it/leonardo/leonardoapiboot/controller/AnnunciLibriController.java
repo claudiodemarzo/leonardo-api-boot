@@ -298,6 +298,13 @@ public class AnnunciLibriController {
         }
     }
 
+    @Operation(description = "Invia una notifica al proprietario dell'annuncio")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "La richiesta è andata a buon fine, la notifica è stata inviata."),
+            @ApiResponse(responseCode = "404", description = "L'annuncio non esiste/è di proprietà dell'utente stesso"),
+            @ApiResponse(responseCode = "401", description = "Sessione non settata e/o token invalido"),
+            @ApiResponse(responseCode = "500", description = "Errore generico del server")
+    })
     @PostMapping("/contact")
     public ResponseEntity<Object> contact(Integer id) {
         log.info("Invoked AnnunciLibriController.contact(" + id + ")");
