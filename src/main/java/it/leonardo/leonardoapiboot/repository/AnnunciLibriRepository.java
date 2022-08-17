@@ -17,6 +17,4 @@ public interface AnnunciLibriRepository extends JpaRepository<AnnunciLibri, Inte
     List<AnnunciLibri> findAllByUtente(Utente u);
 
     List<AnnunciLibri> findAllByLibro(Libro l);
-
-    List<AnnunciLibri> findAllByCitta(Citta c);
 }
