@@ -142,7 +142,7 @@ public class AnnunciLibri {
         AnnunciLibri al = new AnnunciLibri();
         al.setLibro(l);
         al.setPrezzo(caf.getPrezzoListino());
-        al.setStato(0);
+        al.setStato(1);
         al.setLivello_usura(AnnunciLibri.calcolaLivelloUsura(caf.getSottCanc(), caf.getSottNonCanc(), caf.getScrittCanc(), caf.getScrittNonCanc(), caf.getPagManc(), caf.getPagRov(), caf.getPagRovMol(), caf.getCopRov(), caf.getInsManc()));
         al.setUtente(upf);
         al.setStatus(sl);
