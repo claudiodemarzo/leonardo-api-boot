@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import it.leonardo.leonardoapiboot.entity.*;
 import it.leonardo.leonardoapiboot.entity.form.CreateAnnuncioForm;
+import it.leonardo.leonardoapiboot.entity.form.UpdateAnnuncioForm;
 import it.leonardo.leonardoapiboot.service.*;
 import it.leonardo.leonardoapiboot.utils.AnnunciComparator;
 import org.apache.commons.logging.Log;
@@ -220,14 +221,14 @@ public class AnnunciLibriController {
 
         Optional<Libro> opt = libroService.findByIsbn(form.getIsbn());
         Libro l = null;
-        if(opt.isPresent()) l = opt.get();
+        if (opt.isPresent()) l = opt.get();
         else {
             l = Libro.fromCreateAnnuncioForm(form);
         }
         StatusLibro sl = statusLibroService.getStatus(form.getSottCanc(), form.getSottNonCanc(), form.getScrittCanc(), form.getScrittNonCanc(), form.getPagManc(), form.getPagRov(), form.getPagRovMol(), form.getCopRov(), form.getInsManc()).get();
-        AnnunciLibri a = AnnunciLibri.fromCreateAnnuncioForm( l, utentePublicInfoService.getById(Integer.parseInt(userid)).get(), sl,form);
+        AnnunciLibri a = AnnunciLibri.fromCreateAnnuncioForm(l, utentePublicInfoService.getById(Integer.parseInt(userid)).get(), sl, form);
 
-        if(a.getLivello_usura() == 'x') return ResponseEntity.badRequest().build();
+        if (a.getLivello_usura() == 'x') return ResponseEntity.badRequest().build();
 
         AnnunciLibri alSaved = service.save(a);
         return new ResponseEntity<>(alSaved, HttpStatus.CREATED);
@@ -237,47 +238,34 @@ public class AnnunciLibriController {
     @Operation(description = "Aggiorna un annuncio, impostando come utente l'utente ricavato dalla sessione")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "La richiesta è andata a buon fine, l'annuncio è stato aggiornato."),
-            @ApiResponse(responseCode = "404", description = "Alcuni dei campi specificati sono inesistenti. Maggiori informazioni nell'attributo 'invalidField' del body json di risposta"),
             @ApiResponse(responseCode = "401", description = "Sessione non settata e/o token invalido"),
-            @ApiResponse(responseCode = "403", description = "Non si è proprietari dell'annuncio, e di conseguenza non è possibile modificarlo"),
+            @ApiResponse(responseCode = "404", description = "Non si è proprietari dell'annuncio, e di conseguenza non è possibile modificarlo, o non è stato trovato l'id dell'annuncio"),
             @ApiResponse(responseCode = "500", description = "Errore generico del server")})
     @PatchMapping("{id}")
-    public ResponseEntity<Object> update(@PathVariable Integer id, @RequestParam(required = false) Float prezzo, @RequestParam(required = false) Integer citta, @RequestParam(required = false) Integer stato, @RequestParam(required = false) Character livello_usura) {
-        log.info("Invoked AnnunciLibriController.update(" + id + ", " + prezzo + ", " + citta + ", " + stato + ", " + livello_usura + ")");
-        /*String token = session.getAttribute("token") == null ? null : session.getAttribute("token").toString();
+    public ResponseEntity<Object> update(UpdateAnnuncioForm form) {
+        log.info("Invoked AnnunciLibriController.update(" + form + ")");
+        String token = session.getAttribute("token") == null ? null : session.getAttribute("token").toString();
 
         if (token == null) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 
         try {
-            Optional<AnnunciLibri> opt = service.findById(id);
-            if (!opt.isPresent()) return new ResponseEntity<>("{\"invalidField\" : \"id\"}", HttpStatus.NOT_FOUND);
+            Optional<AnnunciLibri> opt = service.findById(form.getId());
+            if (!opt.isPresent()) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            AnnunciLibri al = opt.get();
+            if (al.getUtente().getId() != Integer.parseInt(session.getAttribute("userID").toString()))
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
-            AnnunciLibri ann = opt.get();
-            if (ann.getUtente().equals(utenteService.findById(Integer.parseInt(session.getAttribute("userID").toString())).get())) {
-                if (prezzo != null) ann.setPrezzo(prezzo);
+            char newUsura = AnnunciLibri.calcolaLivelloUsura(form);
+            if (newUsura == 'x') return ResponseEntity.badRequest().build();
 
-                if (citta != null) {
-                    Optional<Citta> c = cittaService.getById(citta);
-                    if (!c.isPresent())
-                        return new ResponseEntity<>("{\"invalidField\" : \"citta\"}", HttpStatus.NOT_FOUND);
-                    ann.setCitta(c.get());
-                }
+            al.copyFromUpdateAnnuncioForm(form, statusLibroService.getStatus(form.getSottCanc(), form.getSottNonCanc(), form.getScrittCanc(), form.getScrittNonCanc(), form.getPagManc(), form.getPagRov(), form.getPagRovMol(), form.getCopRov(), form.getInsManc()).get());
 
-                if (stato != null) ann.setStato(stato);
-                if (livello_usura != null) ann.setLivello_usura(livello_usura);
-
-                AnnunciLibri annUpdated = service.save(ann);
-                annUpdated.setUtente(null);
-                return ResponseEntity.ok(annUpdated);
-
-            }
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+            AnnunciLibri alSaved = service.save(al);
+            return new ResponseEntity<>(alSaved, HttpStatus.OK);
 
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
-        }*/
-        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
-
+        }
     }
 
     @Operation(description = "Imposta un annuncio come venduto")

@@ -1,7 +1,5 @@
 package it.leonardo.leonardoapiboot.entity.form;
 
-import javax.persistence.Column;
-
 public class CreateAnnuncioForm {
     private String isbn;
     private String titolo;

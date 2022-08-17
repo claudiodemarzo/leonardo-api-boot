@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import it.leonardo.leonardoapiboot.entity.form.CreateAnnuncioForm;
+import it.leonardo.leonardoapiboot.entity.form.UpdateAnnuncioForm;
 import org.jetbrains.annotations.NotNull;
 
 import javax.persistence.*;
@@ -161,6 +162,10 @@ public class AnnunciLibri {
         return al;
     }
 
+    public static char calcolaLivelloUsura(UpdateAnnuncioForm form){
+        return calcolaLivelloUsura(form.getSottCanc(), form.getSottNonCanc(), form.getScrittCanc(), form.getScrittNonCanc(), form.getPagManc(), form.getPagRov(), form.getPagRovMol(), form.getCopRov(), form.getInsManc());
+    }
+
     public static char calcolaLivelloUsura(Integer sottCanc, Integer sottNonCanc, Integer scrittCanc, Integer scrittNonCanc, Integer pagManc, Integer pagRov, Integer pagRovMol, Integer copRov, Integer insManc) {
         int sum = 0;
 
@@ -291,5 +296,11 @@ public class AnnunciLibri {
         if (sum <= 13) return 'd';
         if (sum <= 18) return 'a';
         return 'x';
+    }
+
+    public void copyFromUpdateAnnuncioForm(UpdateAnnuncioForm form, StatusLibro sl) {
+        this.setPrezzo(form.getPrezzoVendita());
+        this.setLivello_usura(AnnunciLibri.calcolaLivelloUsura(form));
+        this.setStatus(sl);
     }
 }
