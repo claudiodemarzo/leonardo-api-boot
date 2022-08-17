@@ -11,7 +11,7 @@ import java.io.Serializable;
 public class Recensione implements Serializable {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "recensione_id")
 	private Integer recensioneId;
 

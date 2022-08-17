@@ -19,7 +19,7 @@ public class AnnunciLibri {
 
     @Id
     @Column(name = "annuncio_id")
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer annuncio_id;
 
     @Column(name = "prezzo")

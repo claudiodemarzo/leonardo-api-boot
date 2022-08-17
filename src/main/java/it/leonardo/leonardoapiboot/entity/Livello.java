@@ -8,7 +8,7 @@ import javax.persistence.*;
 public class Livello {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "livello_id")
     private Integer livelloId;
 

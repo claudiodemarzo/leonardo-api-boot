@@ -16,7 +16,7 @@ public class Citta implements Serializable {
 
     @Id
     @Column(name = "citta_id")
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer cittaId;
 
     @Column(name = "nome")
