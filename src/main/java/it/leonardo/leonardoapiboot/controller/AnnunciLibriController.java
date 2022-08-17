@@ -179,33 +179,6 @@ public class AnnunciLibriController {
 
     }
 
-    @Operation(description = "Restituisce una lista di tutti gli annunci taggati con la città fornita")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "La richiesta è andata a buon fine, la lista degli annunci è stata popolata"),
-            @ApiResponse(responseCode = "204", description = "La richiesta è andata a buon fine, ma la lista è risultata essere vuota"),
-            @ApiResponse(responseCode = "500", description = "Errore generico del server")})
-    @GetMapping("/by-citta/{id}")
-    public ResponseEntity<Object> getByCitta(@PathVariable("id") Integer id) {
-        log.info("Invoked AnnunciLibriController.getByCitta(" + id + ")");
-
-        try {
-            Optional<Citta> opt = cittaService.getById(id);
-            if (!opt.isPresent()) return new ResponseEntity<>("{\"invalidField\" : \"id\"}", HttpStatus.NOT_FOUND);
-
-            List<AnnunciLibri> lst = service.getByCitta(opt.get());
-            if (lst.isEmpty()) return ResponseEntity.noContent().build();
-
-            lst.forEach(a -> {
-                a.getUtente().setPunti(null);
-            });
-            return new ResponseEntity<>(lst, HttpStatus.OK);
-
-
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
     @Operation(description = "Inserisce un annuncio, impostando come utente l'utente ricavato dalla sessione")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "La richiesta è andata a buon fine, l'annuncio è stato creato."),

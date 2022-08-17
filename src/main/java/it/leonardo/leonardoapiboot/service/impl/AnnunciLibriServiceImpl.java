@@ -39,11 +39,6 @@ public class AnnunciLibriServiceImpl implements AnnunciLibriService {
     }
 
     @Override
-    public List<AnnunciLibri> getByCitta(Citta c) {
-        return repo.findAllByCitta(c);
-    }
-
-    @Override
     public AnnunciLibri save(AnnunciLibri al) {
         return repo.save(al);
     }

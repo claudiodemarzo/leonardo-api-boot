@@ -18,8 +18,6 @@ public interface AnnunciLibriService {
 
     List<AnnunciLibri> getByLibro(Libro l);
 
-    List<AnnunciLibri> getByCitta(Citta c);
-
     AnnunciLibri save(AnnunciLibri al);
 
 }
