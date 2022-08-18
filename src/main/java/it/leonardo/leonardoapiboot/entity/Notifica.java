@@ -1,5 +1,7 @@
 package it.leonardo.leonardoapiboot.entity;
 
+import org.json.JSONObject;
+
 public class Notifica {
     public enum TipoNotifica {
         info,
@@ -44,6 +46,10 @@ public class Notifica {
 
     @Override
     public String toString() {
-        return "{ \"type\": \"" + type + "\", \"title\": \"" + title + "\", \"content\": \"" + content + "\" }";
+        JSONObject obj = new JSONObject();
+        obj.put("type", type.toString());
+        obj.put("title", title);
+        obj.put("content", content);
+        return obj.toString();
     }
 }
