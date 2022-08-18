@@ -46,10 +46,11 @@ public class Notifica {
 
     @Override
     public String toString() {
-        return "Notifica{" +
-                "type=" + type +
-                ", title='" + title + '\'' +
-                ", content='" + content + '\'' +
-                '}';
+        String obj = new JSONObject()
+                .put("type", type)
+                .put("title", title)
+                .put("content", content)
+                .toString();
+        return obj;
     }
 }
