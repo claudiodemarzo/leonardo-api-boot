@@ -1,6 +1,7 @@
 package it.leonardo.leonardoapiboot.controller;
 
 
+import io.sentry.Sentry;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -34,14 +35,15 @@ public class LivelloController {
             @ApiResponse(responseCode = "204", description = "Richiesta andata a buon fine, ma la lista è vuota"),
             @ApiResponse(responseCode = "500", description = "Errore generico del server")
     })
-    public ResponseEntity<List<Livello>> getAll(){
+    public ResponseEntity<List<Livello>> getAll() {
         log.info("Invoked LivelloController.getAll()");
 
-        try{
+        try {
             List<Livello> lst = service.getAll();
-            if(lst.isEmpty()) return ResponseEntity.noContent().build();
+            if (lst.isEmpty()) return ResponseEntity.noContent().build();
             return ResponseEntity.ok(lst);
-        }catch(Exception e){
+        } catch (Exception e) {
+            Sentry.captureException(e);
             return ResponseEntity.internalServerError().build();
         }
     }
@@ -53,14 +55,15 @@ public class LivelloController {
             @ApiResponse(responseCode = "404", description = "Non è stato possibile trovare l'oggetto associato all'id fornito"),
             @ApiResponse(responseCode = "500", description = "Errore generico del server")
     })
-    public ResponseEntity<Livello> getById(@PathVariable("id") Integer id){
+    public ResponseEntity<Livello> getById(@PathVariable("id") Integer id) {
         log.info("Invoked LivelloController.getById(" + id + ")");
 
-        try{
+        try {
             Optional<Livello> lvl = service.getById(id);
-            if(!lvl.isPresent()) return ResponseEntity.notFound().build();
+            if (!lvl.isPresent()) return ResponseEntity.notFound().build();
             return ResponseEntity.ok(lvl.get());
-        }catch(Exception e){
+        } catch (Exception e) {
+            Sentry.captureException(e);
             return ResponseEntity.internalServerError().build();
         }
 

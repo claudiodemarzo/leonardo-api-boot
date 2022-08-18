@@ -1,5 +1,6 @@
 package it.leonardo.leonardoapiboot.controller;
 
+import io.sentry.Sentry;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -68,7 +69,7 @@ public class ChatController {
             if (!tmp.isEmpty()) messaggi.addAll(tmp);
             tmp = messaggioService.findByUtenteMitAndUtenteDest(dest, mit);
             if (!tmp.isEmpty()) messaggi.addAll(tmp);
-            for(Messaggio m : messaggi){
+            for (Messaggio m : messaggi) {
                 m.getChatroom().setUtenteMitInfo(m.getChatroom().getUtenteMit().getUtenteId());
             }
 
@@ -76,6 +77,7 @@ public class ChatController {
 
             return ResponseEntity.ok(messaggi);
         } catch (Exception e) {
+            Sentry.captureException(e);
             return ResponseEntity.internalServerError().build();
         }
 
@@ -104,6 +106,7 @@ public class ChatController {
             if (count == null) return ResponseEntity.notFound().build();
             return ResponseEntity.ok(count);
         } catch (Exception e) {
+            Sentry.captureException(e);
             return ResponseEntity.internalServerError().build();
         }
     }
@@ -135,6 +138,7 @@ public class ChatController {
 
             return ResponseEntity.ok("{}");
         } catch (Exception e) {
+            Sentry.captureException(e);
             return ResponseEntity.internalServerError().build();
         }
     }
@@ -158,7 +162,7 @@ public class ChatController {
             List<Chatroom> chatrooms = chatroomService.getByUtenteDest(utenteService.findById(Integer.parseInt(userID)).get());
             if (chatrooms.isEmpty()) return ResponseEntity.noContent().build();
 
-            for(Chatroom c : chatrooms) {
+            for (Chatroom c : chatrooms) {
                 c.getMessaggi().sort(new MessaggiComparator());
                 c.setLastMessageDate(c.getMessaggi().size() != 0 ? c.getMessaggi().get(0).getTimestamp() : null);
             }
@@ -174,6 +178,7 @@ public class ChatController {
             return ResponseEntity.ok(chatrooms);
         } catch (Exception e) {
             e.printStackTrace();
+            Sentry.captureException(e);
             return ResponseEntity.internalServerError().build();
         }
     }
@@ -195,7 +200,8 @@ public class ChatController {
         String userID = session.getAttribute("userID").toString();
         try {
             Optional<Utente> otherUtenteOptional = utenteService.findById(id);
-            if(!otherUtenteOptional.isPresent()) return new ResponseEntity<>("{\"invalidField\" : \"id\"}", HttpStatus.NOT_FOUND);
+            if (!otherUtenteOptional.isPresent())
+                return new ResponseEntity<>("{\"invalidField\" : \"id\"}", HttpStatus.NOT_FOUND);
             Utente dest = otherUtenteOptional.get(), mit = utenteService.findById(Integer.parseInt(userID)).get();
             Chatroom chatroom = chatroomService.getOrCreate(dest, mit);
 
@@ -205,6 +211,7 @@ public class ChatController {
 
             return ResponseEntity.ok("{}");
         } catch (Exception e) {
+            Sentry.captureException(e);
             return ResponseEntity.internalServerError().build();
         }
     }

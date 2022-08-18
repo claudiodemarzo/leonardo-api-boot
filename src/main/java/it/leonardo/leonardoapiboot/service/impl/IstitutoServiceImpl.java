@@ -1,5 +1,6 @@
 package it.leonardo.leonardoapiboot.service.impl;
 
+import io.sentry.spring.tracing.SentrySpan;
 import it.leonardo.leonardoapiboot.entity.Citta;
 import it.leonardo.leonardoapiboot.entity.Istituto;
 import it.leonardo.leonardoapiboot.repository.IstitutoRepository;
@@ -17,21 +18,25 @@ public class IstitutoServiceImpl implements IstitutoService {
     private IstitutoRepository repo;
 
     @Override
+    @SentrySpan
     public List<Istituto> getAll() {
         return repo.findAll();
     }
 
     @Override
+    @SentrySpan
     public Optional<Istituto> getById(Integer id) {
         return repo.findById(id);
     }
 
     @Override
+    @SentrySpan
     public List<Istituto> getByCitta(Citta c) {
         return repo.getIstitutoByCitta(c);
     }
 
     @Override
+    @SentrySpan
     public Istituto save(Istituto i) {
         return repo.save(i);
     }

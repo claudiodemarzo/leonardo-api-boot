@@ -1,5 +1,6 @@
 package it.leonardo.leonardoapiboot.controller;
 
+import io.sentry.Sentry;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -75,7 +76,8 @@ public class TagController {
             if (!tag.isPresent()) return ResponseEntity.notFound().build();
             return ResponseEntity.ok(tag.get());
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
+            Sentry.captureException(e);
+return ResponseEntity.internalServerError().build();
         }
 
     }
@@ -102,7 +104,8 @@ public class TagController {
             else return ResponseEntity.ok(tagsUtente);
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.internalServerError().build();
+            Sentry.captureException(e);
+return ResponseEntity.internalServerError().build();
         }
     }
 
@@ -132,7 +135,8 @@ public class TagController {
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.internalServerError().build();
+            Sentry.captureException(e);
+return ResponseEntity.internalServerError().build();
         }
     }
 

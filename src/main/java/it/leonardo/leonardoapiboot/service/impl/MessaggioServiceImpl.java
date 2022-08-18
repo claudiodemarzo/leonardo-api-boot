@@ -1,5 +1,6 @@
 package it.leonardo.leonardoapiboot.service.impl;
 
+import io.sentry.spring.tracing.SentrySpan;
 import it.leonardo.leonardoapiboot.entity.Chatroom;
 import it.leonardo.leonardoapiboot.entity.Messaggio;
 import it.leonardo.leonardoapiboot.entity.Utente;
@@ -22,6 +23,7 @@ public class MessaggioServiceImpl implements MessaggioService {
     private ChatroomRepository chatroomRepository;
 
     @Override
+    @SentrySpan
     public List<Messaggio> findByUtenteMitAndUtenteDest(Utente mit, Utente dest) {
         Optional<Chatroom> chatroomOpt = chatroomRepository.findByUtenteMitAndUtenteDest(mit, dest);
         if (!chatroomOpt.isPresent()) return null;
@@ -30,6 +32,7 @@ public class MessaggioServiceImpl implements MessaggioService {
     }
 
     @Override
+    @SentrySpan
     public Integer getUnreadMessagesCount(Utente mit, Utente dest) {
         Optional<Chatroom> chatroomOpt = chatroomRepository.findByUtenteMitAndUtenteDest(dest, mit);
         if (!chatroomOpt.isPresent()) return null;
@@ -38,11 +41,13 @@ public class MessaggioServiceImpl implements MessaggioService {
     }
 
     @Override
-    public Integer getUnreadMessagesCount(Integer c){
+    @SentrySpan
+    public Integer getUnreadMessagesCount(Integer c) {
         return Math.toIntExact(chatroomRepository.findById(c).get().getMessaggi().stream().filter(m -> m.getStatus() == 0).count());
     }
 
     @Override
+    @SentrySpan
     public void setMessagesAsRead(Utente mit, Utente dest) {
         Optional<Chatroom> chatroomOpt = chatroomRepository.findByUtenteMitAndUtenteDest(mit, dest);
         if (!chatroomOpt.isPresent()) return;
@@ -54,6 +59,7 @@ public class MessaggioServiceImpl implements MessaggioService {
     }
 
     @Override
+    @SentrySpan
     public Messaggio save(Messaggio m) {
         return messaggioRepository.save(m);
     }

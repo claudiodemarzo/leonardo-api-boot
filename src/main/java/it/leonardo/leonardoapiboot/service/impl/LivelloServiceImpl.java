@@ -1,5 +1,6 @@
 package it.leonardo.leonardoapiboot.service.impl;
 
+import io.sentry.spring.tracing.SentrySpan;
 import it.leonardo.leonardoapiboot.entity.Livello;
 import it.leonardo.leonardoapiboot.repository.LivelliRepository;
 import it.leonardo.leonardoapiboot.service.LivelloService;
@@ -16,11 +17,13 @@ public class LivelloServiceImpl implements LivelloService {
     private LivelliRepository repo;
 
     @Override
+    @SentrySpan
     public List<Livello> getAll() {
         return repo.findAll();
     }
 
     @Override
+    @SentrySpan
     public Optional<Livello> getById(Integer id) {
         return repo.findById(id);
     }

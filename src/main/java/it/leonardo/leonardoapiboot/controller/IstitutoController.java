@@ -1,5 +1,6 @@
 package it.leonardo.leonardoapiboot.controller;
 
+import io.sentry.Sentry;
 import it.leonardo.leonardoapiboot.entity.Citta;
 import it.leonardo.leonardoapiboot.entity.Istituto;
 import it.leonardo.leonardoapiboot.service.CittaService;
@@ -53,6 +54,7 @@ public class IstitutoController {
                 resp = new ResponseEntity<>(lst, HttpStatus.OK);
             }
         } catch (Exception e) {
+            Sentry.captureException(e);
             resp = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
@@ -69,6 +71,7 @@ public class IstitutoController {
             if (i.isPresent()) resp = new ResponseEntity<>(i.get(), HttpStatus.OK);
             else resp = new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } catch (Exception e) {
+            Sentry.captureException(e);
             resp = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
@@ -89,6 +92,7 @@ public class IstitutoController {
             if (cittaOptional.isPresent()) c = cittaOptional.get();
             else resp = new ResponseEntity<>("{\"invalidField\" : \"citta\"}", HttpStatus.NOT_FOUND);
         } catch (Exception e) {
+            Sentry.captureException(e);
             resp = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
@@ -110,6 +114,7 @@ public class IstitutoController {
                 iSaved.setPathLogo(null);
                 resp = new ResponseEntity<>(iSaved, HttpStatus.CREATED);
             } catch (Exception e) {
+                Sentry.captureException(e);
                 resp = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
             }
         }

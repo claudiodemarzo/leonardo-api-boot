@@ -1,6 +1,7 @@
 package it.leonardo.leonardoapiboot.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.sentry.Sentry;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -46,7 +47,8 @@ public class LibroController {
             if (lst.isEmpty()) resp = new ResponseEntity<>(HttpStatus.NO_CONTENT);
             else resp = new ResponseEntity<>(lst, HttpStatus.OK);
         } catch (Exception e) {
-            resp = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            Sentry.captureException(e);
+            return ResponseEntity.internalServerError().build();
         }
 
         return resp;
@@ -62,7 +64,8 @@ public class LibroController {
             if (libro.isPresent()) resp = new ResponseEntity<>(libro.get(), HttpStatus.OK);
             else resp = new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } catch (Exception e) {
-            resp = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            Sentry.captureException(e);
+            return ResponseEntity.internalServerError().build();
         }
 
         return resp;
@@ -83,7 +86,8 @@ public class LibroController {
                     if (lst.isEmpty()) resp = new ResponseEntity<>(HttpStatus.NO_CONTENT);
                     else resp = new ResponseEntity<>(lst, HttpStatus.OK);
                 } catch (Exception e) {
-                    resp = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+                    Sentry.captureException(e);
+                    return ResponseEntity.internalServerError().build();
                 }
                 break;
             case 2:     //like
@@ -92,7 +96,8 @@ public class LibroController {
                     if (lst.isEmpty()) resp = new ResponseEntity<>(HttpStatus.NO_CONTENT);
                     else resp = new ResponseEntity<>(lst, HttpStatus.OK);
                 } catch (Exception e) {
-                    resp = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+                    Sentry.captureException(e);
+                    return ResponseEntity.internalServerError().build();
                 }
                 break;
         }
@@ -116,7 +121,8 @@ public class LibroController {
                     if (lst.isEmpty()) resp = new ResponseEntity<>(HttpStatus.NO_CONTENT);
                     else resp = new ResponseEntity<>(lst, HttpStatus.OK);
                 } catch (Exception e) {
-                    resp = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+                    Sentry.captureException(e);
+                    return ResponseEntity.internalServerError().build();
                 }
                 break;
             case 2:     //like
@@ -125,7 +131,8 @@ public class LibroController {
                     if (lst.isEmpty()) resp = new ResponseEntity<>(HttpStatus.NO_CONTENT);
                     else resp = new ResponseEntity<>(lst, HttpStatus.OK);
                 } catch (Exception e) {
-                    resp = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+                    Sentry.captureException(e);
+                    return ResponseEntity.internalServerError().build();
                 }
                 break;
         }
@@ -149,7 +156,8 @@ public class LibroController {
                     if (lst.isEmpty()) resp = new ResponseEntity<>(HttpStatus.NO_CONTENT);
                     else resp = new ResponseEntity<>(lst, HttpStatus.OK);
                 } catch (Exception e) {
-                    resp = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+                    Sentry.captureException(e);
+                    return ResponseEntity.internalServerError().build();
                 }
                 break;
             case 2:     //like
@@ -158,7 +166,8 @@ public class LibroController {
                     if (lst.isEmpty()) resp = new ResponseEntity<>(HttpStatus.NO_CONTENT);
                     else resp = new ResponseEntity<>(lst, HttpStatus.OK);
                 } catch (Exception e) {
-                    resp = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+                    Sentry.captureException(e);
+                    return ResponseEntity.internalServerError().build();
                 }
                 break;
         }
@@ -182,7 +191,8 @@ public class LibroController {
                     if (lst.isEmpty()) resp = new ResponseEntity<>(HttpStatus.NO_CONTENT);
                     else resp = new ResponseEntity<>(lst, HttpStatus.OK);
                 } catch (Exception e) {
-                    resp = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+                    Sentry.captureException(e);
+                    return ResponseEntity.internalServerError().build();
                 }
                 break;
             case 2:     //like
@@ -191,7 +201,8 @@ public class LibroController {
                     if (lst.isEmpty()) resp = new ResponseEntity<>(HttpStatus.NO_CONTENT);
                     else resp = new ResponseEntity<>(lst, HttpStatus.OK);
                 } catch (Exception e) {
-                    resp = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+                    Sentry.captureException(e);
+                    return ResponseEntity.internalServerError().build();
                 }
                 break;
         }
@@ -252,7 +263,7 @@ public class LibroController {
         try {
             Optional<Libro> libroOptional = service.findByIsbn(q);
 
-            if(libroOptional.isPresent()) return ResponseEntity.ok(Collections.singletonList(libroOptional.get()));
+            if (libroOptional.isPresent()) return ResponseEntity.ok(Collections.singletonList(libroOptional.get()));
 
             String url = "https://www.googleapis.com/books/v1/volumes?q=isbn:" + q;
             RestTemplate restTemplate = new RestTemplate();
@@ -273,7 +284,7 @@ public class LibroController {
             ObjectMapper om = new ObjectMapper();
             String jsonString = om.writeValueAsString(lst);
 
-            url = "https://www.googleapis.com/books/v1/volumes?q=" + URLEncoder.encode(q, "UTF-8")+"&printType=books";
+            url = "https://www.googleapis.com/books/v1/volumes?q=" + URLEncoder.encode(q, "UTF-8") + "&printType=books";
             response = restTemplate.getForObject(url, String.class);
 
             json = new JSONObject(response);
@@ -281,7 +292,7 @@ public class LibroController {
             JSONArray items = json.getJSONArray("items");
             JSONArray tmp = new JSONArray();
             for (int i = 0; i < Math.min(items.length(), 10); i++) {
-                if(items.getJSONObject(i).getJSONObject("saleInfo").getBoolean("isEbook")) continue;
+                if (items.getJSONObject(i).getJSONObject("saleInfo").getBoolean("isEbook")) continue;
                 tmp.put(items.getJSONObject(i));
             }
 
@@ -292,6 +303,7 @@ public class LibroController {
             return ResponseEntity.ok(tmp.toString());
         } catch (Exception e) {
             e.printStackTrace();
+            Sentry.captureException(e);
             return ResponseEntity.internalServerError().build();
         }
     }
@@ -315,18 +327,22 @@ public class LibroController {
         Optional<Libro> lOpt = service.findByIsbn(form.getIsbn());
         if (lOpt.isPresent()) return new ResponseEntity<>(HttpStatus.CONFLICT);
 
-        if(form.getIsbn() == null || form.getIsbn().isEmpty()) return ResponseEntity.badRequest().body("{\"invalidField\" : \"isbn\"}");
-        for(char c : form.getIsbn().toCharArray()) {
-            if(!Character.isDigit(c)) return ResponseEntity.badRequest().body("{\"invalidField\" : \"isbn\"}");
+        if (form.getIsbn() == null || form.getIsbn().isEmpty())
+            return ResponseEntity.badRequest().body("{\"invalidField\" : \"isbn\"}");
+        for (char c : form.getIsbn().toCharArray()) {
+            if (!Character.isDigit(c)) return ResponseEntity.badRequest().body("{\"invalidField\" : \"isbn\"}");
         }
-        if(form.getPrezzo() != null && form.getPrezzo() <= 0) return ResponseEntity.badRequest().body("{\"invalidField\" : \"prezzo\"}");
-        if(form.getNpag() != null && form.getNpag() <= 0) return ResponseEntity.badRequest().body("{\"invalidField\" : \"npag\"}");
+        if (form.getPrezzo() != null && form.getPrezzo() <= 0)
+            return ResponseEntity.badRequest().body("{\"invalidField\" : \"prezzo\"}");
+        if (form.getNpag() != null && form.getNpag() <= 0)
+            return ResponseEntity.badRequest().body("{\"invalidField\" : \"npag\"}");
 
         try {
             Libro l = Libro.fromForm(form);
             Libro lSaved = service.save(l);
             return new ResponseEntity<>(lSaved, HttpStatus.CREATED);
         } catch (Exception e) {
+            Sentry.captureException(e);
             return ResponseEntity.internalServerError().build();
         }
     }

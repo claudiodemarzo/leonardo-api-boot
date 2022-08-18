@@ -1,5 +1,6 @@
 package it.leonardo.leonardoapiboot.service.impl;
 
+import io.sentry.spring.tracing.SentrySpan;
 import it.leonardo.leonardoapiboot.entity.Tag;
 import it.leonardo.leonardoapiboot.repository.TagsRepository;
 import it.leonardo.leonardoapiboot.service.TagService;
@@ -16,11 +17,13 @@ public class TagServiceImpl implements TagService {
     private TagsRepository repo;
 
     @Override
+    @SentrySpan
     public List<Tag> getAll() {
         return repo.findAll();
     }
 
     @Override
+    @SentrySpan
     public Optional<Tag> getById(Integer id) {
         return repo.findById(id);
     }

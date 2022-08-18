@@ -1,6 +1,7 @@
 package it.leonardo.leonardoapiboot.controller;
 
 
+import io.sentry.Sentry;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -50,7 +51,8 @@ public class ProvinciaController {
                 resp = new ResponseEntity<>(list, HttpStatus.OK);
             }
         } catch (Exception e) {
-            resp = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            Sentry.captureException(e);
+return ResponseEntity.internalServerError().build();
         }
 
         return resp;
@@ -75,7 +77,8 @@ public class ProvinciaController {
                 resp = new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
         } catch (Exception e) {
-            resp = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            Sentry.captureException(e);
+return ResponseEntity.internalServerError().build();
         }
 
         return resp;
@@ -97,7 +100,8 @@ public class ProvinciaController {
             if (rOpt.isPresent()) r = rOpt.get();
             else resp = new ResponseEntity<>("{\"invalidField\" : \"id\"}", HttpStatus.NOT_FOUND);
         } catch (Exception e) {
-            resp = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            Sentry.captureException(e);
+return ResponseEntity.internalServerError().build();
         }
         if (r != null) {
             try {
@@ -108,7 +112,8 @@ public class ProvinciaController {
                     resp = new ResponseEntity<>(list, HttpStatus.OK);
                 }
             } catch (Exception e) {
-                resp = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+                Sentry.captureException(e);
+return ResponseEntity.internalServerError().build();
             }
         }
         return resp;

@@ -1,6 +1,7 @@
 package it.leonardo.leonardoapiboot.controller;
 
 
+import io.sentry.Sentry;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -41,7 +42,8 @@ public class RegioneController {
             if (regioni.isEmpty()) return ResponseEntity.noContent().build();
             return ResponseEntity.ok(regioni);
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
+            Sentry.captureException(e);
+return ResponseEntity.internalServerError().build();
         }
     }
 
@@ -61,7 +63,8 @@ public class RegioneController {
             if (!regione.isPresent()) return ResponseEntity.notFound().build();
             return ResponseEntity.ok(regione.get());
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
+            Sentry.captureException(e);
+return ResponseEntity.internalServerError().build();
         }
     }
 }

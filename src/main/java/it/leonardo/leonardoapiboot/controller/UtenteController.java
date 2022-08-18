@@ -1,5 +1,6 @@
 package it.leonardo.leonardoapiboot.controller;
 
+import io.sentry.Sentry;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -121,6 +122,7 @@ public class UtenteController {
             session.setAttribute("userID", u.getUtenteId());
             return ResponseEntity.ok(uSaved);
         } catch (Exception e) {
+            Sentry.captureException(e);
             return ResponseEntity.internalServerError().build();
         }
     }
@@ -147,6 +149,7 @@ public class UtenteController {
 
             return ResponseEntity.ok("{}");
         } catch (Exception e) {
+            Sentry.captureException(e);
             return ResponseEntity.internalServerError().build();
         }
     }
@@ -179,6 +182,7 @@ public class UtenteController {
                 session.setAttribute("userID", u.get().getUtenteId());
                 return ResponseEntity.ok().body("{\"token\" : \"" + token + "\"}");
             } catch (Exception e) {
+                Sentry.captureException(e);
                 return ResponseEntity.internalServerError().build();
             }
         } else {
@@ -246,17 +250,23 @@ public class UtenteController {
         if (details) {
             try {
                 Optional<Utente> u = service.findById(Integer.parseInt(session.getAttribute("userID").toString()));
-                if (!u.isPresent()) return ResponseEntity.internalServerError().build();
+                if (!u.isPresent()) {
+                    return ResponseEntity.internalServerError().build();
+                }
                 return ResponseEntity.ok(u.get());
             } catch (Exception e) {
+                Sentry.captureException(e);
                 return ResponseEntity.internalServerError().build();
             }
         }
         try {
             Optional<UtentePublicInfo> upi = utentePublicInfoService.getById(Integer.parseInt(session.getAttribute("userID").toString()));
-            if (!upi.isPresent()) return ResponseEntity.internalServerError().build();
+            if (!upi.isPresent()) {
+                return ResponseEntity.internalServerError().build();
+            }
             return ResponseEntity.ok(upi.get());
         } catch (Exception e) {
+            Sentry.captureException(e);
             return ResponseEntity.internalServerError().build();
         }
     }
@@ -284,7 +294,8 @@ public class UtenteController {
             String oldUsername = u.getUsername();
             u.copyFromPublicUpdateForm(form);
             String newUsername = u.getUsername();
-            if(opt.isPresent() && !oldUsername.equals(newUsername)) return ResponseEntity.status(HttpStatus.CONFLICT).body("{\"duplicatedField\":\"username\"}");
+            if (opt.isPresent() && !oldUsername.equals(newUsername))
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("{\"duplicatedField\":\"username\"}");
             if (form.getIstituto() != null) {
                 Optional<Istituto> ist = istitutoService.getById(form.getIstituto());
                 if (!ist.isPresent()) return ResponseEntity.badRequest().body("{\"invalidFields\" : \"istituto\"}");
@@ -294,6 +305,7 @@ public class UtenteController {
             return ResponseEntity.ok(uSaved);
         } catch (Exception e) {
             e.printStackTrace();
+            Sentry.captureException(e);
             return ResponseEntity.internalServerError().build();
         }
     }
@@ -313,7 +325,9 @@ public class UtenteController {
 
         String userID = session.getAttribute("userID").toString();
         Optional<Utente> utente = service.findById(Integer.parseInt(userID));
-        if (!utente.isPresent()) return ResponseEntity.internalServerError().build();
+        if (!utente.isPresent()) {
+            return ResponseEntity.internalServerError().build();
+        }
 
         OpenCV.loadLocally();
 
@@ -391,6 +405,7 @@ public class UtenteController {
             return ResponseEntity.ok("{}");
         } catch (Exception e) {
             e.printStackTrace();
+            Sentry.captureException(e);
             return ResponseEntity.internalServerError().build();
         }
     }
@@ -417,7 +432,7 @@ public class UtenteController {
             String newEmail = u.getEmail();
 
             Optional<Utente> utente = service.findByEmail(newEmail);
-            if(utente.isPresent() && !oldEmail.equals(newEmail)) {
+            if (utente.isPresent() && !oldEmail.equals(newEmail)) {
                 return ResponseEntity.status(HttpStatus.CONFLICT).body("{\"duplicatedField\":\"email\"}");
             }
 
@@ -449,6 +464,7 @@ public class UtenteController {
 
             return ResponseEntity.ok(uSaved);
         } catch (Exception e) {
+            Sentry.captureException(e);
             return ResponseEntity.internalServerError().build();
         }
     }
@@ -498,11 +514,13 @@ public class UtenteController {
                         return ResponseEntity.ok(value);
                     }
                 } catch (JSONException e) {
+                    Sentry.captureException(e);
                     return ResponseEntity.internalServerError().body("'" + key + "' not found");
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
+            Sentry.captureException(e);
             return ResponseEntity.internalServerError().build();
         }
     }
@@ -536,6 +554,7 @@ public class UtenteController {
             return ResponseEntity.ok(uSaved.getPreferencesStr());
         } catch (Exception e) {
             e.printStackTrace();
+            Sentry.captureException(e);
             return ResponseEntity.internalServerError().build();
         }
     }
@@ -569,6 +588,7 @@ public class UtenteController {
 
             return ResponseEntity.ok("{}");
         } catch (Exception e) {
+            Sentry.captureException(e);
             return ResponseEntity.internalServerError().build();
         }
     }
@@ -598,6 +618,7 @@ public class UtenteController {
             Utente uSaved = service.save(u);
             return ResponseEntity.ok("{}");
         } catch (Exception e) {
+            Sentry.captureException(e);
             return ResponseEntity.internalServerError().build();
         }
     }
@@ -639,6 +660,7 @@ public class UtenteController {
 
             return ResponseEntity.ok().build();
         } catch (Exception e) {
+            Sentry.captureException(e);
             return ResponseEntity.internalServerError().build();
         }
     }
@@ -659,7 +681,9 @@ public class UtenteController {
 
             String userID = session.getAttribute("userID").toString();
             Optional<Utente> utenteOptional = service.findById(Integer.parseInt(userID));
-            if (!utenteOptional.isPresent()) return ResponseEntity.internalServerError().build();
+            if (!utenteOptional.isPresent()) {
+                return ResponseEntity.internalServerError().build();
+            }
 
             Utente u = utenteOptional.get();
             if (u.getEmail_confermata()) return new ResponseEntity<>(HttpStatus.CONFLICT);
@@ -676,6 +700,7 @@ public class UtenteController {
             Utente uSaved = service.save(u);
             return ResponseEntity.ok("{}");
         } catch (Exception e) {
+            Sentry.captureException(e);
             return ResponseEntity.internalServerError().build();
         }
     }
@@ -687,13 +712,14 @@ public class UtenteController {
             @ApiResponse(responseCode = "500", description = "Errore generico del server")
     })
     @GetMapping("search/{username}")
-    public ResponseEntity<List<UtentePublicInfo>> searchUtente(@PathVariable String username){
+    public ResponseEntity<List<UtentePublicInfo>> searchUtente(@PathVariable String username) {
         log.info("Invoked UtenteController.searchUtente(" + username + ")");
         try {
             List<UtentePublicInfo> utenti = utentePublicInfoService.searchUsername(username);
             if (utenti.isEmpty()) return ResponseEntity.noContent().build();
             return ResponseEntity.ok(utenti);
         } catch (Exception e) {
+            Sentry.captureException(e);
             return ResponseEntity.internalServerError().build();
         }
     }

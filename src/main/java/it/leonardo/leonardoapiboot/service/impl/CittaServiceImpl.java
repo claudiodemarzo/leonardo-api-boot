@@ -1,5 +1,6 @@
 package it.leonardo.leonardoapiboot.service.impl;
 
+import io.sentry.spring.tracing.SentrySpan;
 import it.leonardo.leonardoapiboot.entity.Citta;
 import it.leonardo.leonardoapiboot.entity.Provincia;
 import it.leonardo.leonardoapiboot.repository.CittaRepository;
@@ -17,16 +18,19 @@ public class CittaServiceImpl implements CittaService {
     private CittaRepository repo;
 
     @Override
+    @SentrySpan
     public List<Citta> getAll() {
         return repo.findAll();
     }
 
     @Override
+    @SentrySpan
     public Optional<Citta> getById(Integer id) {
         return repo.findById(id);
     }
 
     @Override
+    @SentrySpan
     public List<Citta> getByProvincia(Provincia p) {
         return repo.findAllByProvincia(p);
     }

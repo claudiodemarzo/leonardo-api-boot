@@ -1,5 +1,6 @@
 package it.leonardo.leonardoapiboot.service.impl;
 
+import io.sentry.spring.tracing.SentrySpan;
 import it.leonardo.leonardoapiboot.entity.AnnunciLibri;
 import it.leonardo.leonardoapiboot.entity.Citta;
 import it.leonardo.leonardoapiboot.entity.Libro;
@@ -19,26 +20,31 @@ public class AnnunciLibriServiceImpl implements AnnunciLibriService {
     private AnnunciLibriRepository repo;
 
     @Override
+    @SentrySpan
     public List<AnnunciLibri> getAll() {
         return repo.findAll();
     }
 
     @Override
+    @SentrySpan
     public Optional<AnnunciLibri> findById(Integer id) {
         return repo.findById(id);
     }
 
     @Override
+    @SentrySpan
     public List<AnnunciLibri> getByUtente(Utente u) {
         return repo.findAllByUtente(u);
     }
 
     @Override
+    @SentrySpan
     public List<AnnunciLibri> getByLibro(Libro l) {
         return repo.findAllByLibro(l);
     }
 
     @Override
+    @SentrySpan
     public AnnunciLibri save(AnnunciLibri al) {
         return repo.save(al);
     }

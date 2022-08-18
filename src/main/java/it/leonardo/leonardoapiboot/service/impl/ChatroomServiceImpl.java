@@ -1,5 +1,6 @@
 package it.leonardo.leonardoapiboot.service.impl;
 
+import io.sentry.spring.tracing.SentrySpan;
 import it.leonardo.leonardoapiboot.entity.Chatroom;
 import it.leonardo.leonardoapiboot.entity.Utente;
 import it.leonardo.leonardoapiboot.repository.ChatroomRepository;
@@ -17,9 +18,10 @@ public class ChatroomServiceImpl implements ChatroomService {
     private ChatroomRepository repo;
 
     @Override
+    @SentrySpan
     public Chatroom getOrCreate(Utente mit, Utente dest) {
         Optional<Chatroom> chatroomOpt = repo.findByUtenteMitAndUtenteDest(mit, dest);
-        if(chatroomOpt.isPresent()) return chatroomOpt.get();
+        if (chatroomOpt.isPresent()) return chatroomOpt.get();
         Chatroom c1 = new Chatroom(), c2 = new Chatroom();
         c1.setUtenteDest(dest);
         c1.setUtenteMit(mit);
@@ -31,16 +33,19 @@ public class ChatroomServiceImpl implements ChatroomService {
     }
 
     @Override
+    @SentrySpan
     public List<Chatroom> getByUtenteMit(Utente mit) {
         return repo.findAllByUtenteMit(mit);
     }
 
     @Override
+    @SentrySpan
     public Chatroom save(Chatroom c) {
         return repo.save(c);
     }
 
     @Override
+    @SentrySpan
     public List<Chatroom> getByUtenteDest(Utente dest) {
         return repo.findAllByUtenteDest(dest);
     }

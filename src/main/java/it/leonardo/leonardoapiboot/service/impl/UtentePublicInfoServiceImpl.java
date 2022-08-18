@@ -1,5 +1,6 @@
 package it.leonardo.leonardoapiboot.service.impl;
 
+import io.sentry.spring.tracing.SentrySpan;
 import it.leonardo.leonardoapiboot.entity.UtentePublicInfo;
 import it.leonardo.leonardoapiboot.repository.UtentePublicInfoRepository;
 import it.leonardo.leonardoapiboot.service.UtentePublicInfoService;
@@ -16,12 +17,14 @@ public class UtentePublicInfoServiceImpl implements UtentePublicInfoService {
     private UtentePublicInfoRepository repo;
 
     @Override
+    @SentrySpan
     public Optional<UtentePublicInfo> getById(Integer id) {
         return repo.findById(id);
     }
 
     @Override
+    @SentrySpan
     public List<UtentePublicInfo> searchUsername(String username) {
-        return repo.findAllByUsernameLikeIgnoreCase("%"+username+"%");
+        return repo.findAllByUsernameLikeIgnoreCase("%" + username + "%");
     }
 }

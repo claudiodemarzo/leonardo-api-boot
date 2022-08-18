@@ -1,6 +1,7 @@
 package it.leonardo.leonardoapiboot.controller;
 
 
+import io.sentry.Sentry;
 import it.leonardo.leonardoapiboot.entity.Citta;
 import it.leonardo.leonardoapiboot.entity.CittaSimple;
 import it.leonardo.leonardoapiboot.entity.Provincia;
@@ -59,7 +60,8 @@ public class CittaController {
             return ResponseEntity.ok(list);
 
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
+            Sentry.captureException(e);
+return ResponseEntity.internalServerError().build();
         }
     }
 
@@ -83,7 +85,8 @@ public class CittaController {
             return ResponseEntity.ok(citta.get());
 
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
+            Sentry.captureException(e);
+return ResponseEntity.internalServerError().build();
         }
     }
 
@@ -98,6 +101,7 @@ public class CittaController {
             if (provOpt.isPresent()) prov = provOpt.get();
             else resp = new ResponseEntity<>("{\"invalidField\" : \"id\"}", HttpStatus.NOT_FOUND);
         } catch (Exception e) {
+            Sentry.captureException(e);
             resp = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
@@ -127,6 +131,7 @@ public class CittaController {
                 resp = new ResponseEntity<>("{\"invalidField\":\"id\"}", HttpStatus.NOT_FOUND);
             }
         } catch (Exception e) {
+            Sentry.captureException(e);
             resp = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 

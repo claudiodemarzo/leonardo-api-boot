@@ -1,6 +1,7 @@
 package it.leonardo.leonardoapiboot.controller;
 
 
+import io.sentry.Sentry;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -78,7 +79,8 @@ public class AnnunciLibriController {
 
 
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            Sentry.captureException(e);
+            return ResponseEntity.internalServerError().build();
         }
     }
 
@@ -102,8 +104,8 @@ public class AnnunciLibriController {
             });
             return ResponseEntity.ok(lst);
         } catch (Exception e) {
-            e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            Sentry.captureException(e);
+            return ResponseEntity.internalServerError().build();
         }
     }
 
@@ -124,7 +126,8 @@ public class AnnunciLibriController {
             AnnunciLibri al = opt.get();
             Optional<Libro> lOpt = libroService.findByIsbn(al.getLibro().getIsbn());
 
-            if (!lOpt.isPresent()) return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            if (!lOpt.isPresent())
+                return ResponseEntity.internalServerError().build();
 
             Libro l = lOpt.get();
             if (!all) {
@@ -132,7 +135,8 @@ public class AnnunciLibriController {
             }
             return new ResponseEntity<>(l, HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            Sentry.captureException(e);
+            return ResponseEntity.internalServerError().build();
         }
     }
 
@@ -156,7 +160,8 @@ public class AnnunciLibriController {
             return new ResponseEntity<>(lst, HttpStatus.OK);
 
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            Sentry.captureException(e);
+            return ResponseEntity.internalServerError().build();
         }
 
     }
@@ -183,7 +188,8 @@ public class AnnunciLibriController {
             return new ResponseEntity<>(lst, HttpStatus.OK);
 
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            Sentry.captureException(e);
+            return ResponseEntity.internalServerError().build();
         }
 
     }
@@ -224,7 +230,8 @@ public class AnnunciLibriController {
             return new ResponseEntity<>(alSaved, HttpStatus.CREATED);
         } catch (Exception e) {
             e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            Sentry.captureException(e);
+            return ResponseEntity.internalServerError().build();
         }
     }
 
@@ -258,6 +265,7 @@ public class AnnunciLibriController {
             return new ResponseEntity<>(alSaved, HttpStatus.OK);
 
         } catch (Exception e) {
+            Sentry.captureException(e);
             return ResponseEntity.internalServerError().build();
         }
     }
@@ -287,6 +295,7 @@ public class AnnunciLibriController {
             }
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } catch (Exception e) {
+            Sentry.captureException(e);
             return ResponseEntity.internalServerError().build();
         }
     }
@@ -310,9 +319,10 @@ public class AnnunciLibriController {
             if (ann.getUtente().getId().equals(utenteService.findById(Integer.parseInt(session.getAttribute("userID").toString())).get().getUtenteId())) {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
-            ChatWSController.sendNotification(ann.getUtente().getId().toString(), new Notifica(Notifica.TipoNotifica.info, "Richiesta di contatto", "@"+utenteService.findById(Integer.parseInt(session.getAttribute("userID").toString())).get().getUsername()+ " è interessato al tuo annuncio: "+ann.getLibro().getNome()));
+            ChatWSController.sendNotification(ann.getUtente().getId().toString(), new Notifica(Notifica.TipoNotifica.info, "Richiesta di contatto", "@" + utenteService.findById(Integer.parseInt(session.getAttribute("userID").toString())).get().getUsername() + " è interessato al tuo annuncio: " + ann.getLibro().getNome()));
             return ResponseEntity.ok().body("{}");
         } catch (Exception e) {
+            Sentry.captureException(e);
             return ResponseEntity.internalServerError().build();
         }
     }

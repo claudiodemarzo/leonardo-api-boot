@@ -1,5 +1,6 @@
 package it.leonardo.leonardoapiboot.service.impl;
 
+import io.sentry.spring.tracing.SentrySpan;
 import it.leonardo.leonardoapiboot.entity.CAP;
 import it.leonardo.leonardoapiboot.entity.Citta;
 import it.leonardo.leonardoapiboot.repository.CAPRepository;
@@ -19,11 +20,13 @@ public class CAPServiceImpl implements CAPService {
 
 
     @Override
+    @SentrySpan
     public List<CAP> findByCitta(Citta citta) {
         return capRepository.findByCitta(citta);
     }
 
     @Override
+    @SentrySpan
     public Optional<CAP> findByCittaAndCap(Citta citta, String cap) {
         return capRepository.findByCittaAndCap(citta, cap);
     }
