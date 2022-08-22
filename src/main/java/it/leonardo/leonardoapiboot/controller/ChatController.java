@@ -168,8 +168,8 @@ public class ChatController {
                     bAfterSortingMessages = new Breadcrumb(),
                     bAfterSortingChatroomsPerMessages = new Breadcrumb();
 
-            for(Chatroom c : chatrooms){
-                c.getReceivedMessages().addAll(c.getMessaggi() != null ? c.getMessaggi() : null);
+            for (Chatroom c : chatrooms) {
+                c.setReceivedMessages(c.getMessaggi());
                 c.getReceivedMessages().addAll(chatroomService.getOrCreate(c.getUtenteDest(), c.getUtenteMit()).getMessaggi());
             }
 
