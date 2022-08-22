@@ -162,17 +162,23 @@ public class ChatController {
         String userID = session.getAttribute("userID").toString();
         try {
             List<Chatroom> chatrooms = chatroomService.getByUtenteDest(utenteService.findById(Integer.parseInt(userID)).get());
+
             if (chatrooms.isEmpty()) return ResponseEntity.noContent().build();
             Breadcrumb bBeforeSorting = new Breadcrumb(),
                     bAfterSortingMessages = new Breadcrumb(),
                     bAfterSortingChatroomsPerMessages = new Breadcrumb();
 
+            for(Chatroom c : chatrooms){
+                c.getReceivedMessages().addAll(c.getMessaggi());
+                c.getReceivedMessages().addAll(chatroomService.getOrCreate(c.getUtenteDest(), c.getUtenteMit()).getMessaggi());
+            }
+
             bBeforeSorting.setData("chatrooms", chatrooms);
             bBeforeSorting.setLevel(SentryLevel.DEBUG);
             bBeforeSorting.setMessage("Chatrooms prima di ordinamento");
             for (Chatroom c : chatrooms) {
-                c.getMessaggi().sort(new MessaggiComparator());
-                c.setLastMessageDate(c.getMessaggi().size() != 0 ? c.getMessaggi().get(0).getTimestamp() : null);
+                c.getReceivedMessages().sort(new MessaggiComparator());
+                c.setLastMessageDate(c.getReceivedMessages().size() != 0 ? c.getReceivedMessages().get(0).getTimestamp() : null);
             }
             bAfterSortingMessages.setData("chatrooms", chatrooms);
             bAfterSortingMessages.setLevel(SentryLevel.DEBUG);
