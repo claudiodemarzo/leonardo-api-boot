@@ -1,6 +1,8 @@
 package it.leonardo.leonardoapiboot.controller;
 
+import io.sentry.Breadcrumb;
 import io.sentry.Sentry;
+import io.sentry.SentryLevel;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -161,11 +163,20 @@ public class ChatController {
         try {
             List<Chatroom> chatrooms = chatroomService.getByUtenteDest(utenteService.findById(Integer.parseInt(userID)).get());
             if (chatrooms.isEmpty()) return ResponseEntity.noContent().build();
+            Breadcrumb bBeforeSorting = new Breadcrumb(),
+                    bAfterSortingMessages = new Breadcrumb(),
+                    bAfterSortingChatroomsPerMessages = new Breadcrumb();
 
+            bBeforeSorting.setData("chatrooms", chatrooms);
+            bBeforeSorting.setLevel(SentryLevel.DEBUG);
+            bBeforeSorting.setMessage("Chatrooms prima di ordinamento");
             for (Chatroom c : chatrooms) {
                 c.getMessaggi().sort(new MessaggiComparator());
                 c.setLastMessageDate(c.getMessaggi().size() != 0 ? c.getMessaggi().get(0).getTimestamp() : null);
             }
+            bAfterSortingMessages.setData("chatrooms", chatrooms);
+            bAfterSortingMessages.setLevel(SentryLevel.DEBUG);
+            bAfterSortingMessages.setMessage("Chatrooms dopo ordinamento di Messaggi");
 
             for (Chatroom c : chatrooms)
                 c.setUtenteMitInfo(utentePublicInfoService.getById(c.getUtenteMit().getUtenteId()).get());
@@ -175,6 +186,15 @@ public class ChatController {
                 c.setUnreadMessages(messaggioService.getUnreadMessagesCount(chatroomService.getOrCreate(c.getUtenteMit(), c.getUtenteDest()).getChatroomId()));
 
             chatrooms.sort(new ChatroomComparator());
+
+            bAfterSortingChatroomsPerMessages.setData("chatrooms", chatrooms);
+            bAfterSortingChatroomsPerMessages.setLevel(SentryLevel.DEBUG);
+            bAfterSortingChatroomsPerMessages.setMessage("Chatrooms dopo ordinamento");
+
+            Sentry.addBreadcrumb(bBeforeSorting);
+            Sentry.addBreadcrumb(bAfterSortingMessages);
+            Sentry.addBreadcrumb(bAfterSortingChatroomsPerMessages);
+
             return ResponseEntity.ok(chatrooms);
         } catch (Exception e) {
             e.printStackTrace();
