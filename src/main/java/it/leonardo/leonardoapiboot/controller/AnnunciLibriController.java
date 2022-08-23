@@ -27,9 +27,12 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
+import java.text.DecimalFormat;
 import java.time.Instant;
 import java.util.*;
 
@@ -342,7 +345,10 @@ public class AnnunciLibriController {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
             ChatWSController.sendNotification(ann.getUtente().getId().toString(), new Notifica(Notifica.TipoNotifica.info, "Richiesta di contatto", "@" + utenteService.findById(Integer.parseInt(session.getAttribute("userID").toString())).get().getUsername() + " è interessato al tuo annuncio: " + ann.getLibro().getNome()));
-            ChatWSController.sendMessage(utenteService.findById(Integer.parseInt(session.getAttribute("userID").toString())).get(), utenteService.findById(ann.getUtente().getId()).get(), "Ciao! Sono interessato all'acquisto di un libro<div ad-id=\""+ann.getAnnuncio_id()+"\" class=\"ad-contacted card flex-row w-100\"><img src=\""+ann.getLibro().getCopertina()+"\" alt=\""+ann.getLibro().getNome()+"\"><div class=\"card-body d-flex flex-column\"><div class=\"ad-title\">"+ann.getLibro().getNome()+"</div><div class=\"ad-isbn\">"+ann.getLibro().getIsbn()+"</div><div class=\"ad-description\">"+ann.getLibro().getDescrizione()+"</div><div class=\"ad-price\">Prezzo: € "+ann.getPrezzo()+"</div></div></div>", chatroomService, utentePublicInfoService, messaggioService);
+
+            BigDecimal costo = BigDecimal.valueOf(ann.getPrezzo());
+            costo = costo.setScale(2, RoundingMode.HALF_UP);
+            ChatWSController.sendMessage(utenteService.findById(Integer.parseInt(session.getAttribute("userID").toString())).get(), utenteService.findById(ann.getUtente().getId()).get(), "Ciao! Sono interessato all'acquisto di un libro<div ad-id=\""+ann.getAnnuncio_id()+"\" class=\"ad-contacted card flex-row w-100\"><img src=\""+ann.getLibro().getCopertina()+"\" alt=\""+ann.getLibro().getNome()+"\"><div class=\"card-body d-flex flex-column\"><div class=\"ad-title\">"+ann.getLibro().getNome()+"</div><div class=\"ad-isbn\">"+ann.getLibro().getIsbn()+"</div><div class=\"ad-description\">"+ann.getLibro().getDescrizione()+"</div><div class=\"ad-price\">Prezzo: € "+costo.toPlainString()+"</div></div></div>", chatroomService, utentePublicInfoService, messaggioService);
 
             return ResponseEntity.ok().body("{}");
         } catch (Exception e) {
