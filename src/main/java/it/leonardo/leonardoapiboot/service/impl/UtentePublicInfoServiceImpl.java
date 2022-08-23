@@ -27,4 +27,9 @@ public class UtentePublicInfoServiceImpl implements UtentePublicInfoService {
     public List<UtentePublicInfo> searchUsername(String username) {
         return repo.findAllByUsernameLikeIgnoreCase("%" + username + "%");
     }
+
+    @Override
+    public Optional<UtentePublicInfo> getByUsername(String username) {
+        return repo.findByUsername(username);
+    }
 }

@@ -9,4 +9,6 @@ public interface UtentePublicInfoService {
     Optional<UtentePublicInfo> getById(Integer id);
 
     List<UtentePublicInfo> searchUsername(String username);
+
+    Optional<UtentePublicInfo> getByUsername(String username);
 }

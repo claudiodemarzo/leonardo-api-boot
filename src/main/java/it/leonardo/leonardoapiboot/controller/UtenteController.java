@@ -716,4 +716,32 @@ public class UtenteController {
             return ResponseEntity.internalServerError().build();
         }
     }
+
+    @Operation(description = "Ricerca le informazioni pubbliche di un utente, dato l'id o l'username")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Richiesta andata a buon fine"),
+            @ApiResponse(responseCode = "404", description = "Utente non trovato"),
+            @ApiResponse(responseCode = "500", description = "Errore generico del server")
+    })
+    @GetMapping("{query}")
+    public ResponseEntity<UtentePublicInfo> getExact(@PathVariable String query) {
+        log.info("Invoked UtenteController.getExact(" + query + ")");
+        try {
+            UtentePublicInfo upf;
+            try {
+                Integer userID = Integer.parseInt(query);
+                Optional<UtentePublicInfo> upfOptional = utentePublicInfoService.getById(userID);
+                if (!upfOptional.isPresent()) return ResponseEntity.notFound().build();
+                upf = upfOptional.get();
+            } catch (NumberFormatException e) {
+                Optional<UtentePublicInfo> upfOptional = utentePublicInfoService.getByUsername(query);
+                if (!upfOptional.isPresent()) return ResponseEntity.notFound().build();
+                upf = upfOptional.get();
+            }
+            return ResponseEntity.ok(upf);
+        } catch (Exception e) {
+            Sentry.captureException(e);
+            return ResponseEntity.internalServerError().build();
+        }
+    }
 }
