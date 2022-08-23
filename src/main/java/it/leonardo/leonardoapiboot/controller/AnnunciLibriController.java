@@ -14,23 +14,33 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.coyote.Response;
+import org.apache.tomcat.util.codec.binary.Base64;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.opencv.core.CvType;
+import org.opencv.core.Mat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
+import javax.imageio.ImageIO;
 import javax.servlet.http.HttpSession;
+import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferByte;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.time.Instant;
 import java.util.*;
+
+import static it.leonardo.leonardoapiboot.utils.ImageUtils.encodeWebp;
 
 @RestController
 @RequestMapping("/annuncilibri")
@@ -214,8 +224,24 @@ public class AnnunciLibriController {
             if (opt.isPresent()) l = opt.get();
             else {
                 l = Libro.fromCreateAnnuncioForm(form);
-                String copertinaPath = "/var/www/html/assets/imgs/libri/" + FilenameUtils.getName(new URL(form.getImgLink()).getPath());
-                downloadFile(form.getImgLink(), copertinaPath);
+                String copertinaPath = "/var/www/html/assets/imgs/libri/" + l.getIsbn() + ".webp", tmpCopertinaPath = "/var/www/html/assets/imgs/libri/" + l.getIsbn() + ".tmp.webp";
+                downloadFile(form.getImgLink(), tmpCopertinaPath);
+
+                File tmpCopertinaFile = new File(tmpCopertinaPath);
+                BufferedImage image = ImageIO.read(tmpCopertinaFile);
+                BufferedImage imageCopy = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
+
+                imageCopy.getGraphics().drawImage(image, 0, 0, null);
+                byte[] imageCopyBytes = ((DataBufferByte) imageCopy.getRaster().getDataBuffer()).getData();
+
+                Mat imageMatrix = new Mat(image.getHeight(), image.getWidth(), CvType.CV_8UC3);
+                imageMatrix.put(0, 0, imageCopyBytes);
+
+                imageCopyBytes = encodeWebp(imageMatrix, 300);
+                OutputStream webpOutputStream = new FileOutputStream(copertinaPath);
+                webpOutputStream.write(imageCopyBytes);
+                tmpCopertinaFile.delete();
+
                 l.setCopertina(copertinaPath.replace("/var/www/html", ""));
                 libroService.save(l);
             }

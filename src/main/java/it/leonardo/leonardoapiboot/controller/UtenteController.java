@@ -38,6 +38,8 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.util.*;
 
+import static it.leonardo.leonardoapiboot.utils.ImageUtils.encodeWebp;
+
 @RestController
 @RequestMapping("/utenti")
 //@CrossOrigin(origins = {"http://leonardostart.ddns.net", "http://127.0.0.1:5507", "http://192.168.1.2"}, allowCredentials = "true")
@@ -473,15 +475,6 @@ public class UtenteController {
         for (String hay : haystack)
             if (needle.equals(hay)) return true;
         return false;
-    }
-
-    private byte[] encodeWebp(Mat image, int quality) {
-        MatOfInt parameters = new MatOfInt(Imgcodecs.IMWRITE_WEBP_QUALITY, quality);
-        MatOfByte output = new MatOfByte();
-        if (Imgcodecs.imencode(".webp", image, output, parameters))
-            return output.toArray();
-        else
-            throw new IllegalStateException("Failed to encode the image as webp with quality " + quality);
     }
 
 
