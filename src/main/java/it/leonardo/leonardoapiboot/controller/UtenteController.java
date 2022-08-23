@@ -18,9 +18,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
-import org.opencv.core.MatOfByte;
-import org.opencv.core.MatOfInt;
-import org.opencv.imgcodecs.Imgcodecs;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,7 +33,10 @@ import java.awt.image.DataBufferByte;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
-import java.util.*;
+import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 import static it.leonardo.leonardoapiboot.utils.ImageUtils.encodeWebp;
 

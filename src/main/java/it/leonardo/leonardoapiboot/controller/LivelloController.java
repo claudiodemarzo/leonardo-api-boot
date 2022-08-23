@@ -9,9 +9,7 @@ import it.leonardo.leonardoapiboot.entity.Livello;
 import it.leonardo.leonardoapiboot.service.LivelloService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

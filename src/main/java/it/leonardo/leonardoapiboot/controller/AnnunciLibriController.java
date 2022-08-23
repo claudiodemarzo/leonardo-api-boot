@@ -10,20 +10,14 @@ import it.leonardo.leonardoapiboot.entity.form.CreateAnnuncioForm;
 import it.leonardo.leonardoapiboot.entity.form.UpdateAnnuncioForm;
 import it.leonardo.leonardoapiboot.service.*;
 import it.leonardo.leonardoapiboot.utils.AnnunciComparator;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.coyote.Response;
-import org.apache.tomcat.util.codec.binary.Base64;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpSession;
@@ -34,7 +28,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.time.Instant;
@@ -60,9 +53,6 @@ public class AnnunciLibriController {
     private LibroService libroService;
 
     @Autowired
-    private CittaService cittaService;
-
-    @Autowired
     private HttpSession session;
 
     @Autowired
@@ -70,6 +60,12 @@ public class AnnunciLibriController {
 
     @Autowired
     private StatusLibroService statusLibroService;
+
+    @Autowired
+    private ChatroomService chatroomService;
+
+    @Autowired
+    private MessaggioService messaggioService;
 
     @Operation(description = "Restituisce tutti gli annunci")
     @ApiResponses(value = {
@@ -346,6 +342,8 @@ public class AnnunciLibriController {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
             ChatWSController.sendNotification(ann.getUtente().getId().toString(), new Notifica(Notifica.TipoNotifica.info, "Richiesta di contatto", "@" + utenteService.findById(Integer.parseInt(session.getAttribute("userID").toString())).get().getUsername() + " è interessato al tuo annuncio: " + ann.getLibro().getNome()));
+            ChatWSController.sendMessage(utenteService.findById(Integer.parseInt(session.getAttribute("userID").toString())).get(), utenteService.findById(ann.getUtente().getId()).get(), "Ciao! Sono interessato all'acquisto di un libro<div ad-id=\"${annuncio.id}\" class=\"ad-contacted card flex-row w-100\"><img src=\"${libro.copertina}\" alt=\"${libro.titolo}\"><div class=\"card-body d-flex flex-column\"><div class=\"ad-title\">${libro.titolo}</div><div class=\"ad-isbn\">${libro.isbn}</div><div class=\"ad-description\">${libro.descrizione}</div><div class=\"ad-price\">Prezzo: € ${annuncio.prezzo}</div></div></div>", chatroomService, utentePublicInfoService, messaggioService);
+
             return ResponseEntity.ok().body("{}");
         } catch (Exception e) {
             Sentry.captureException(e);

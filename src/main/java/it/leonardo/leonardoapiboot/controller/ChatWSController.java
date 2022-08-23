@@ -19,7 +19,6 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
-import java.io.IOException;
 import java.security.Principal;
 import java.time.Instant;
 import java.util.Date;
@@ -78,5 +77,26 @@ public class ChatWSController {
     public static void sendNotification(String userId, Notifica notifica) {
         log.info("Invoked ChatWSController.sendNotification()");
         messagingTemplate.convertAndSendToUser(userId, "/topic/notification", notifica.toString());
+    }
+
+    @Operation(description = "Invia un messaggio all'utente fornito")
+    public static void sendMessage(Utente sender, Utente recipient, String messaggioStr, ChatroomService chatroomService, UtentePublicInfoService utentePublicInfoService, MessaggioService messaggioService) {
+        log.info("Invoked ChatWSController.sendMessage()");
+        Messaggio messaggio = new Messaggio();
+        Integer utenteMit = sender.getUtenteId();
+        Integer utenteDest = recipient.getUtenteId();
+        if(sender.getUtenteId().equals(recipient.getUtenteId())) return;
+        Chatroom c = chatroomService.getOrCreate(sender, recipient);
+        c.setUtenteMitInfo(utentePublicInfoService.getById(sender.getUtenteId()).get().getId());
+        c.setUtenteDestInfo(utentePublicInfoService.getById(recipient.getUtenteId()).get().getId());
+
+        messaggio.setChatroom(c);
+        messaggio.setStatus(0);
+        messaggio.setTimestamp(Date.from(Instant.now()));
+        messaggio.setMessaggio(messaggioStr);
+
+        messaggio = messaggioService.save(messaggio);
+
+        messagingTemplate.convertAndSendToUser(recipient.getUtenteId().toString(), "/topic/private-message", messaggio.toString());
     }
 }

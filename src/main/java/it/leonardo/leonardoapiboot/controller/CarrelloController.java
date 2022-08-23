@@ -13,7 +13,6 @@ import it.leonardo.leonardoapiboot.service.LibroService;
 import it.leonardo.leonardoapiboot.service.UtenteService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
