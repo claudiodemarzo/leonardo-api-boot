@@ -21,6 +21,7 @@ public class ChatroomServiceImpl implements ChatroomService {
     @SentrySpan
     public Chatroom getOrCreate(Utente mit, Utente dest) {
         Optional<Chatroom> chatroomOpt = repo.findByUtenteMitAndUtenteDest(mit, dest);
+        if(mit.getUtenteId().equals(dest.getUtenteId())) return null;
         if (chatroomOpt.isPresent()) return chatroomOpt.get();
         Chatroom c1 = new Chatroom(), c2 = new Chatroom();
         c1.setUtenteDest(dest);
