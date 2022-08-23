@@ -70,7 +70,7 @@ public class ChatWSController {
 
         m = messaggioService.save(m);
 
-        messagingTemplate.convertAndSendToUser(utenteDest.toString(), "/topic/private-message", m);
+        messagingTemplate.convertAndSendToUser(utenteDest.toString(), "/topic/private-message", m.toString());
     }
 
     @Operation(description = "Notifica l'utente fornito con un messaggio specificato")
