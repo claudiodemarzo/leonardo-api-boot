@@ -74,7 +74,7 @@ public class Messaggio {
     public String toString() {
         return new JSONObject()
                 .put("messaggioId", this.messaggioId)
-                .put("chatroom", this.chatroom.getChatroomId())
+                .put("senderId", this.chatroom.getUtenteMit().getUtenteId())
                 .put("messaggio", this.messaggio)
                 .put("status", this.status)
                 .put("timestamp", this.timestamp)
