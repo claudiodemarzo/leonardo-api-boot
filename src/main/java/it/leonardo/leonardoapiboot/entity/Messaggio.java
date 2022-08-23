@@ -1,6 +1,7 @@
 package it.leonardo.leonardoapiboot.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import org.json.JSONObject;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -71,13 +72,13 @@ public class Messaggio {
 
     @Override
     public String toString() {
-        return "Messaggio{" +
-                "messaggioId=" + messaggioId +
-                ", chatroom=" + chatroom +
-                ", messaggio='" + messaggio + '\'' +
-                ", status=" + status +
-                ", timestamp=" + timestamp +
-                '}';
+        return new JSONObject()
+                .put("messaggioId", this.messaggioId)
+                .put("chatroom", this.chatroom.getChatroomId())
+                .put("messaggio", this.messaggio)
+                .put("status", this.status)
+                .put("timestamp", this.timestamp)
+                .toString();
     }
 
     public Messaggio() {
