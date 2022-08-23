@@ -181,6 +181,8 @@ public class ChatController {
                 messaggi.addAll(c.getMessaggi());
 
                 messaggi.sort(new MessaggiComparator());
+                Collections.reverse(messaggi);
+                c.getMessaggi().sort(new MessaggiComparator());
                 c.setLastMessageDate(messaggi.size() != 0 ? messaggi.get(0).getTimestamp() : null);
             }
             bAfterSortingMessages.setData("chatrooms", chatrooms);
