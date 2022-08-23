@@ -182,7 +182,7 @@ public class UtenteController {
                 String token = UUID.randomUUID().toString();
                 session.setAttribute("token", token);
                 session.setAttribute("userID", u.get().getUtenteId());
-                return ResponseEntity.ok().body("{\"token\" : \"" + token + "\"}");
+                return ResponseEntity.ok().body("{\"userID\" : \"" + u.get().getUtenteId() + "\", \"propic\" : \"" + u.get().getFoto() + "\"}");
             } catch (Exception e) {
                 Sentry.captureException(e);
                 return ResponseEntity.internalServerError().build();
