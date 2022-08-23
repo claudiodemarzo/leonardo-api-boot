@@ -170,9 +170,18 @@ public class ChatController {
             bBeforeSorting.setData("chatrooms", chatrooms);
             bBeforeSorting.setLevel(SentryLevel.DEBUG);
             bBeforeSorting.setMessage("Chatrooms prima di ordinamento");
+
+            List<Messaggio> messaggi;
+
             for (Chatroom c : chatrooms) {
-                c.getMessaggi().sort(new MessaggiComparator());
-                c.setLastMessageDate(c.getMessaggi().size() != 0 ? c.getMessaggi().get(0).getTimestamp() : null);
+                messaggi = new ArrayList<>();
+                Chatroom reverse = chatroomService.getOrCreate(c.getUtenteDest(), c.getUtenteMit());
+
+                messaggi.addAll(reverse.getMessaggi());
+                messaggi.addAll(c.getMessaggi());
+
+                messaggi.sort(new MessaggiComparator());
+                c.setLastMessageDate(messaggi.size() != 0 ? messaggi.get(0).getTimestamp() : null);
             }
             bAfterSortingMessages.setData("chatrooms", chatrooms);
             bAfterSortingMessages.setLevel(SentryLevel.DEBUG);
