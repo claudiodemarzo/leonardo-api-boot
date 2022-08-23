@@ -37,6 +37,8 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static it.leonardo.leonardoapiboot.utils.ImageUtils.encodeWebp;
 
@@ -97,6 +99,10 @@ public class UtenteController {
             Optional<Utente> uByUsername = service.findByUsername(form.getUsername());
             if (uByUsername.isPresent())
                 return new ResponseEntity<>("{\"duplicateField\" : \"username\"}", HttpStatus.CONFLICT);
+            Pattern pattern = Pattern.compile("^(?=.*[a-z].*)([a-z0-9]{1}[a-z0-9\\.\\_\\-\\!]{2,29})$", Pattern.CASE_INSENSITIVE);
+            Matcher matcher = pattern.matcher(form.getUsername());
+            if(!matcher.matches())
+                return ResponseEntity.badRequest().body("{\"invalidField\" : \"username\"}");
             Optional<Utente> uByEmail = service.findByEmail(form.getEmail());
             if (uByEmail.isPresent())
                 return new ResponseEntity<>("{\"duplicateField\" : \"email\"}", HttpStatus.CONFLICT);
