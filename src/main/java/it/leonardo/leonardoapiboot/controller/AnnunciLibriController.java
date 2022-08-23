@@ -103,7 +103,7 @@ public class AnnunciLibriController {
             lst.forEach(libro -> {
                 List<AnnunciLibri> lstAnn = new ArrayList<>(libro.getAnnunci());
                 lstAnn.removeIf(ann -> ann.getStato() != 1);
-                lstAnn.removeIf(ann -> ann.getUtente().getId() == Integer.parseInt(session.getAttribute("userID").toString()));
+                lstAnn.removeIf(ann -> session.getAttribute("userID") != null && ann.getUtente().getId() == Integer.parseInt(session.getAttribute("userID").toString()));
                 lstAnn.sort(new AnnunciComparator());
                 Collections.reverse(lstAnn);
                 libro.setAnnunci(lstAnn);
