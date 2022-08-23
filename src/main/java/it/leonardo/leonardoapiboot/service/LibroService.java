@@ -2,7 +2,6 @@ package it.leonardo.leonardoapiboot.service;
 
 import it.leonardo.leonardoapiboot.entity.Libro;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 

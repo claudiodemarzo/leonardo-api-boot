@@ -5,7 +5,6 @@ import it.leonardo.leonardoapiboot.entity.CAP;
 import it.leonardo.leonardoapiboot.entity.Citta;
 import it.leonardo.leonardoapiboot.repository.CAPRepository;
 import it.leonardo.leonardoapiboot.service.CAPService;
-import it.leonardo.leonardoapiboot.service.CittaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

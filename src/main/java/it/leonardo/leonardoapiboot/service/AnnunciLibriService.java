@@ -1,7 +1,6 @@
 package it.leonardo.leonardoapiboot.service;
 
 import it.leonardo.leonardoapiboot.entity.AnnunciLibri;
-import it.leonardo.leonardoapiboot.entity.Citta;
 import it.leonardo.leonardoapiboot.entity.Libro;
 import it.leonardo.leonardoapiboot.entity.Utente;
 

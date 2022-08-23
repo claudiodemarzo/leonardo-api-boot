@@ -3,11 +3,9 @@ package it.leonardo.leonardoapiboot.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import it.leonardo.leonardoapiboot.entity.form.CreateAnnuncioForm;
 import it.leonardo.leonardoapiboot.entity.form.UpdateAnnuncioForm;
-import org.jetbrains.annotations.NotNull;
 
 import javax.persistence.*;
 import java.util.Date;

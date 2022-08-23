@@ -2,7 +2,6 @@ package it.leonardo.leonardoapiboot.service.impl;
 
 import io.sentry.spring.tracing.SentrySpan;
 import it.leonardo.leonardoapiboot.entity.AnnunciLibri;
-import it.leonardo.leonardoapiboot.entity.Citta;
 import it.leonardo.leonardoapiboot.entity.Libro;
 import it.leonardo.leonardoapiboot.entity.Utente;
 import it.leonardo.leonardoapiboot.repository.AnnunciLibriRepository;

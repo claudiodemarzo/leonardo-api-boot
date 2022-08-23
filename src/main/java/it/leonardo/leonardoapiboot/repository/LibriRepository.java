@@ -3,8 +3,6 @@ package it.leonardo.leonardoapiboot.repository;
 import it.leonardo.leonardoapiboot.entity.Libro;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import javax.persistence.NamedNativeQueries;
-import javax.persistence.NamedNativeQuery;
 import java.util.List;
 
 public interface LibriRepository extends JpaRepository<Libro, String> {

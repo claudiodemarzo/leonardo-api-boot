@@ -3,7 +3,6 @@ package it.leonardo.leonardoapiboot.repository;
 import it.leonardo.leonardoapiboot.entity.Provincia;
 import it.leonardo.leonardoapiboot.entity.Regione;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;

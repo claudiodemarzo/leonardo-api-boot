@@ -1,6 +1,5 @@
 package it.leonardo.leonardoapiboot.service;
 
-import it.leonardo.leonardoapiboot.entity.Chatroom;
 import it.leonardo.leonardoapiboot.entity.Messaggio;
 import it.leonardo.leonardoapiboot.entity.Utente;
 
