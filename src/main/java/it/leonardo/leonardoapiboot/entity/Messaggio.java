@@ -77,7 +77,7 @@ public class Messaggio {
                 .put("senderId", this.chatroom.getUtenteMit().getUtenteId())
                 .put("messaggio", this.messaggio)
                 .put("status", this.status)
-                .put("timestamp", this.timestamp.toString())
+                .put("timestamp", this.timestamp.toInstant().toString())
                 .toString();
     }
 
