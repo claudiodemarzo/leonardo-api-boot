@@ -73,6 +73,7 @@ public class ChatWSController {
     @Operation(description = "Notifica l'utente fornito con un messaggio specificato")
     public static void sendNotification(String userId, Notifica notifica, NotificaService notificaService){
         log.info("Invoked ChatWSController.sendNotification()");
+        notifica.setTimestamp(Date.from(Instant.now()));
         Notifica notificaSaved = notificaService.save(notifica);
         messagingTemplate.convertAndSendToUser(userId, "/topic/notification", notificaSaved.toString());
     }
