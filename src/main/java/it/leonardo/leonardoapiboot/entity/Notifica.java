@@ -1,7 +1,13 @@
 package it.leonardo.leonardoapiboot.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.json.JSONObject;
 
+import javax.persistence.*;
+import java.util.Date;
+
+@Entity
+@Table(name = "notifiche")
 public class Notifica {
     public enum TipoNotifica {
         info,
@@ -10,14 +16,42 @@ public class Notifica {
         error
     }
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "notifica_id")
+    private Integer notificaId;
+
+    @Enumerated(EnumType.ORDINAL)
+    @Column(name = "type")
     private TipoNotifica type;
+
+    @Column(name = "title")
     private String title;
+
+    @Column(name = "content")
     private String content;
 
-    public Notifica(TipoNotifica type, String title, String content) {
+    @Column(name = "timestamp")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date timestamp;
+
+    @Column(name = "letto")
+    private Boolean letto = false;
+
+    @ManyToOne
+    @JsonIgnore
+    @JoinColumn(name = "utente")
+    private Utente utente;
+
+    public Notifica(TipoNotifica type, String title, String content, Utente utente) {
         this.type = type;
         this.title = title;
         this.content = content;
+        this.letto = false;
+        this.utente = utente;
+    }
+
+    public Notifica() {
     }
 
     public TipoNotifica getType() {
@@ -44,12 +78,47 @@ public class Notifica {
         this.content = content;
     }
 
+    public Integer getNotificaId() {
+        return notificaId;
+    }
+
+    public void setNotificaId(Integer notificaId) {
+        this.notificaId = notificaId;
+    }
+
+    public Date getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(Date timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public Boolean getLetto() {
+        return letto;
+    }
+
+    public void setLetto(Boolean letto) {
+        this.letto = letto;
+    }
+
+    public Utente getUtente() {
+        return utente;
+    }
+
+    public void setUtente(Utente utente) {
+        this.utente = utente;
+    }
+
     @Override
     public String toString() {
         String obj = new JSONObject()
+                .put("notificaId", notificaId)
                 .put("type", type)
                 .put("title", title)
                 .put("content", content)
+                .put("timestamp", timestamp.toInstant().toString())
+                .put("letto", letto)
                 .toString();
         return obj;
     }

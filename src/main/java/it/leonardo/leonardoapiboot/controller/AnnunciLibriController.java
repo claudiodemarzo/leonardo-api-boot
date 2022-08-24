@@ -32,7 +32,6 @@ import java.math.RoundingMode;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
-import java.text.DecimalFormat;
 import java.time.Instant;
 import java.util.*;
 
@@ -69,6 +68,9 @@ public class AnnunciLibriController {
 
     @Autowired
     private MessaggioService messaggioService;
+
+    @Autowired
+    private NotificaService notificaService;
 
     @Operation(description = "Restituisce tutti gli annunci")
     @ApiResponses(value = {
@@ -344,7 +346,7 @@ public class AnnunciLibriController {
             if (ann.getUtente().getId().equals(utenteService.findById(Integer.parseInt(session.getAttribute("userID").toString())).get().getUtenteId())) {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
-            ChatWSController.sendNotification(ann.getUtente().getId().toString(), new Notifica(Notifica.TipoNotifica.info, "Richiesta di contatto", "@" + utenteService.findById(Integer.parseInt(session.getAttribute("userID").toString())).get().getUsername() + " è interessato al tuo annuncio: " + ann.getLibro().getNome()));
+            ChatWSController.sendNotification(ann.getUtente().getId().toString(), new Notifica(Notifica.TipoNotifica.info, "Richiesta di contatto", "@" + utenteService.findById(Integer.parseInt(session.getAttribute("userID").toString())).get().getUsername() + " è interessato al tuo annuncio: " + ann.getLibro().getNome(),utenteService.findById(ann.getUtente().getId()).get()), notificaService);
 
             BigDecimal costo = BigDecimal.valueOf(ann.getPrezzo());
             costo = costo.setScale(2, RoundingMode.HALF_UP);

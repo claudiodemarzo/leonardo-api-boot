@@ -6,10 +6,7 @@ import it.leonardo.leonardoapiboot.entity.Messaggio;
 import it.leonardo.leonardoapiboot.entity.Notifica;
 import it.leonardo.leonardoapiboot.entity.Utente;
 import it.leonardo.leonardoapiboot.entity.form.MessaggioWS;
-import it.leonardo.leonardoapiboot.service.ChatroomService;
-import it.leonardo.leonardoapiboot.service.MessaggioService;
-import it.leonardo.leonardoapiboot.service.UtentePublicInfoService;
-import it.leonardo.leonardoapiboot.service.UtenteService;
+import it.leonardo.leonardoapiboot.service.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,9 +71,10 @@ public class ChatWSController {
     }
 
     @Operation(description = "Notifica l'utente fornito con un messaggio specificato")
-    public static void sendNotification(String userId, Notifica notifica) {
+    public static void sendNotification(String userId, Notifica notifica, NotificaService notificaService){
         log.info("Invoked ChatWSController.sendNotification()");
-        messagingTemplate.convertAndSendToUser(userId, "/topic/notification", notifica.toString());
+        Notifica notificaSaved = notificaService.save(notifica);
+        messagingTemplate.convertAndSendToUser(userId, "/topic/notification", notificaSaved.toString());
     }
 
     @Operation(description = "Invia un messaggio all'utente fornito")

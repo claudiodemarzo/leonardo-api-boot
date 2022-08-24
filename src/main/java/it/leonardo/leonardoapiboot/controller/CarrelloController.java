@@ -7,10 +7,7 @@ import it.leonardo.leonardoapiboot.entity.AnnunciLibri;
 import it.leonardo.leonardoapiboot.entity.Carrello;
 import it.leonardo.leonardoapiboot.entity.Libro;
 import it.leonardo.leonardoapiboot.entity.Notifica;
-import it.leonardo.leonardoapiboot.service.AnnunciLibriService;
-import it.leonardo.leonardoapiboot.service.CarrelloService;
-import it.leonardo.leonardoapiboot.service.LibroService;
-import it.leonardo.leonardoapiboot.service.UtenteService;
+import it.leonardo.leonardoapiboot.service.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +40,9 @@ public class CarrelloController {
 
     @Autowired
     private AnnunciLibriService annunciLibriService;
+
+    @Autowired
+    private NotificaService notificaService;
 
     @Autowired
     private HttpSession session;
@@ -94,7 +94,7 @@ public class CarrelloController {
                     Carrello c = new Carrello();
                     c.setAnnuncio(annOpt.get());
                     c.setUtente(utenteService.findById(Integer.parseInt(session.getAttribute("userID").toString())).get());
-                    ChatWSController.sendNotification(annOpt.get().getUtente().getId().toString(), new Notifica(Notifica.TipoNotifica.info, "Aggiornamento sull'annuncio", "Qualcuno ha aggiunto un tuo annuncio al suo carrello"));
+                    ChatWSController.sendNotification(annOpt.get().getUtente().getId().toString(), new Notifica(Notifica.TipoNotifica.info, "Aggiornamento sull'annuncio", "Qualcuno ha aggiunto un tuo annuncio al suo carrello", utenteService.findById(annOpt.get().getUtente().getId()).get()), notificaService);
                     Carrello cSaved = service.save(c);
                     return new ResponseEntity<>(cSaved, HttpStatus.CREATED);
                 } catch (DataIntegrityViolationException ex) {
@@ -117,7 +117,7 @@ public class CarrelloController {
     })
     @PostMapping("/multiple")
     public ResponseEntity<Object> insertMultiple(@RequestBody List<Integer> annunci) {
-        log.info("Invoked CarrelloController.insertMultiple(" + annunci+ ")");
+        log.info("Invoked CarrelloController.insertMultiple(" + annunci + ")");
 
         if (annunci.size() == 0) return ResponseEntity.badRequest().build();
 
@@ -131,7 +131,7 @@ public class CarrelloController {
                         Carrello c = new Carrello();
                         c.setAnnuncio(annOpt.get());
                         c.setUtente(utenteService.findById(Integer.parseInt(session.getAttribute("userID").toString())).get());
-                        ChatWSController.sendNotification(annOpt.get().getUtente().getId().toString(), new Notifica(Notifica.TipoNotifica.info, "Aggiornamento sull'annuncio", "Qualcuno ha aggiunto un tuo annuncio al suo carrello"));
+                        ChatWSController.sendNotification(annOpt.get().getUtente().getId().toString(), new Notifica(Notifica.TipoNotifica.info, "Aggiornamento sull'annuncio", "Qualcuno ha aggiunto un tuo annuncio al suo carrello", utenteService.findById(annOpt.get().getUtente().getId()).get()), notificaService);
                         Carrello cSaved = service.save(c);
                     } catch (DataIntegrityViolationException ex) {
                     }

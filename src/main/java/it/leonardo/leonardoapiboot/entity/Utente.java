@@ -136,6 +136,10 @@ public class Utente implements Serializable {
     @JsonBackReference
     private List<Chatroom> chatroomsAsDest;
 
+    @OneToMany(mappedBy = "utente")
+    @JsonBackReference
+    private List<Notifica> notifiche;
+
     public Integer getUtenteId() {
         return utenteId;
     }
@@ -386,6 +390,14 @@ public class Utente implements Serializable {
 
     public void setChatroomsAsDest(List<Chatroom> chatroomsAsDest) {
         this.chatroomsAsDest = chatroomsAsDest;
+    }
+
+    public List<Notifica> getNotifiche() {
+        return notifiche;
+    }
+
+    public void setNotifiche(List<Notifica> notifiche) {
+        this.notifiche = notifiche;
     }
 
     @Override
