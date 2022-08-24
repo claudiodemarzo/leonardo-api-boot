@@ -4,6 +4,7 @@ import io.sentry.spring.tracing.SentrySpan;
 import it.leonardo.leonardoapiboot.entity.AnnunciLibri;
 import it.leonardo.leonardoapiboot.entity.Libro;
 import it.leonardo.leonardoapiboot.entity.Utente;
+import it.leonardo.leonardoapiboot.entity.UtentePublicInfo;
 import it.leonardo.leonardoapiboot.repository.AnnunciLibriRepository;
 import it.leonardo.leonardoapiboot.service.AnnunciLibriService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,8 +33,8 @@ public class AnnunciLibriServiceImpl implements AnnunciLibriService {
 
     @Override
     @SentrySpan
-    public List<AnnunciLibri> getByUtente(Utente u) {
-        return repo.findAllByUtente(u);
+    public List<AnnunciLibri> getByUtente(UtentePublicInfo u) {
+        return repo.findByUtente(u);
     }
 
     @Override

@@ -160,7 +160,7 @@ public class AnnunciLibriController {
     public ResponseEntity<Object> getByUtente(@PathVariable("id") Integer id) {
         log.info("Invoked AnnunciLibriController.getByUtente(" + id + ")");
         try {
-            Optional<Utente> opt = utenteService.findById(id);
+            Optional<UtentePublicInfo> opt = utentePublicInfoService.getById(id);
             if (!opt.isPresent()) return new ResponseEntity<>("{\"invalidField\" : \"id\"}", HttpStatus.NOT_FOUND);
             List<AnnunciLibri> lst = service.getByUtente(opt.get());
             if (lst.isEmpty()) return new ResponseEntity<>(HttpStatus.NO_CONTENT);

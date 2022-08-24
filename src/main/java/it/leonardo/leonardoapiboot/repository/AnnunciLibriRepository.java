@@ -3,6 +3,7 @@ package it.leonardo.leonardoapiboot.repository;
 import it.leonardo.leonardoapiboot.entity.AnnunciLibri;
 import it.leonardo.leonardoapiboot.entity.Libro;
 import it.leonardo.leonardoapiboot.entity.Utente;
+import it.leonardo.leonardoapiboot.entity.UtentePublicInfo;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -12,7 +13,7 @@ public interface AnnunciLibriRepository extends JpaRepository<AnnunciLibri, Inte
 
     Optional<AnnunciLibri> findById(int id);
 
-    List<AnnunciLibri> findAllByUtente(Utente u);
+    List<AnnunciLibri> findByUtente(UtentePublicInfo utente);
 
     List<AnnunciLibri> findAllByLibro(Libro l);
 }
