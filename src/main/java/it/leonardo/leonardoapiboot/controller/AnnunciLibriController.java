@@ -155,6 +155,7 @@ public class AnnunciLibriController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "La richiesta è andata a buon fine, la lista degli annunci è stata popolata"),
             @ApiResponse(responseCode = "204", description = "La richiesta è andata a buon fine, ma la lista è risultata essere vuota"),
+            @ApiResponse(responseCode = "404", description = "L'utente specificato non è stato trovato"),
             @ApiResponse(responseCode = "500", description = "Errore generico del server")})
     @GetMapping("/by-utente/{id}")
     public ResponseEntity<Object> getByUtente(@PathVariable("id") Integer id) {
