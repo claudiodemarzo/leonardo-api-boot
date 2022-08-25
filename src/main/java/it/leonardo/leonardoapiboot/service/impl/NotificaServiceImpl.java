@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class NotificaServiceImpl implements NotificaService {
@@ -34,6 +35,15 @@ public class NotificaServiceImpl implements NotificaService {
         }
 
         notificaRepository.saveAll(notifiche);
+    }
+
+    @Override
+    public void setNotificheAsReadById(Integer id, Utente utente) {
+        Notifica notifica = notificaRepository.findById(id).get();
+        if (!Objects.equals(notifica.getUtente().getUtenteId(), utente.getUtenteId()))
+            return;
+        notifica.setLetto(true);
+        notificaRepository.save(notifica);
     }
 
     @Override

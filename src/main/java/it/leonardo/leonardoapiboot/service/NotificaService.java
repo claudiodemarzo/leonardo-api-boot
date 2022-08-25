@@ -13,6 +13,8 @@ public interface NotificaService {
 
     void setNotificheAsRead(Utente utente);
 
+    void setNotificheAsReadById(Integer id, Utente utente);
+
     Notifica save(Notifica notifica);
 
     List<Notifica> saveAll(List<Notifica> notifiche);

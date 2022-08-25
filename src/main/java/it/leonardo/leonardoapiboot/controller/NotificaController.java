@@ -12,10 +12,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import java.util.List;
@@ -113,6 +110,31 @@ public class NotificaController {
 
         try {
             service.setNotificheAsRead(utenteService.findById(Integer.parseInt(session.getAttribute("userID").toString())).get());
+            return ResponseEntity.ok("{}");
+        } catch (Exception e) {
+            Sentry.captureException(e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @Operation(description = "Aggiorna una notifica come letta, dato un id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "La richiesta è andata a buon fine"),
+            @ApiResponse(responseCode = "403", description = "Utente non connesso"),
+            @ApiResponse(responseCode = "500", description = "Errore interno del server")
+    })
+    @PostMapping("/read/{id}")
+    public ResponseEntity<Object> readSingle(@PathVariable Integer id) {
+        log.info("Invoked NotificaController.read(" + id + ")");
+
+        String token = session.getAttribute("token") == null ? null : session.getAttribute("token").toString();
+
+        if (token == null) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        try {
+            service.setNotificheAsReadById(id, utenteService.findById(Integer.parseInt(session.getAttribute("userID").toString())).get());
             return ResponseEntity.ok("{}");
         } catch (Exception e) {
             Sentry.captureException(e);
