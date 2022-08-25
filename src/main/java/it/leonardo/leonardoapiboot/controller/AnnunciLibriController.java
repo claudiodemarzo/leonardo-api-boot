@@ -176,7 +176,8 @@ public class AnnunciLibriController {
                 boolean found = false;
                 for (AnnunciLibri al : lst) {
                     if (al.getUtente().getId().equals(id) && al.getLibro().getIsbn().equals(l.getIsbn())) {
-                        l.getAnnunci().stream().filter(all -> all.getUtente().getId().equals(id));
+                        List<AnnunciLibri> tmp = l.getAnnunci().stream().filter(all -> all.getUtente().getId().equals(id)).toList();
+                        l.setAnnunci(tmp);
                         actualLstLibri.add(l);
                         found = true;
                     }
