@@ -331,7 +331,7 @@ public class AnnunciLibriController {
             if (!opt.isPresent()) return new ResponseEntity<>("{\"invalidField\" : \"id\"}", HttpStatus.NOT_FOUND);
             AnnunciLibri ann = opt.get();
             if (ann.getUtente().getId().equals(utenteService.findById(Integer.parseInt(session.getAttribute("userID").toString())).get().getUtenteId())) {
-                if (ann.getStato() == 1) return new ResponseEntity<>(HttpStatus.CONFLICT);
+                if (ann.getStato() == 2) return new ResponseEntity<>(HttpStatus.CONFLICT);
                 ann.setStato(2);
                 AnnunciLibri annUpdated = service.save(ann);
                 return ResponseEntity.ok(annUpdated);
