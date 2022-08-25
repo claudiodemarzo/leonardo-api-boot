@@ -20,5 +20,7 @@ public interface UtenteService {
 
     Optional<Utente> findByConfirmToken(String token);
 
+    void setOnlineStatus(boolean onlineStatus, Integer utenteID);
+
     Utente save(Utente u);
 }

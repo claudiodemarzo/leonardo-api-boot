@@ -58,6 +58,13 @@ public class UtenteServiceImpl implements UtenteService {
     }
 
     @Override
+    public void setOnlineStatus(boolean onlineStatus, Integer utenteID) {
+        Utente u = repo.findById(utenteID).get();
+        u.setOnline(onlineStatus);
+        repo.save(u);
+    }
+
+    @Override
     @SentrySpan
     public Utente save(Utente u) {
         return repo.saveAndFlush(u);

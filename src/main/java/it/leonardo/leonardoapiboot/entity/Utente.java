@@ -140,6 +140,9 @@ public class Utente implements Serializable {
     @JsonBackReference
     private List<Notifica> notifiche;
 
+    @Column(name = "online")
+    private Boolean online = false;
+
     public Integer getUtenteId() {
         return utenteId;
     }
@@ -398,6 +401,14 @@ public class Utente implements Serializable {
 
     public void setNotifiche(List<Notifica> notifiche) {
         this.notifiche = notifiche;
+    }
+
+    public Boolean getOnline() {
+        return online;
+    }
+
+    public void setOnline(Boolean online) {
+        this.online = online;
     }
 
     @Override

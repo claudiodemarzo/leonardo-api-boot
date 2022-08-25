@@ -50,6 +50,9 @@ public class UtentePublicInfo {
     @ManyToOne
     private Citta citta;
 
+    @Column(name = "online")
+    private Boolean online;
+
     public Integer getId() {
         return id;
     }
@@ -144,6 +147,14 @@ public class UtentePublicInfo {
 
     public void setCitta(Citta citta) {
         this.citta = citta;
+    }
+
+    public Boolean getOnline() {
+        return online;
+    }
+
+    public void setOnline(Boolean online) {
+        this.online = online;
     }
 
     public UtentePublicInfo() {

@@ -2,8 +2,10 @@ package it.leonardo.leonardoapiboot.configuration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.leonardo.leonardoapiboot.handler.WebSocketHandshakeHandler;
+import it.leonardo.leonardoapiboot.service.UtenteService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.converter.DefaultContentTypeResolver;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
@@ -28,6 +30,9 @@ import java.util.List;
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     private static Log log = LogFactory.getLog(WebSocketConfig.class);
+
+    @Autowired
+    private UtenteService utenteService;
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
@@ -67,6 +72,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
                         if (session.getAttributes().containsKey("userID")) {
                             log.info("Utente collegato: " + session.getAttributes().get("userID"));
+                            utenteService.setOnlineStatus(true, Integer.parseInt(session.getAttributes().get("userID").toString()));
                         } else {
                             log.warn("Connessione non autorizzata");
                             session.close(CloseStatus.NOT_ACCEPTABLE);
@@ -78,6 +84,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                     public void afterConnectionClosed(WebSocketSession session, CloseStatus closeStatus) throws Exception {
                         if (CloseStatus.NOT_ACCEPTABLE != closeStatus) {
                             log.info("Utente " + session.getAttributes().get("userID") + " disconnesso da WS");
+                            utenteService.setOnlineStatus(false, Integer.parseInt(session.getAttributes().get("userID").toString()));
                         }
                         super.afterConnectionClosed(session, closeStatus);
                     }
