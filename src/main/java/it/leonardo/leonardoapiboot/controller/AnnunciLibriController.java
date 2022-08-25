@@ -165,11 +165,7 @@ public class AnnunciLibriController {
             List<AnnunciLibri> lst = service.getByUtente(opt.get());
             if (lst.isEmpty()) return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 
-            for (AnnunciLibri a : lst) {
-                a.getUtente().setPunti(null);
-            }
             return new ResponseEntity<>(lst, HttpStatus.OK);
-
         } catch (Exception e) {
             Sentry.captureException(e);
             return ResponseEntity.internalServerError().build();
