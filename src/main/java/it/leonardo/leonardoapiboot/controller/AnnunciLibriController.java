@@ -164,9 +164,27 @@ public class AnnunciLibriController {
             Optional<UtentePublicInfo> opt = utentePublicInfoService.getById(id);
             if (!opt.isPresent()) return new ResponseEntity<>("{\"invalidField\" : \"id\"}", HttpStatus.NOT_FOUND);
             List<AnnunciLibri> lst = service.getByUtente(opt.get());
-            if (lst.isEmpty()) return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-
-            return new ResponseEntity<>(lst, HttpStatus.OK);
+            List<String> lstIsbn = new ArrayList<>();
+            lst.forEach(al -> lstIsbn.add(al.getLibro().getIsbn()));
+            List<Libro> lstLibri = new ArrayList<>();
+            for (String isbn : lstIsbn) {
+                Optional<Libro> optLibro = libroService.findByIsbn(isbn);
+                if (optLibro.isPresent()) lstLibri.add(optLibro.get());
+            }
+            List<Libro> actualLstLibri = new ArrayList<>();
+            for (Libro l : lstLibri) {
+                boolean found = false;
+                for (AnnunciLibri al : lst) {
+                    if (al.getUtente().getId().equals(id) && al.getLibro().getIsbn().equals(l.getIsbn())) {
+                        l.getAnnunci().stream().filter(all -> all.getUtente().getId().equals(id));
+                        actualLstLibri.add(l);
+                        found = true;
+                    }
+                    if (found) break;
+                }
+            }
+            if (actualLstLibri.isEmpty()) return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(actualLstLibri, HttpStatus.OK);
         } catch (Exception e) {
             Sentry.captureException(e);
             return ResponseEntity.internalServerError().build();
@@ -343,11 +361,11 @@ public class AnnunciLibriController {
             if (ann.getUtente().getId().equals(utenteService.findById(Integer.parseInt(session.getAttribute("userID").toString())).get().getUtenteId())) {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
-            ChatWSController.sendNotification(ann.getUtente().getId().toString(), new Notifica(Notifica.TipoNotifica.info, "Richiesta di contatto", "@" + utenteService.findById(Integer.parseInt(session.getAttribute("userID").toString())).get().getUsername() + " è interessato al tuo annuncio: " + ann.getLibro().getNome(),utenteService.findById(ann.getUtente().getId()).get()), notificaService);
+            ChatWSController.sendNotification(ann.getUtente().getId().toString(), new Notifica(Notifica.TipoNotifica.info, "Richiesta di contatto", "@" + utenteService.findById(Integer.parseInt(session.getAttribute("userID").toString())).get().getUsername() + " è interessato al tuo annuncio: " + ann.getLibro().getNome(), utenteService.findById(ann.getUtente().getId()).get()), notificaService);
 
             BigDecimal costo = BigDecimal.valueOf(ann.getPrezzo());
             costo = costo.setScale(2, RoundingMode.HALF_UP);
-            ChatWSController.sendMessage(utenteService.findById(Integer.parseInt(session.getAttribute("userID").toString())).get(), utenteService.findById(ann.getUtente().getId()).get(), "Ciao! Sono interessato all'acquisto di un libro<div ad-id=\""+ann.getAnnuncio_id()+"\" class=\"ad-contacted card flex-row w-100\"><img src=\""+ann.getLibro().getCopertina()+"\" alt=\""+ann.getLibro().getNome()+"\"><div class=\"card-body d-flex flex-column\"><div class=\"ad-title\">"+ann.getLibro().getNome()+"</div><div class=\"ad-isbn\">"+ann.getLibro().getIsbn()+"</div><div class=\"ad-description\">"+ann.getLibro().getDescrizione()+"</div><div class=\"ad-price\">Prezzo: € "+costo.toPlainString()+"</div></div></div>", chatroomService, utentePublicInfoService, messaggioService);
+            ChatWSController.sendMessage(utenteService.findById(Integer.parseInt(session.getAttribute("userID").toString())).get(), utenteService.findById(ann.getUtente().getId()).get(), "Ciao! Sono interessato all'acquisto di un libro<div ad-id=\"" + ann.getAnnuncio_id() + "\" class=\"ad-contacted card flex-row w-100\"><img src=\"" + ann.getLibro().getCopertina() + "\" alt=\"" + ann.getLibro().getNome() + "\"><div class=\"card-body d-flex flex-column\"><div class=\"ad-title\">" + ann.getLibro().getNome() + "</div><div class=\"ad-isbn\">" + ann.getLibro().getIsbn() + "</div><div class=\"ad-description\">" + ann.getLibro().getDescrizione() + "</div><div class=\"ad-price\">Prezzo: € " + costo.toPlainString() + "</div></div></div>", chatroomService, utentePublicInfoService, messaggioService);
 
             return ResponseEntity.ok().body("{}");
         } catch (Exception e) {
