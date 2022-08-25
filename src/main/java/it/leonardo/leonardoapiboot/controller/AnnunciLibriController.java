@@ -332,7 +332,7 @@ public class AnnunciLibriController {
             AnnunciLibri ann = opt.get();
             if (ann.getUtente().getId().equals(utenteService.findById(Integer.parseInt(session.getAttribute("userID").toString())).get().getUtenteId())) {
                 if (ann.getStato() == 1) return new ResponseEntity<>(HttpStatus.CONFLICT);
-                ann.setStato(1);
+                ann.setStato(2);
                 AnnunciLibri annUpdated = service.save(ann);
                 return ResponseEntity.ok(annUpdated);
             }
