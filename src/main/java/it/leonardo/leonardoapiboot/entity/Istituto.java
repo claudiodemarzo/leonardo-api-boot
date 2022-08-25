@@ -40,7 +40,7 @@ public class Istituto implements Serializable {
     @Column(name = "lng")
     private Float lng;
 
-    @JsonManagedReference
+    @JsonBackReference
     @OneToMany(mappedBy = "istituto")
     private List<UtentePublicInfo> utentePublicInfos;
 
