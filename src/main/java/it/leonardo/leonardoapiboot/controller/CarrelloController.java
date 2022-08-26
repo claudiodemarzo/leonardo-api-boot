@@ -131,7 +131,7 @@ public class CarrelloController {
                         Carrello c = new Carrello();
                         c.setAnnuncio(annOpt.get());
                         c.setUtente(utenteService.findById(Integer.parseInt(session.getAttribute("userID").toString())).get());
-                        ChatWSController.sendNotification(annOpt.get().getUtente().getId().toString(), new Notifica(Notifica.TipoNotifica.info, "Aggiornamento sull'annuncio", "Qualcuno ha aggiunto un tuo annuncio al suo carrello", utenteService.findById(annOpt.get().getUtente().getId()).get()), notificaService);
+                        //ChatWSController.sendNotification(annOpt.get().getUtente().getId().toString(), new Notifica(Notifica.TipoNotifica.info, "Aggiornamento sull'annuncio", "Qualcuno ha aggiunto un tuo annuncio al suo carrello", utenteService.findById(annOpt.get().getUtente().getId()).get()), notificaService);
                         Carrello cSaved = service.save(c);
                     } catch (DataIntegrityViolationException ex) {
                     }
