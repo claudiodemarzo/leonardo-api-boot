@@ -74,6 +74,9 @@ public class UtenteController {
     @Autowired
     private JavaMailSender mailSender;
 
+    @Autowired
+    private TagService tagService;
+
     @PostMapping("/register")
     @Operation(description = "Esegue la registrazione in db di un utente")
     @ApiResponses(value = {
@@ -272,7 +275,9 @@ public class UtenteController {
             if (!upi.isPresent()) {
                 return ResponseEntity.internalServerError().build();
             }
-            return ResponseEntity.ok(upi.get());
+            UtentePublicInfo upi_ = upi.get();
+            upi_.setActiveTag(tagService.getActiveTagByUtente(upi_.getId()).get());
+            return ResponseEntity.ok(upi_);
         } catch (Exception e) {
             Sentry.captureException(e);
             return ResponseEntity.internalServerError().build();
@@ -716,6 +721,9 @@ public class UtenteController {
         try {
             List<UtentePublicInfo> utenti = utentePublicInfoService.searchUsername(username);
             if (utenti.isEmpty()) return ResponseEntity.noContent().build();
+            utenti.forEach(u -> {
+                u.setActiveTag(tagService.getActiveTagByUtente(u.getId()).get());
+            });
             return ResponseEntity.ok(utenti);
         } catch (Exception e) {
             Sentry.captureException(e);
@@ -739,10 +747,12 @@ public class UtenteController {
                 Optional<UtentePublicInfo> upfOptional = utentePublicInfoService.getById(userID);
                 if (!upfOptional.isPresent()) return ResponseEntity.notFound().build();
                 upf = upfOptional.get();
+                upf.setActiveTag(tagService.getActiveTagByUtente(upf.getId()).get());
             } catch (NumberFormatException e) {
                 Optional<UtentePublicInfo> upfOptional = utentePublicInfoService.getByUsername(query);
                 if (!upfOptional.isPresent()) return ResponseEntity.notFound().build();
                 upf = upfOptional.get();
+                upf.setActiveTag(tagService.getActiveTagByUtente(upf.getId()).get());
             }
             return ResponseEntity.ok(upf);
         } catch (Exception e) {

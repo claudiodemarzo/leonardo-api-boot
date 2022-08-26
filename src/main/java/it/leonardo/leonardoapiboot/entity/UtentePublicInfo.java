@@ -53,6 +53,9 @@ public class UtentePublicInfo {
     @Column(name = "online")
     private Boolean online;
 
+    @Transient
+    private Tag activeTag;
+
     public Integer getId() {
         return id;
     }
@@ -155,6 +158,14 @@ public class UtentePublicInfo {
 
     public void setOnline(Boolean online) {
         this.online = online;
+    }
+
+    public Tag getActiveTag() {
+        return activeTag;
+    }
+
+    public void setActiveTag(Tag activeTag) {
+        this.activeTag = activeTag;
     }
 
     public UtentePublicInfo() {
