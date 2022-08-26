@@ -55,6 +55,10 @@ public class AnnunciLibri {
     @JoinColumn(name = "soldTo")
     private Utente soldTo;
 
+    @JsonIgnore
+    @OneToOne(mappedBy = "annuncio")
+    private Recensione recensione;
+
     public Integer getAnnuncio_id() {
         return annuncio_id;
     }

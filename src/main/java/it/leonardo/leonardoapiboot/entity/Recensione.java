@@ -20,6 +20,10 @@ public class Recensione implements Serializable {
 	@ManyToOne
 	private Utente utenteRecensito;
 
+	@OneToOne
+	@JoinColumn(name = "annuncio")
+	private AnnunciLibri annuncio;
+
 	@JsonBackReference
 	@JoinColumn(name = "utente_recensore")
 	@ManyToOne
@@ -27,6 +31,9 @@ public class Recensione implements Serializable {
 
 	@Column(name = "voto")
 	private Integer voto;
+
+	@Column(name = "commento")
+	private String commento;
 
 	public Integer getRecensioneId() {
 		return recensioneId;
@@ -58,6 +65,22 @@ public class Recensione implements Serializable {
 
 	public void setVoto(Integer voto) {
 		this.voto = voto;
+	}
+
+	public AnnunciLibri getAnnuncio() {
+		return annuncio;
+	}
+
+	public void setAnnuncio(AnnunciLibri annuncio) {
+		this.annuncio = annuncio;
+	}
+
+	public String getCommento() {
+		return commento;
+	}
+
+	public void setCommento(String commento) {
+		this.commento = commento;
 	}
 
 	public Recensione(){}

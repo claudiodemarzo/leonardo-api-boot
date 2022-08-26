@@ -34,4 +34,9 @@ public class RecensioneServiceImpl implements RecensioneService {
     public Optional<Recensione> getById(Integer id) {
         return repo.findById(id);
     }
+
+    @Override
+    public Recensione save(Recensione r) {
+        return repo.save(r);
+    }
 }

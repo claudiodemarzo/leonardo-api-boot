@@ -13,4 +13,6 @@ public interface RecensioneService {
 
 	Optional<Recensione> getById(Integer id);
 
+	Recensione save(Recensione r);
+
 }
