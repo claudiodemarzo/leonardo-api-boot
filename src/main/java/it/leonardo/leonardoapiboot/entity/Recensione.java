@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Date;
 
 @Entity
 @Table(name = "recensioni")
@@ -34,6 +35,10 @@ public class Recensione implements Serializable {
 
 	@Column(name = "commento")
 	private String commento;
+
+	@Column(name = "created_at")
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date createdAt;
 
 	public Integer getRecensioneId() {
 		return recensioneId;
@@ -81,6 +86,14 @@ public class Recensione implements Serializable {
 
 	public void setCommento(String commento) {
 		this.commento = commento;
+	}
+
+	public Date getCreatedAt() {
+		return createdAt;
+	}
+
+	public void setCreatedAt(Date createdAt) {
+		this.createdAt = createdAt;
 	}
 
 	public Recensione(){}

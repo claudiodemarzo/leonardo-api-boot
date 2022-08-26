@@ -23,6 +23,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpSession;
+import java.time.Instant;
+import java.util.Date;
 import java.util.Optional;
 
 @RestController
@@ -76,6 +78,7 @@ public class RecensioniController {
             r.setAnnuncio(annunciLibriService.findById(ann.getAnnuncioId()).get());
             r.setCommento(form.getCommento());
             r.setVoto(form.getVoto());
+            r.setCreatedAt(Date.from(Instant.now()));
 
             Recensione rSaved = recensioneService.save(r);
 
