@@ -40,22 +40,22 @@ public class ChatWSController {
 
     @MessageMapping("/broad")
     @SendTo("/topic/broadcast")
-    public Messaggio broadcastNews(@Payload MessaggioWS message, Principal principal){
+    public Messaggio broadcastNews(@Payload MessaggioWS message, Principal principal) {
         return null;
     }
 
     @Operation(description = "Invia un messaggio all'utente specificato")
     @MessageMapping("/private-message")
-    public void privateMessage(@Payload MessaggioWS message, Principal principal){
+    public void privateMessage(@Payload MessaggioWS message, Principal principal) {
         log.info("Invoked ChatWSController.privateMessage()");
         Messaggio m = new Messaggio();
         Integer utenteMit = Integer.parseInt(principal.getName());
         Integer utenteDest = message.getUtenteDest();
         Utente mit = utenteService.findById(utenteMit).orElse(null);
-        if(mit == null) return;
+        if (mit == null) return;
         Utente dest = utenteService.findById(utenteDest).orElse(null);
-        if(dest == null) return;
-        if(mit.getUtenteId().equals(dest.getUtenteId())) return;
+        if (dest == null) return;
+        if (mit.getUtenteId().equals(dest.getUtenteId())) return;
         Chatroom c = chatroomService.getOrCreate(mit, dest);
         c.setUtenteMitInfo(utentePublicInfoService.getById(mit.getUtenteId()).get().getId());
         c.setUtenteDestInfo(utentePublicInfoService.getById(dest.getUtenteId()).get().getId());
@@ -71,11 +71,11 @@ public class ChatWSController {
     }
 
     @Operation(description = "Notifica l'utente fornito con un messaggio specificato")
-    public static void sendNotification(String userId, Notifica notifica, NotificaService notificaService){
+    public static void sendNotification(String userId, Notifica notifica, NotificaService notificaService) {
         log.info("Invoked ChatWSController.sendNotification()");
         notifica.setTimestamp(Date.from(Instant.now()));
-        Notifica notificaSaved = notificaService.save(notifica);
-        messagingTemplate.convertAndSendToUser(userId, "/topic/notification", notificaSaved.toString());
+        if (notifica.getType() != Notifica.TipoNotifica.internal) notifica = notificaService.save(notifica);
+        messagingTemplate.convertAndSendToUser(userId, "/topic/notification", notifica.toString());
     }
 
     @Operation(description = "Invia un messaggio all'utente fornito")
@@ -84,7 +84,7 @@ public class ChatWSController {
         Messaggio messaggio = new Messaggio();
         Integer utenteMit = sender.getUtenteId();
         Integer utenteDest = recipient.getUtenteId();
-        if(sender.getUtenteId().equals(recipient.getUtenteId())) return;
+        if (sender.getUtenteId().equals(recipient.getUtenteId())) return;
         Chatroom c = chatroomService.getOrCreate(sender, recipient);
         c.setUtenteMitInfo(utentePublicInfoService.getById(sender.getUtenteId()).get().getId());
         c.setUtenteDestInfo(utentePublicInfoService.getById(recipient.getUtenteId()).get().getId());

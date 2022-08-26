@@ -13,7 +13,8 @@ public class Notifica {
         info,
         success,
         warning,
-        error
+        error,
+        internal
     }
 
     @Id

@@ -1,7 +1,10 @@
 package it.leonardo.leonardoapiboot.configuration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import it.leonardo.leonardoapiboot.controller.ChatWSController;
+import it.leonardo.leonardoapiboot.entity.Notifica;
 import it.leonardo.leonardoapiboot.handler.WebSocketHandshakeHandler;
+import it.leonardo.leonardoapiboot.service.ChatroomService;
 import it.leonardo.leonardoapiboot.service.UtenteService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -33,6 +36,9 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Autowired
     private UtenteService utenteService;
+
+    @Autowired
+    private ChatroomService chatroomService;
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
@@ -73,6 +79,10 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                         if (session.getAttributes().containsKey("userID")) {
                             log.info("Utente collegato: " + session.getAttributes().get("userID"));
                             utenteService.setOnlineStatus(true, Integer.parseInt(session.getAttributes().get("userID").toString()));
+                            chatroomService.getByUtenteMit(utenteService.findById(Integer.parseInt(session.getAttributes().get("userID").toString())).get()).forEach(c -> {
+                                int id = c.getUtenteDest().getUtenteId();
+                                ChatWSController.sendNotification(String.valueOf(id), new Notifica(Notifica.TipoNotifica.internal, "", "{\"context\" : \"userStatusUpdate\", \"value\" : {\"userID\" : " + session.getAttributes().get("userID").toString() + ", \"status\" : true}}", null), null);
+                            });
                         } else {
                             log.warn("Connessione non autorizzata");
                             session.close(CloseStatus.NOT_ACCEPTABLE);
@@ -85,6 +95,10 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                         if (CloseStatus.NOT_ACCEPTABLE != closeStatus) {
                             log.info("Utente " + session.getAttributes().get("userID") + " disconnesso da WS");
                             utenteService.setOnlineStatus(false, Integer.parseInt(session.getAttributes().get("userID").toString()));
+                            chatroomService.getByUtenteMit(utenteService.findById(Integer.parseInt(session.getAttributes().get("userID").toString())).get()).forEach(c -> {
+                                int id = c.getUtenteDest().getUtenteId();
+                                ChatWSController.sendNotification(String.valueOf(id), new Notifica(Notifica.TipoNotifica.internal, "", "{\"context\" : \"userStatusUpdate\", \"value\" : {\"userID\" : " + session.getAttributes().get("userID").toString() + ", \"status\" : false}}", null), null);
+                            });
                         }
                         super.afterConnectionClosed(session, closeStatus);
                     }
