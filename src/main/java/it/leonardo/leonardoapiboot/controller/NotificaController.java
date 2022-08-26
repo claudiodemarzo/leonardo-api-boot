@@ -50,7 +50,7 @@ public class NotificaController {
         }
 
         try {
-            List<Notifica> notifiche = service.findAllByUtente(utenteService.findById(Integer.parseInt(session.getAttribute("userID").toString())).get());
+            List<Notifica> notifiche = service.findAllByUtenteAndCancellatoIsFalse(utenteService.findById(Integer.parseInt(session.getAttribute("userID").toString())).get());
             if (notifiche.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
             }
@@ -80,7 +80,7 @@ public class NotificaController {
         }
 
         try {
-            List<Notifica> notifiche = service.findAllByUtenteAndLettoIsFalse(utenteService.findById(Integer.parseInt(session.getAttribute("userID").toString())).get());
+            List<Notifica> notifiche = service.findAllByUtenteAndLettoIsFalseAndCancellatoIsFalse(utenteService.findById(Integer.parseInt(session.getAttribute("userID").toString())).get());
             if (notifiche.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
             }
@@ -135,6 +135,56 @@ public class NotificaController {
 
         try {
             service.setNotificheAsReadById(id, utenteService.findById(Integer.parseInt(session.getAttribute("userID").toString())).get());
+            return ResponseEntity.ok("{}");
+        } catch (Exception e) {
+            Sentry.captureException(e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @Operation(description = "Aggiorna una notifica come cancellata, dato un id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "La richiesta è andata a buon fine"),
+            @ApiResponse(responseCode = "403", description = "Utente non connesso"),
+            @ApiResponse(responseCode = "500", description = "Errore interno del server")
+    })
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Object> deleteById(@PathVariable Integer id) {
+        log.info("Invoked NotificaController.delete(" + id + ")");
+
+        String token = session.getAttribute("token") == null ? null : session.getAttribute("token").toString();
+
+        if (token == null) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        try {
+            service.delete(id, utenteService.findById(Integer.parseInt(session.getAttribute("userID").toString())).get());
+            return ResponseEntity.ok("{}");
+        } catch (Exception e) {
+            Sentry.captureException(e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @Operation(description = "Aggiorna tutte le notifiche come cancellate")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "La richiesta è andata a buon fine"),
+            @ApiResponse(responseCode = "403", description = "Utente non connesso"),
+            @ApiResponse(responseCode = "500", description = "Errore interno del server")
+    })
+    @DeleteMapping("/")
+    public ResponseEntity<Object> deleteAll() {
+        log.info("Invoked NotificaController.deleteAll()");
+
+        String token = session.getAttribute("token") == null ? null : session.getAttribute("token").toString();
+
+        if (token == null) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        try {
+            service.deleteAll(utenteService.findById(Integer.parseInt(session.getAttribute("userID").toString())).get());
             return ResponseEntity.ok("{}");
         } catch (Exception e) {
             Sentry.captureException(e);

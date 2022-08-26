@@ -38,6 +38,9 @@ public class Notifica {
     @Column(name = "letto")
     private Boolean letto = false;
 
+    @Column(name = "cancellato")
+    private Boolean cancellato = false;
+
     @ManyToOne
     @JsonIgnore
     @JoinColumn(name = "utente")
@@ -108,6 +111,14 @@ public class Notifica {
 
     public void setUtente(Utente utente) {
         this.utente = utente;
+    }
+
+    public Boolean getCancellato() {
+        return cancellato;
+    }
+
+    public void setCancellato(Boolean cancellato) {
+        this.cancellato = cancellato;
     }
 
     @Override

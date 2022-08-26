@@ -22,13 +22,18 @@ public class NotificaServiceImpl implements NotificaService {
     }
 
     @Override
-    public List<Notifica> findAllByUtenteAndLettoIsFalse(Utente utente) {
-        return notificaRepository.findAllByUtenteAndLettoIsFalse(utente);
+    public List<Notifica> findAllByUtenteAndCancellatoIsFalse(Utente utente){
+        return notificaRepository.findAllByUtenteAndCancellatoIsFalse(utente);
+    }
+
+    @Override
+    public List<Notifica> findAllByUtenteAndLettoIsFalseAndCancellatoIsFalse(Utente utente) {
+        return notificaRepository.findAllByUtenteAndLettoIsFalseAndCancellatoIsFalse(utente);
     }
 
     @Override
     public void setNotificheAsRead(Utente utente) {
-        List<Notifica> notifiche = findAllByUtenteAndLettoIsFalse(utente);
+        List<Notifica> notifiche = findAllByUtenteAndLettoIsFalseAndCancellatoIsFalse(utente);
 
         for (Notifica notifica : notifiche) {
             notifica.setLetto(true);
@@ -52,8 +57,28 @@ public class NotificaServiceImpl implements NotificaService {
     }
 
     @Override
+    public void delete(Integer id, Utente utente) {
+        Notifica notifica = notificaRepository.findById(id).get();
+        if (!Objects.equals(notifica.getUtente().getUtenteId(), utente.getUtenteId()))
+            return;
+        notifica.setLetto(true);
+        notifica.setCancellato(true);
+        notificaRepository.save(notifica);
+    }
+
+    @Override
     public List<Notifica> saveAll(List<Notifica> notifiche) {
         return notificaRepository.saveAll(notifiche);
+    }
+
+    @Override
+    public void deleteAll(Utente utente) {
+        List<Notifica> notifiche = findAllByUtente(utente);
+        for (Notifica notifica : notifiche) {
+            notifica.setLetto(true);
+            notifica.setCancellato(true);
+        }
+        notificaRepository.saveAll(notifiche);
     }
 }
 

@@ -9,7 +9,9 @@ public interface NotificaService {
 
     List<Notifica> findAllByUtente(Utente utente);
 
-    List<Notifica> findAllByUtenteAndLettoIsFalse(Utente utente);
+    List<Notifica> findAllByUtenteAndCancellatoIsFalse(Utente utente);
+
+    List<Notifica> findAllByUtenteAndLettoIsFalseAndCancellatoIsFalse(Utente utente);
 
     void setNotificheAsRead(Utente utente);
 
@@ -17,5 +19,9 @@ public interface NotificaService {
 
     Notifica save(Notifica notifica);
 
+    void delete(Integer id, Utente utente);
+
     List<Notifica> saveAll(List<Notifica> notifiche);
+
+    void deleteAll(Utente utente);
 }

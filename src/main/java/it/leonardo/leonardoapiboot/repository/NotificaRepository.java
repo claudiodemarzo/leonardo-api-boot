@@ -10,5 +10,7 @@ public interface NotificaRepository extends JpaRepository<Notifica, Integer> {
 
     List<Notifica> findAllByUtente(Utente utente);
 
-    List<Notifica> findAllByUtenteAndLettoIsFalse(Utente utente);
+    List<Notifica> findAllByUtenteAndCancellatoIsFalse(Utente utente);
+
+    List<Notifica> findAllByUtenteAndLettoIsFalseAndCancellatoIsFalse(Utente utente);
 }
