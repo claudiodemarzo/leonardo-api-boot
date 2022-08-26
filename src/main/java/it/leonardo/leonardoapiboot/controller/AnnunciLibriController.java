@@ -142,7 +142,7 @@ public class AnnunciLibriController {
 
             Libro l = lOpt.get();
             if (!all) {
-                l.getAnnunci().removeIf(ann -> ann.getAnnuncio_id().intValue() != id);
+                l.getAnnunci().removeIf(ann -> ann.getAnnuncio_id().intValue() != id || ann.getStato() != 1);
             }
             return new ResponseEntity<>(l, HttpStatus.OK);
         } catch (Exception e) {
@@ -175,7 +175,7 @@ public class AnnunciLibriController {
             for (Libro l : lstLibri) {
                 boolean found = false;
                 for (AnnunciLibri al : lst) {
-                    if (al.getUtente().getId().equals(id) && al.getLibro().getIsbn().equals(l.getIsbn())) {
+                    if (al.getUtente().getId().equals(id) && al.getLibro().getIsbn().equals(l.getIsbn()) && al.getStato() != 3) {
                         List<AnnunciLibri> tmp = l.getAnnunci().stream().filter(all -> all.getUtente().getId().equals(id)).toList();
                         l.setAnnunci(tmp);
                         actualLstLibri.add(l);
@@ -206,6 +206,7 @@ public class AnnunciLibriController {
             if (!opt.isPresent()) return new ResponseEntity<>("{\"invalidField\" : \"id\"}", HttpStatus.NOT_FOUND);
 
             List<AnnunciLibri> lst = service.getByLibro(opt.get());
+            lst.removeIf(al -> al.getStato() == 3);
             lst.sort(new AnnunciComparator());
             Collections.reverse(lst);
             lst.forEach(a -> {
@@ -316,23 +317,27 @@ public class AnnunciLibriController {
     @Operation(description = "Imposta un annuncio come venduto")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "La richiesta è andata a buon fine, l'annuncio è stato impostato come venduto."),
-            @ApiResponse(responseCode = "404", description = "L'annuncio non esiste/non è di proprietà dell'utente"),
+            @ApiResponse(responseCode = "404", description = "L'annuncio non esiste/non è di proprietà dell'utente, o l'utente specificato non esiste"),
             @ApiResponse(responseCode = "401", description = "Sessione non settata e/o token invalido"),
             @ApiResponse(responseCode = "500", description = "Errore generico del server"),
             @ApiResponse(responseCode = "409", description = "L'annuncio è già stato impostato come venduto")
     })
-    @PostMapping("{id}/sold")
-    public ResponseEntity<Object> setSold(@PathVariable Integer id) {
-        log.info("Invoked AnnunciLibriController.setSold(" + id + ")");
+    @PostMapping("/sold/{idAnn}/{idUser}")
+    public ResponseEntity<Object> setSold(@PathVariable Integer idAnn, @PathVariable Integer idUser) {
+        log.info("Invoked AnnunciLibriController.setSold(" + idAnn + ", " + idUser + ")");
         String token = session.getAttribute("token") == null ? null : session.getAttribute("token").toString();
         if (token == null) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         try {
-            Optional<AnnunciLibri> opt = service.findById(id);
+            Optional<AnnunciLibri> opt = service.findById(idAnn);
             if (!opt.isPresent()) return new ResponseEntity<>("{\"invalidField\" : \"id\"}", HttpStatus.NOT_FOUND);
             AnnunciLibri ann = opt.get();
             if (ann.getUtente().getId().equals(utenteService.findById(Integer.parseInt(session.getAttribute("userID").toString())).get().getUtenteId())) {
-                if (ann.getStato() == 2) return new ResponseEntity<>(HttpStatus.CONFLICT);
+                if (ann.getStato() != 1) return new ResponseEntity<>(HttpStatus.CONFLICT);
                 ann.setStato(2);
+
+                Optional<Utente> optUser = utenteService.findById(idUser);
+                if (opt.isEmpty()) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                ann.setSoldTo(optUser.get());
                 AnnunciLibri annUpdated = service.save(ann);
                 return ResponseEntity.ok(annUpdated);
             }
@@ -369,6 +374,34 @@ public class AnnunciLibriController {
             ChatWSController.sendMessage(utenteService.findById(Integer.parseInt(session.getAttribute("userID").toString())).get(), utenteService.findById(ann.getUtente().getId()).get(), "Ciao! Sono interessato all'acquisto di un libro<div ad-id=\"" + ann.getAnnuncio_id() + "\" class=\"ad-contacted card flex-row w-100\"><img src=\"" + ann.getLibro().getCopertina() + "\" alt=\"" + ann.getLibro().getNome() + "\"><div class=\"card-body d-flex flex-column\"><div class=\"ad-title\">" + ann.getLibro().getNome() + "</div><div class=\"ad-isbn\">" + ann.getLibro().getIsbn() + "</div><div class=\"ad-description\">" + ann.getLibro().getDescrizione() + "</div><div class=\"ad-price\">Prezzo: € " + costo.toPlainString() + "</div></div></div>", chatroomService, utentePublicInfoService, messaggioService);
 
             return ResponseEntity.ok().body("{}");
+        } catch (Exception e) {
+            Sentry.captureException(e);
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @Operation(description = "Elimina (nasconde) l'annuncio specificato")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "La richiesta è andata a buon fine, l'annuncio è stato eliminato."),
+            @ApiResponse(responseCode = "404", description = "L'annuncio non esiste/non è di proprietà dell'utente"),
+            @ApiResponse(responseCode = "401", description = "Sessione non settata e/o token invalido"),
+            @ApiResponse(responseCode = "500", description = "Errore generico del server")
+    })
+    @DeleteMapping("/{idAnn}")
+    public ResponseEntity<Object> delete(@PathVariable Integer idAnn) {
+        log.info("Invoked AnnunciLibriController.delete(" + idAnn + ")");
+        String token = session.getAttribute("token") == null ? null : session.getAttribute("token").toString();
+        if (token == null) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        try {
+            Optional<AnnunciLibri> opt = service.findById(idAnn);
+            if (!opt.isPresent()) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            AnnunciLibri ann = opt.get();
+            if (ann.getUtente().getId().equals(utenteService.findById(Integer.parseInt(session.getAttribute("userID").toString())).get().getUtenteId())) {
+                ann.setStato(3);
+                AnnunciLibri annUpdated = service.save(ann);
+                return ResponseEntity.ok(annUpdated);
+            }
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             Sentry.captureException(e);
             return ResponseEntity.internalServerError().build();

@@ -94,6 +94,9 @@ public class Utente implements Serializable {
     @Column(name = "preferences")
     private String preferencesStr;
 
+    @Column(name = "online")
+    private Boolean online = false;
+
     @JsonManagedReference
     @OneToMany(mappedBy = "utente")
     private List<TagsUtente> tags;
@@ -140,8 +143,10 @@ public class Utente implements Serializable {
     @JsonBackReference
     private List<Notifica> notifiche;
 
-    @Column(name = "online")
-    private Boolean online = false;
+
+    @OneToMany(mappedBy = "soldTo")
+    @JsonBackReference
+    private List<AnnunciLibri> acquisti;
 
     public Integer getUtenteId() {
         return utenteId;
@@ -409,6 +414,14 @@ public class Utente implements Serializable {
 
     public void setOnline(Boolean online) {
         this.online = online;
+    }
+
+    public List<AnnunciLibri> getAcquisti() {
+        return acquisti;
+    }
+
+    public void setAcquisti(List<AnnunciLibri> acquisti) {
+        this.acquisti = acquisti;
     }
 
     @Override

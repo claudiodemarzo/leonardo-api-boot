@@ -51,6 +51,10 @@ public class AnnunciLibri {
     @JoinColumn(name = "status_libro")
     private StatusLibro status;
 
+    @ManyToOne
+    @JoinColumn(name = "soldTo")
+    private Utente soldTo;
+
     public Integer getAnnuncio_id() {
         return annuncio_id;
     }
@@ -121,6 +125,14 @@ public class AnnunciLibri {
 
     public void setStatus(StatusLibro status) {
         this.status = status;
+    }
+
+    public Utente getSoldTo() {
+        return soldTo;
+    }
+
+    public void setSoldTo(Utente soldTo) {
+        this.soldTo = soldTo;
     }
 
     public AnnunciLibri() {
