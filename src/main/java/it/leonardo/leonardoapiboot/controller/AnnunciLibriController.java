@@ -72,9 +72,6 @@ public class AnnunciLibriController {
     @Autowired
     private NotificaService notificaService;
 
-    @Autowired
-    private TagService tagService;
-
     @Operation(description = "Restituisce tutti gli annunci")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "La richiesta è andata a buon fine, la lista è stata popolata "),
@@ -113,9 +110,6 @@ public class AnnunciLibriController {
                 lstAnn.removeIf(ann -> ann.getStato() != 1);
                 lstAnn.removeIf(ann -> session.getAttribute("userID") != null && ann.getUtente().getId() == Integer.parseInt(session.getAttribute("userID").toString()));
                 lstAnn.sort(new AnnunciComparator());
-                lstAnn.forEach(ann -> {
-                    ann.getUtente().setActiveTag(tagService.getActiveTagByUtente(ann.getUtente().getId()).get());
-                });
                 Collections.reverse(lstAnn);
                 libro.setAnnunci(lstAnn);
             });
@@ -150,9 +144,6 @@ public class AnnunciLibriController {
             if (!all) {
                 l.getAnnunci().removeIf(ann -> ann.getAnnuncio_id().intValue() != id || ann.getStato() != 1);
             }
-            l.getAnnunci().forEach(ann -> {
-                ann.getUtente().setActiveTag(tagService.getActiveTagByUtente(ann.getUtente().getId()).get());
-            } );
             return new ResponseEntity<>(l, HttpStatus.OK);
         } catch (Exception e) {
             Sentry.captureException(e);
@@ -186,7 +177,6 @@ public class AnnunciLibriController {
                 for (AnnunciLibri al : lst) {
                     if (al.getUtente().getId().equals(id) && al.getLibro().getIsbn().equals(l.getIsbn()) && al.getStato() != 3) {
                         List<AnnunciLibri> tmp = l.getAnnunci().stream().filter(all -> all.getUtente().getId().equals(id)).toList();
-                        tmp.forEach(all -> all.getUtente().setActiveTag(tagService.getActiveTagByUtente(all.getUtente().getId()).get()));
                         l.setAnnunci(tmp);
                         actualLstLibri.add(l);
                         found = true;
@@ -220,7 +210,6 @@ public class AnnunciLibriController {
             lst.sort(new AnnunciComparator());
             Collections.reverse(lst);
             lst.forEach(a -> {
-                a.getUtente().setActiveTag(tagService.getActiveTagByUtente(a.getUtente().getId()).get());
                 a.getUtente().setPunti(null);
             });
             if (lst.isEmpty()) return new ResponseEntity<>(HttpStatus.NO_CONTENT);

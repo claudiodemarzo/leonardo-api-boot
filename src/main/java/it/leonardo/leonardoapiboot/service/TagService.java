@@ -9,6 +9,4 @@ public interface TagService {
     List<Tag> getAll();
 
     Optional<Tag> getById(Integer id);
-
-    Optional<Tag> getActiveTagByUtente(Integer id);
 }
