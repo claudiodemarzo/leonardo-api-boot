@@ -72,6 +72,9 @@ public class UtenteController {
     private UtentePublicInfoService utentePublicInfoService;
 
     @Autowired
+    private RecensioneService recensioneService;
+
+    @Autowired
     private JavaMailSender mailSender;
 
     @PostMapping("/register")
@@ -101,7 +104,7 @@ public class UtenteController {
                 return new ResponseEntity<>("{\"duplicateField\" : \"username\"}", HttpStatus.CONFLICT);
             Pattern pattern = Pattern.compile("^(?=.*[a-z].*)([a-z0-9]{1}[a-z0-9\\.\\_\\-\\!]{2,29})$", Pattern.CASE_INSENSITIVE);
             Matcher matcher = pattern.matcher(form.getUsername());
-            if(!matcher.matches())
+            if (!matcher.matches())
                 return ResponseEntity.badRequest().body("{\"invalidField\" : \"username\"}");
             Optional<Utente> uByEmail = service.findByEmail(form.getEmail());
             if (uByEmail.isPresent())
@@ -272,6 +275,10 @@ public class UtenteController {
             if (!upi.isPresent()) {
                 return ResponseEntity.internalServerError().build();
             }
+
+            UtentePublicInfo upi_ = upi.get();
+            upi_.setRecensioniRicevute(recensioneService.getByUtenteRecensito(service.findById(upi_.getId()).get()));
+            upi_.setRecensioniFatte(recensioneService.getByUtenteRecensore(service.findById(upi_.getId()).get()));
             return ResponseEntity.ok(upi.get());
         } catch (Exception e) {
             Sentry.captureException(e);
@@ -744,6 +751,7 @@ public class UtenteController {
                 if (!upfOptional.isPresent()) return ResponseEntity.notFound().build();
                 upf = upfOptional.get();
             }
+            upf.setRecensioniRicevute(recensioneService.getByUtenteRecensito(service.findById(upf.getId()).get()));
             return ResponseEntity.ok(upf);
         } catch (Exception e) {
             Sentry.captureException(e);

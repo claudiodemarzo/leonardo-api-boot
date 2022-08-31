@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "utenti_public_information")
@@ -64,6 +65,12 @@ public class UtentePublicInfo {
     @OneToOne(mappedBy = "utentePublicInfo")
     @PrimaryKeyJoinColumn
     private UtentiAvgRating avgRating;
+
+    @Transient
+    private List<Recensione> recensioniRicevute;
+
+    @Transient
+    private List<Recensione> recensioniFatte;
 
     public Integer getId() {
         return id;
@@ -191,6 +198,22 @@ public class UtentePublicInfo {
 
     public void setAvgRating(UtentiAvgRating avgRating) {
         this.avgRating = avgRating;
+    }
+
+    public List<Recensione> getRecensioniRicevute() {
+        return recensioniRicevute;
+    }
+
+    public void setRecensioniRicevute(List<Recensione> recensioniRicevute) {
+        this.recensioniRicevute = recensioniRicevute;
+    }
+
+    public List<Recensione> getRecensioniFatte() {
+        return recensioniFatte;
+    }
+
+    public void setRecensioniFatte(List<Recensione> recensioniFatte) {
+        this.recensioniFatte = recensioniFatte;
     }
 
     public UtentePublicInfo() {
