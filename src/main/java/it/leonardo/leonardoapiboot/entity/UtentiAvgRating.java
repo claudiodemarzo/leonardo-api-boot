@@ -23,6 +23,12 @@ public class UtentiAvgRating implements Serializable {
 	@JsonBackReference
 	private Utente utente;
 
+	@OneToOne
+	@MapsId
+	@JoinColumn(name = "utente_id")
+	@JsonBackReference
+	private UtentePublicInfo utentePublicInfo;
+
 	@Column(name = "avg_voto")
 	private Float avgVoto;
 
@@ -59,6 +65,14 @@ public class UtentiAvgRating implements Serializable {
 
 	public void setNumeroVoti(Integer numeroVoti) {
 		this.numeroVoti = numeroVoti;
+	}
+
+	public UtentePublicInfo getUtentePublicInfo() {
+		return utentePublicInfo;
+	}
+
+	public void setUtentePublicInfo(UtentePublicInfo utentePublicInfo) {
+		this.utentePublicInfo = utentePublicInfo;
 	}
 
 	public UtentiAvgRating() {

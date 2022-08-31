@@ -54,11 +54,16 @@ public class UtentePublicInfo {
     @Column(name = "created_at")
     private Date createdAt;
 
-    @Column("libri_venduti")
+    @Column(name = "libri_venduti")
     private Integer libriVenduti;
 
     @Column(name = "online")
     private Boolean online;
+
+    @JsonManagedReference
+    @OneToOne(mappedBy = "utentePublicInfo")
+    @PrimaryKeyJoinColumn
+    private UtentiAvgRating avgRating;
 
     public Integer getId() {
         return id;
@@ -178,6 +183,14 @@ public class UtentePublicInfo {
 
     public void setLibriVenduti(Integer libriVenduti) {
         this.libriVenduti = libriVenduti;
+    }
+
+    public UtentiAvgRating getAvgRating() {
+        return avgRating;
+    }
+
+    public void setAvgRating(UtentiAvgRating avgRating) {
+        this.avgRating = avgRating;
     }
 
     public UtentePublicInfo() {
