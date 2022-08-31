@@ -1,5 +1,6 @@
 package it.leonardo.leonardoapiboot.controller;
 
+import io.sentry.Sentry;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -91,10 +92,11 @@ public class CarrelloController {
             Optional<AnnunciLibri> annOpt = annunciLibriService.findById(annuncio);
             if (annOpt.isPresent()) {
                 try {
+                    if(annOpt.get().getStato() != 1) return ResponseEntity.notFound().build();
                     Carrello c = new Carrello();
                     c.setAnnuncio(annOpt.get());
                     c.setUtente(utenteService.findById(Integer.parseInt(session.getAttribute("userID").toString())).get());
-                    ChatWSController.sendNotification(annOpt.get().getUtente().getId().toString(), new Notifica(Notifica.TipoNotifica.info, "Aggiornamento sull'annuncio", "Qualcuno ha aggiunto un tuo annuncio al suo carrello", utenteService.findById(annOpt.get().getUtente().getId()).get()), notificaService);
+                    //ChatWSController.sendNotification(annOpt.get().getUtente().getId().toString(), new Notifica(Notifica.TipoNotifica.info, "Aggiornamento sull'annuncio", "Qualcuno ha aggiunto un tuo annuncio al suo carrello", utenteService.findById(annOpt.get().getUtente().getId()).get()), notificaService);
                     Carrello cSaved = service.save(c);
                     return new ResponseEntity<>(cSaved, HttpStatus.CREATED);
                 } catch (DataIntegrityViolationException ex) {
@@ -128,12 +130,15 @@ public class CarrelloController {
                 Optional<AnnunciLibri> annOpt = annunciLibriService.findById(annuncio);
                 if (annOpt.isPresent()) {
                     try {
+                        if (annOpt.get().getStato() != 1) continue;
                         Carrello c = new Carrello();
                         c.setAnnuncio(annOpt.get());
                         c.setUtente(utenteService.findById(Integer.parseInt(session.getAttribute("userID").toString())).get());
                         //ChatWSController.sendNotification(annOpt.get().getUtente().getId().toString(), new Notifica(Notifica.TipoNotifica.info, "Aggiornamento sull'annuncio", "Qualcuno ha aggiunto un tuo annuncio al suo carrello", utenteService.findById(annOpt.get().getUtente().getId()).get()), notificaService);
                         Carrello cSaved = service.save(c);
-                    } catch (DataIntegrityViolationException ex) {
+                    } catch (Exception ex) {
+                        Sentry.captureException(ex);
+                        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
                     }
                 }
             }
