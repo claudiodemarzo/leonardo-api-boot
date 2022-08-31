@@ -371,7 +371,7 @@ public class AnnunciLibriController {
             Optional<AnnunciLibri> opt = service.findById(id);
             if (!opt.isPresent()) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             AnnunciLibri ann = opt.get();
-            if (ann.getUtente().getId().equals(utenteService.findById(Integer.parseInt(session.getAttribute("userID").toString())).get().getUtenteId())) {
+            if (ann.getUtente().getId().equals(utenteService.findById(Integer.parseInt(session.getAttribute("userID").toString())).get().getUtenteId()) || ann.getStato() != 1) {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
             ChatWSController.sendNotification(ann.getUtente().getId().toString(), new Notifica(Notifica.TipoNotifica.info, "Richiesta di contatto", "@" + utenteService.findById(Integer.parseInt(session.getAttribute("userID").toString())).get().getUsername() + " è interessato al tuo annuncio: " + ann.getLibro().getNome(), utenteService.findById(ann.getUtente().getId()).get()), notificaService);
