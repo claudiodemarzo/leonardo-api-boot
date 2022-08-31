@@ -19,17 +19,33 @@ public class UtentePublicInfoServiceImpl implements UtentePublicInfoService {
     @Override
     @SentrySpan
     public Optional<UtentePublicInfo> getById(Integer id) {
-        return repo.findById(id);
+        return adjustLibriVenduti(repo.findById(id));
     }
 
     @Override
     @SentrySpan
     public List<UtentePublicInfo> searchUsername(String username) {
-        return repo.findAllByUsernameLikeIgnoreCase("%" + username + "%");
+        return adjustLibriVenduti(repo.findAllByUsernameLikeIgnoreCase("%" + username + "%"));
     }
 
     @Override
+    @SentrySpan
     public Optional<UtentePublicInfo> getByUsername(String username) {
-        return repo.findByUsername(username);
+        return adjustLibriVenduti(repo.findByUsername(username));
+    }
+
+    private Optional<UtentePublicInfo> adjustLibriVenduti(Optional<UtentePublicInfo> opt) {
+        if (opt.isEmpty()) return Optional.empty();
+
+        UtentePublicInfo utente = opt.get();
+        utente.setLibriVenduti(utente.getLibriVenduti() == null ? 0 : utente.getLibriVenduti());
+        return Optional.of(utente);
+    }
+
+    private List<UtentePublicInfo> adjustLibriVenduti(List<UtentePublicInfo> lst){
+        for(UtentePublicInfo utente : lst){
+            utente.setLibriVenduti(utente.getLibriVenduti() == null ? 0 : utente.getLibriVenduti());
+        }
+        return lst;
     }
 }

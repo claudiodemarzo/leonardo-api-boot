@@ -3,6 +3,7 @@ package it.leonardo.leonardoapiboot.entity;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Entity
 @Table(name = "utenti_public_information")
@@ -49,6 +50,12 @@ public class UtentePublicInfo {
     @JsonManagedReference
     @ManyToOne
     private Citta citta;
+
+    @Column(name = "created_at")
+    private Date createdAt;
+
+    @Column("libri_venduti")
+    private Integer libriVenduti;
 
     @Column(name = "online")
     private Boolean online;
@@ -155,6 +162,22 @@ public class UtentePublicInfo {
 
     public void setOnline(Boolean online) {
         this.online = online;
+    }
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Integer getLibriVenduti() {
+        return libriVenduti;
+    }
+
+    public void setLibriVenduti(Integer libriVenduti) {
+        this.libriVenduti = libriVenduti;
     }
 
     public UtentePublicInfo() {
