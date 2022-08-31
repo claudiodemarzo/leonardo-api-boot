@@ -30,9 +30,7 @@ import javax.imageio.ImageIO;
 import javax.servlet.http.HttpSession;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Optional;
@@ -40,6 +38,7 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static it.leonardo.leonardoapiboot.utils.ImageUtils.cropImageSquare;
 import static it.leonardo.leonardoapiboot.utils.ImageUtils.encodeWebp;
 
 @RestController
@@ -376,7 +375,7 @@ public class UtenteController {
                     stream.flush();
                     stream.close();
                 }
-                BufferedImage image = ImageIO.read(pngFile);
+                BufferedImage image = cropImageSquare(ImageIO.read(pngFile));
                 BufferedImage imageCopy = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
 
                 imageCopy.getGraphics().drawImage(image, 0, 0, null);
@@ -424,6 +423,12 @@ public class UtenteController {
             return ResponseEntity.internalServerError().build();
         }
     }
+
+
+    //crop a webp image to a square and return the bytes of the new image
+
+
+
 
     @PatchMapping("/private")
     @Operation(description = "Permette di effettuare una modifica delle informazioni private del profilo di ciascun utente")
