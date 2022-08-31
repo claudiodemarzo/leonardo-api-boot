@@ -23,6 +23,7 @@ public class RecensioneServiceImpl implements RecensioneService {
         List<Recensione> lst = repo.findAllByUtenteRecensore(u);
         for (Recensione r : lst) {
             r.getUtenteRecensore().setAnnunciLibri(null);
+            r.getUtenteRecensito().setAnnunciLibri(null);
         }
         return lst;
     }
@@ -33,6 +34,7 @@ public class RecensioneServiceImpl implements RecensioneService {
         List<Recensione> lst = repo.findAllByUtenteRecensito(u);
         for (Recensione r : lst) {
             r.getUtenteRecensito().setAnnunciLibri(null);
+            r.getUtenteRecensore().setAnnunciLibri(null);
         }
         return lst;
     }
