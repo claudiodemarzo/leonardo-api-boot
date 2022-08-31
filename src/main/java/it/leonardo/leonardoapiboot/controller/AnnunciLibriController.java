@@ -262,7 +262,7 @@ public class AnnunciLibriController {
                 Mat imageMatrix = new Mat(image.getHeight(), image.getWidth(), CvType.CV_8UC3);
                 imageMatrix.put(0, 0, imageCopyBytes);
 
-                imageCopyBytes = encodeWebp(imageMatrix, 300);
+                imageCopyBytes = encodeWebp(imageMatrix, 50);
                 OutputStream webpOutputStream = new FileOutputStream(copertinaPath);
                 webpOutputStream.write(imageCopyBytes);
                 tmpCopertinaFile.delete();
