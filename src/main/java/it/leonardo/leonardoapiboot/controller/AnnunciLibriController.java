@@ -72,6 +72,9 @@ public class AnnunciLibriController {
     @Autowired
     private NotificaService notificaService;
 
+    @Autowired
+    private CarrelloService carrelloService;
+
     @Operation(description = "Restituisce tutti gli annunci")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "La richiesta è andata a buon fine, la lista è stata popolata "),
@@ -346,6 +349,8 @@ public class AnnunciLibriController {
                 if (opt.isEmpty()) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
                 ann.setSoldTo(optUser.get());
                 AnnunciLibri annUpdated = service.save(ann);
+
+                carrelloService.deleteByAnnuncio(annUpdated);
                 return ResponseEntity.ok(annUpdated);
             }
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -406,6 +411,7 @@ public class AnnunciLibriController {
             if (ann.getUtente().getId().equals(utenteService.findById(Integer.parseInt(session.getAttribute("userID").toString())).get().getUtenteId()) && ann.getStato() != 2) {
                 ann.setStato(3);
                 AnnunciLibri annUpdated = service.save(ann);
+                carrelloService.deleteByAnnuncio(annUpdated);
                 return ResponseEntity.ok(annUpdated);
             }
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

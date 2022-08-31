@@ -1,10 +1,14 @@
 package it.leonardo.leonardoapiboot.service.impl;
 
 import io.sentry.spring.tracing.SentrySpan;
+import it.leonardo.leonardoapiboot.controller.ChatWSController;
+import it.leonardo.leonardoapiboot.entity.AnnunciLibri;
 import it.leonardo.leonardoapiboot.entity.Carrello;
+import it.leonardo.leonardoapiboot.entity.Notifica;
 import it.leonardo.leonardoapiboot.entity.Utente;
 import it.leonardo.leonardoapiboot.repository.CarrelloRepository;
 import it.leonardo.leonardoapiboot.service.CarrelloService;
+import it.leonardo.leonardoapiboot.service.NotificaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +19,9 @@ public class CarrelloServiceImpl implements CarrelloService {
 
     @Autowired
     private CarrelloRepository repo;
+
+    @Autowired
+    private NotificaService notificaService;
 
     @Override
     @SentrySpan
@@ -32,6 +39,17 @@ public class CarrelloServiceImpl implements CarrelloService {
     @SentrySpan
     public void deleteById(Integer id) {
         repo.deleteCarrelloByEntryId(id);
+    }
+
+    @Override
+    @SentrySpan
+    public void deleteByAnnuncio(AnnunciLibri ann) {
+        List<Carrello> entries = repo.findAllByAnnuncio(ann);
+
+        for (Carrello c : entries) {
+            ChatWSController.sendNotification(c.getUtente().getUtenteId().toString(), new Notifica(Notifica.TipoNotifica.warning, "Annuncio non più disponibile", "L'annuncio al quale eri interessato, " + ann.getLibro().getNome() + ", di @" + ann.getUtente().getUsername() + " non è più disponibile", null), notificaService);
+            repo.deleteById(c.getEntryId());
+        }
     }
 
     @Override

@@ -1,5 +1,6 @@
 package it.leonardo.leonardoapiboot.service;
 
+import it.leonardo.leonardoapiboot.entity.AnnunciLibri;
 import it.leonardo.leonardoapiboot.entity.Carrello;
 import it.leonardo.leonardoapiboot.entity.Utente;
 
@@ -11,6 +12,8 @@ public interface CarrelloService {
 	Carrello save(Carrello c);
 
 	void deleteById(Integer id);
+
+	void deleteByAnnuncio(AnnunciLibri ann);
 
 	void deleteAllByUtente(Utente u);
 }
