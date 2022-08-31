@@ -329,8 +329,8 @@ public class AnnunciLibriController {
             @ApiResponse(responseCode = "500", description = "Errore generico del server"),
             @ApiResponse(responseCode = "409", description = "L'annuncio è già stato impostato come venduto")
     })
-    @PostMapping("/sold/{idAnn}/{idUser}")
-    public ResponseEntity<Object> setSold(@PathVariable Integer idAnn, @PathVariable Integer idUser) {
+    @PostMapping("/sold")
+    public ResponseEntity<Object> setSold(Integer idAnn,Integer idUser) {
         log.info("Invoked AnnunciLibriController.setSold(" + idAnn + ", " + idUser + ")");
         String token = session.getAttribute("token") == null ? null : session.getAttribute("token").toString();
         if (token == null) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
