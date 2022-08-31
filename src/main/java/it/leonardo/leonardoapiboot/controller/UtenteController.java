@@ -31,10 +31,7 @@ import javax.servlet.http.HttpSession;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.io.*;
-import java.util.GregorianCalendar;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -276,8 +273,8 @@ public class UtenteController {
             }
 
             UtentePublicInfo upi_ = upi.get();
-            upi_.setRecensioniRicevute(recensioneService.getByUtenteRecensito(service.findById(upi_.getId()).get()));
-            upi_.setRecensioniFatte(recensioneService.getByUtenteRecensore(service.findById(upi_.getId()).get()));
+            upi_.setRecensioniRicevute(recensioneService.getByUtenteRecensito(service.findById(upi_.getId()).get()) == null ? new ArrayList<>() : recensioneService.getByUtenteRecensito(service.findById(upi_.getId()).get()));
+            upi_.setRecensioniFatte(recensioneService.getByUtenteRecensore(service.findById(upi_.getId()).get()) == null ? new ArrayList<>() : recensioneService.getByUtenteRecensore(service.findById(upi_.getId()).get()));
             return ResponseEntity.ok(upi.get());
         } catch (Exception e) {
             Sentry.captureException(e);
@@ -426,7 +423,6 @@ public class UtenteController {
 
 
     //crop a webp image to a square and return the bytes of the new image
-
 
 
 
@@ -756,7 +752,7 @@ public class UtenteController {
                 if (!upfOptional.isPresent()) return ResponseEntity.notFound().build();
                 upf = upfOptional.get();
             }
-            upf.setRecensioniRicevute(recensioneService.getByUtenteRecensito(service.findById(upf.getId()).get()));
+            upf.setRecensioniRicevute(recensioneService.getByUtenteRecensito(service.findById(upf.getId()).get()) == null ? new ArrayList<>() : recensioneService.getByUtenteRecensito(service.findById(upf.getId()).get()));
             return ResponseEntity.ok(upf);
         } catch (Exception e) {
             Sentry.captureException(e);
