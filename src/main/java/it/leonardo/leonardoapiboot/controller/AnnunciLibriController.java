@@ -335,7 +335,7 @@ public class AnnunciLibriController {
                 if (ann.getStato() != 1) return new ResponseEntity<>(HttpStatus.CONFLICT);
                 ann.setStato(2);
 
-                Optional<Utente> optUser = utenteService.findById(idUser);
+                Optional<UtentePublicInfo> optUser = utentePublicInfoService.getById(idUser);
                 if (opt.isEmpty()) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
                 ann.setSoldTo(optUser.get());
                 AnnunciLibri annUpdated = service.save(ann);

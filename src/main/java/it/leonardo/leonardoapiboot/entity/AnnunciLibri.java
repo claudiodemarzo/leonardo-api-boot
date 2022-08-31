@@ -53,7 +53,7 @@ public class AnnunciLibri {
 
     @ManyToOne
     @JoinColumn(name = "soldTo")
-    private Utente soldTo;
+    private UtentePublicInfo soldTo;
 
     @JsonIgnore
     @OneToOne(mappedBy = "annuncio")
@@ -131,11 +131,11 @@ public class AnnunciLibri {
         this.status = status;
     }
 
-    public Utente getSoldTo() {
+    public UtentePublicInfo getSoldTo() {
         return soldTo;
     }
 
-    public void setSoldTo(Utente soldTo) {
+    public void setSoldTo(UtentePublicInfo soldTo) {
         this.soldTo = soldTo;
     }
 
