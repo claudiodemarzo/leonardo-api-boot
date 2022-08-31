@@ -752,7 +752,7 @@ public class UtenteController {
                 if (!upfOptional.isPresent()) return ResponseEntity.notFound().build();
                 upf = upfOptional.get();
             }
-//            upf.setRecensioniRicevute(recensioneService.getByUtenteRecensito(service.findById(upf.getId()).get()) == null ? new ArrayList<>() : recensioneService.getByUtenteRecensito(service.findById(upf.getId()).get()));
+            upf.setRecensioniRicevute(recensioneService.getByUtenteRecensito(service.findById(upf.getId()).get()) == null ? new ArrayList<>() : recensioneService.getByUtenteRecensito(service.findById(upf.getId()).get()));
             return ResponseEntity.ok(upf);
         } catch (Exception e) {
             Sentry.captureException(e);
