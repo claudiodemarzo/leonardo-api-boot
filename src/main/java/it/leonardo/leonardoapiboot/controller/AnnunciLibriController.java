@@ -142,8 +142,15 @@ public class AnnunciLibriController {
 
             Libro l = lOpt.get();
             if (!all) {
-                l.getAnnunci().removeIf(ann -> ann.getAnnuncio_id().intValue() != id || ann.getStato() != 1);
+                l.getAnnunci().removeIf(ann -> ann.getStato() != 1);
             }
+
+            int index = l.getAnnunci().indexOf(al);
+
+            al =  l.getAnnunci().remove(index);
+
+            l.getAnnunci().add(0, al);
+
             return new ResponseEntity<>(l, HttpStatus.OK);
         } catch (Exception e) {
             Sentry.captureException(e);
@@ -396,7 +403,7 @@ public class AnnunciLibriController {
             Optional<AnnunciLibri> opt = service.findById(idAnn);
             if (!opt.isPresent()) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             AnnunciLibri ann = opt.get();
-            if (ann.getUtente().getId().equals(utenteService.findById(Integer.parseInt(session.getAttribute("userID").toString())).get().getUtenteId())) {
+            if (ann.getUtente().getId().equals(utenteService.findById(Integer.parseInt(session.getAttribute("userID").toString())).get().getUtenteId()) && ann.getStato() != 2) {
                 ann.setStato(3);
                 AnnunciLibri annUpdated = service.save(ann);
                 return ResponseEntity.ok(annUpdated);
