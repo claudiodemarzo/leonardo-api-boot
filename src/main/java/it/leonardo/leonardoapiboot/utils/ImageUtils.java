@@ -12,13 +12,13 @@ import java.io.IOException;
 public class ImageUtils {
 
     public static byte[] encodeWebp(Mat image, int quality) {
-        int min = Math.min(image.rows(), image.cols());
+        /*int min = Math.min(image.rows(), image.cols());
         Rect roi = new Rect((image.cols() - min) / 2, (image.rows() - min) / 2, min, min);
         Mat cropped = new Mat();
-        image.submat(roi).copyTo(cropped);
+        image.submat(roi).copyTo(cropped);*/
         MatOfInt parameters = new MatOfInt(Imgcodecs.IMWRITE_WEBP_QUALITY, quality);
         MatOfByte output = new MatOfByte();
-        if (Imgcodecs.imencode(".webp", cropped, output, parameters)) {
+        if (Imgcodecs.imencode(".webp", image, output, parameters)) {
 
             return output.toArray();
         } else
