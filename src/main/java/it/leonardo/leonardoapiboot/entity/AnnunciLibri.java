@@ -55,7 +55,6 @@ public class AnnunciLibri {
     @JoinColumn(name = "soldTo")
     private UtentePublicInfo soldTo;
 
-    @JsonIgnore
     @OneToOne(mappedBy = "annuncio")
     private Recensione recensione;
 

@@ -20,23 +20,15 @@ public class RecensioneServiceImpl implements RecensioneService {
     @Override
     @SentrySpan
     public List<Recensione> getByUtenteRecensore(Utente u) {
-        List<Recensione> lst = repo.findAllByUtenteRecensore(u);
-        for (Recensione r : lst) {
-            r.getUtenteRecensore().setAnnunciLibri(null);
-            r.getUtenteRecensito().setAnnunciLibri(null);
-        }
-        return lst;
+
+        return repo.findAllByUtenteRecensore(u);
     }
 
     @Override
     @SentrySpan
     public List<Recensione> getByUtenteRecensito(Utente u) {
-        List<Recensione> lst = repo.findAllByUtenteRecensito(u);
-        for (Recensione r : lst) {
-            r.getUtenteRecensito().setAnnunciLibri(null);
-            r.getUtenteRecensore().setAnnunciLibri(null);
-        }
-        return lst;
+
+        return repo.findAllByUtenteRecensito(u);
     }
 
     @Override

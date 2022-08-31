@@ -2,6 +2,7 @@ package it.leonardo.leonardoapiboot.entity;
 
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -23,6 +24,7 @@ public class Recensione implements Serializable {
 
 	@OneToOne
 	@JoinColumn(name = "annuncio")
+	@JsonIgnore
 	private AnnunciLibri annuncio;
 
 	@JsonBackReference
