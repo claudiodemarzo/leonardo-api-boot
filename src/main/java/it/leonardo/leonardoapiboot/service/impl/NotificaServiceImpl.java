@@ -1,5 +1,6 @@
 package it.leonardo.leonardoapiboot.service.impl;
 
+import io.sentry.spring.tracing.SentrySpan;
 import it.leonardo.leonardoapiboot.entity.Notifica;
 import it.leonardo.leonardoapiboot.entity.Utente;
 import it.leonardo.leonardoapiboot.repository.NotificaRepository;
@@ -17,21 +18,25 @@ public class NotificaServiceImpl implements NotificaService {
     private NotificaRepository notificaRepository;
 
     @Override
+    @SentrySpan
     public List<Notifica> findAllByUtente(Utente utente) {
         return notificaRepository.findAllByUtente(utente);
     }
 
     @Override
+    @SentrySpan
     public List<Notifica> findAllByUtenteAndCancellatoIsFalse(Utente utente){
         return notificaRepository.findAllByUtenteAndCancellatoIsFalse(utente);
     }
 
     @Override
+    @SentrySpan
     public List<Notifica> findAllByUtenteAndLettoIsFalseAndCancellatoIsFalse(Utente utente) {
         return notificaRepository.findAllByUtenteAndLettoIsFalseAndCancellatoIsFalse(utente);
     }
 
     @Override
+    @SentrySpan
     public void setNotificheAsRead(Utente utente) {
         List<Notifica> notifiche = findAllByUtenteAndLettoIsFalseAndCancellatoIsFalse(utente);
 
@@ -43,6 +48,7 @@ public class NotificaServiceImpl implements NotificaService {
     }
 
     @Override
+    @SentrySpan
     public void setNotificheAsReadById(Integer id, Utente utente) {
         Notifica notifica = notificaRepository.findById(id).get();
         if (!Objects.equals(notifica.getUtente().getUtenteId(), utente.getUtenteId()))
@@ -52,11 +58,13 @@ public class NotificaServiceImpl implements NotificaService {
     }
 
     @Override
+    @SentrySpan
     public Notifica save(Notifica notifica) {
         return notificaRepository.save(notifica);
     }
 
     @Override
+    @SentrySpan
     public void delete(Integer id, Utente utente) {
         Notifica notifica = notificaRepository.findById(id).get();
         if (!Objects.equals(notifica.getUtente().getUtenteId(), utente.getUtenteId()))
@@ -67,11 +75,13 @@ public class NotificaServiceImpl implements NotificaService {
     }
 
     @Override
+    @SentrySpan
     public List<Notifica> saveAll(List<Notifica> notifiche) {
         return notificaRepository.saveAll(notifiche);
     }
 
     @Override
+    @SentrySpan
     public void deleteAll(Utente utente) {
         List<Notifica> notifiche = findAllByUtente(utente);
         for (Notifica notifica : notifiche) {

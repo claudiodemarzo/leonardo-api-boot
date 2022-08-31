@@ -1,5 +1,6 @@
 package it.leonardo.leonardoapiboot.service.impl;
 
+import io.sentry.spring.tracing.SentrySpan;
 import it.leonardo.leonardoapiboot.entity.AnnuncioWithoutRecensione;
 import it.leonardo.leonardoapiboot.repository.AnnuncioWithoutRecensioneRepository;
 import it.leonardo.leonardoapiboot.service.AnnuncioWithoutRecensioneService;
@@ -15,6 +16,7 @@ public class AnnuncioWithoutRecensioneServiceImpl implements AnnuncioWithoutRece
     private AnnuncioWithoutRecensioneRepository repository;
 
     @Override
+    @SentrySpan
     public Optional<AnnuncioWithoutRecensione> findByAnnuncioId(Integer id) {
         return repository.findByAnnuncioId(id);
     }

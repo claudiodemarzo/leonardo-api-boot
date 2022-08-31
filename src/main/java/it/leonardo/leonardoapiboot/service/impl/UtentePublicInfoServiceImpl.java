@@ -34,6 +34,7 @@ public class UtentePublicInfoServiceImpl implements UtentePublicInfoService {
         return adjustLibriVenduti(repo.findByUsername(username));
     }
 
+    @SentrySpan
     private Optional<UtentePublicInfo> adjustLibriVenduti(Optional<UtentePublicInfo> opt) {
         if (opt.isEmpty()) return Optional.empty();
 
@@ -42,8 +43,9 @@ public class UtentePublicInfoServiceImpl implements UtentePublicInfoService {
         return Optional.of(utente);
     }
 
-    private List<UtentePublicInfo> adjustLibriVenduti(List<UtentePublicInfo> lst){
-        for(UtentePublicInfo utente : lst){
+    @SentrySpan
+    private List<UtentePublicInfo> adjustLibriVenduti(List<UtentePublicInfo> lst) {
+        for (UtentePublicInfo utente : lst) {
             utente.setLibriVenduti(utente.getLibriVenduti() == null ? 0 : utente.getLibriVenduti());
         }
         return lst;

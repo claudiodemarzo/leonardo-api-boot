@@ -36,6 +36,7 @@ public class RecensioneServiceImpl implements RecensioneService {
     }
 
     @Override
+    @SentrySpan
     public Recensione save(Recensione r) {
         return repo.save(r);
     }
