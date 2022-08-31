@@ -21,9 +21,13 @@ public class Tag {
     @Column(name = "descrizione")
     private String descrizione;
 
+    @OneToMany(mappedBy = "activeTag")
     @JsonBackReference
-    @OneToMany(mappedBy = "tag")
-    private List<TagsUtente> tagsUtente;
+    private List<Utente> utenti;
+
+    @OneToMany(mappedBy = "activeTag")
+    @JsonBackReference
+    private List<UtentePublicInfo> tagsPub;
 
     public Integer getTagId() {
         return tagId;
@@ -49,12 +53,12 @@ public class Tag {
         this.descrizione = descrizione;
     }
 
-    public List<TagsUtente> getTagsUtente() {
-        return tagsUtente;
+    public List<Utente> getUtenti() {
+        return utenti;
     }
 
-    public void setTagsUtente(List<TagsUtente> tagsUtente) {
-        this.tagsUtente = tagsUtente;
+    public void setUtenti(List<Utente> utenti) {
+        this.utenti = utenti;
     }
 
     @Override
@@ -62,12 +66,12 @@ public class Tag {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Tag tag = (Tag) o;
-        return Objects.equals(getTagId(), tag.getTagId()) && Objects.equals(getNome(), tag.getNome()) && Objects.equals(getDescrizione(), tag.getDescrizione()) && Objects.equals(tagsUtente, tag.tagsUtente);
+        return Objects.equals(getTagId(), tag.getTagId()) && Objects.equals(getNome(), tag.getNome()) && Objects.equals(getDescrizione(), tag.getDescrizione());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getTagId(), getNome(), getDescrizione(), tagsUtente);
+        return Objects.hash(getTagId(), getNome(), getDescrizione());
     }
 
     public Tag() {

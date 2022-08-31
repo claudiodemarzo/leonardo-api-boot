@@ -97,9 +97,9 @@ public class Utente implements Serializable {
     @Column(name = "online")
     private Boolean online = false;
 
-    @JsonManagedReference
-    @OneToMany(mappedBy = "utente")
-    private List<TagsUtente> tags;
+    @ManyToOne
+    @JoinColumn(name = "activeTag")
+    private Tag activeTag;
 
     @JsonBackReference
     @OneToMany(mappedBy = "utente")
@@ -268,16 +268,12 @@ public class Utente implements Serializable {
         this.carrello = carrello;
     }
 
-    public List<TagsUtente> getTags() {
-        return tags;
+    public Tag getActiveTag() {
+        return activeTag;
     }
 
-    public void addTags(TagsUtente tag) {
-        tags.add(tag);
-    }
-
-    public void setTags(List<TagsUtente> tags) {
-        this.tags = tags;
+    public void setActiveTag(Tag activeTag) {
+        this.activeTag = activeTag;
     }
 
     public List<Recensione> getRecensioniRicevute() {
@@ -429,12 +425,12 @@ public class Utente implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Utente utente = (Utente) o;
-        return Objects.equals(getUtenteId(), utente.getUtenteId()) && Objects.equals(getCreatedAt(), utente.getCreatedAt()) && Objects.equals(getUsername(), utente.getUsername()) && Objects.equals(getEmail(), utente.getEmail()) && Objects.equals(getPassword(), utente.getPassword()) && Objects.equals(getTelefono(), utente.getTelefono()) && Objects.equals(getBio(), utente.getBio()) && Objects.equals(getNome(), utente.getNome()) && Objects.equals(getCognome(), utente.getCognome()) && Objects.equals(getIstituto(), utente.getIstituto()) && Objects.equals(getPunti(), utente.getPunti()) && Objects.equals(getFoto(), utente.getFoto()) && Objects.equals(getEmail_confermata(), utente.getEmail_confermata()) && Objects.equals(getTags(), utente.getTags()) && Objects.equals(getAnnunciLibri(), utente.getAnnunciLibri()) && Objects.equals(getCarrello(), utente.getCarrello()) && Objects.equals(getRecensioniRicevute(), utente.getRecensioniRicevute()) && Objects.equals(getRecensioniFatte(), utente.getRecensioniFatte());
+        return Objects.equals(getUtenteId(), utente.getUtenteId()) && Objects.equals(getCreatedAt(), utente.getCreatedAt()) && Objects.equals(getUsername(), utente.getUsername()) && Objects.equals(getEmail(), utente.getEmail()) && Objects.equals(getPassword(), utente.getPassword()) && Objects.equals(getTelefono(), utente.getTelefono()) && Objects.equals(getBio(), utente.getBio()) && Objects.equals(getNome(), utente.getNome()) && Objects.equals(getCognome(), utente.getCognome()) && Objects.equals(getIstituto(), utente.getIstituto()) && Objects.equals(getPunti(), utente.getPunti()) && Objects.equals(getFoto(), utente.getFoto()) && Objects.equals(getEmail_confermata(), utente.getEmail_confermata()) && Objects.equals(getAnnunciLibri(), utente.getAnnunciLibri()) && Objects.equals(getCarrello(), utente.getCarrello()) && Objects.equals(getRecensioniRicevute(), utente.getRecensioniRicevute()) && Objects.equals(getRecensioniFatte(), utente.getRecensioniFatte());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getUtenteId(), getCreatedAt(), getUsername(), getEmail(), getPassword(), getTelefono(), getBio(), getNome(), getCognome(), getIstituto(), getPunti(), getFoto(), getEmail_confermata(), getTags(), getAnnunciLibri(), getCarrello(), getRecensioniRicevute(), getRecensioniFatte());
+        return Objects.hash(getUtenteId(), getCreatedAt(), getUsername(), getEmail(), getPassword(), getTelefono(), getBio(), getNome(), getCognome(), getIstituto(), getPunti(), getFoto(), getEmail_confermata(), getAnnunciLibri(), getCarrello(), getRecensioniRicevute(), getRecensioniFatte());
     }
 
     public void copyFromRegisterForm(RegisterForm rf) throws ParseException {

@@ -6,8 +6,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import it.leonardo.leonardoapiboot.entity.Tag;
 import it.leonardo.leonardoapiboot.entity.TagsUtente;
+import it.leonardo.leonardoapiboot.entity.Utente;
 import it.leonardo.leonardoapiboot.service.TagService;
-import it.leonardo.leonardoapiboot.service.TagsUtenteService;
 import it.leonardo.leonardoapiboot.service.UtenteService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -29,9 +29,6 @@ public class TagController {
 
     @Autowired
     private TagService service;
-
-    @Autowired
-    private TagsUtenteService tagsUtenteService;
 
     @Autowired
     private UtenteService utenteService;
@@ -77,36 +74,9 @@ public class TagController {
             return ResponseEntity.ok(tag.get());
         } catch (Exception e) {
             Sentry.captureException(e);
-return ResponseEntity.internalServerError().build();
+            return ResponseEntity.internalServerError().build();
         }
 
-    }
-
-
-    @Operation(description = "Restituisce i tag dell'utente loggato")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Richiesta andata a buon fine, l'array è restituito"),
-            @ApiResponse(responseCode = "204", description = "Richiesta ok, lista vuota"),
-            @ApiResponse(responseCode = "401", description = "Il token di sessione non è settato, di conseguenza non è possibile accedere a questo endpoint."),
-            @ApiResponse(responseCode = "500", description = "Errore generico del server")
-    })
-    @GetMapping
-    public ResponseEntity<List<TagsUtente>> getTagsByLoggedUser() {
-        log.info("Invoked TagController.getTagsByLoggedUser()");
-
-        String token = session.getAttribute("token") == null ? null : session.getAttribute("token").toString();
-        if (token == null) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-
-        String userid = session.getAttribute("userID").toString();
-        try {
-            List<TagsUtente> tagsUtente = tagsUtenteService.getTagsUtenteByUtente(utenteService.findById(Integer.parseInt(userid)).get());
-            if (tagsUtente.isEmpty()) return ResponseEntity.noContent().build();
-            else return ResponseEntity.ok(tagsUtente);
-        } catch (Exception e) {
-            e.printStackTrace();
-            Sentry.captureException(e);
-return ResponseEntity.internalServerError().build();
-        }
     }
 
     @Operation(description = "Imposta il tag attivo per l'utente loggato")
@@ -126,17 +96,15 @@ return ResponseEntity.internalServerError().build();
         String userid = session.getAttribute("userID").toString();
         try {
             Optional<Tag> tagOpt = service.getById(id);
-            if(!tagOpt.isPresent()) return ResponseEntity.notFound().build();
-
-            List<TagsUtente> tagsUtente = tagsUtenteService.getTagsUtenteByUtente(utenteService.findById(Integer.parseInt(userid)).get());
-            tagsUtente.forEach(t -> t.setActive(t.getTag().getTagId().equals(id)));
-
-            tagsUtenteService.saveAll(tagsUtente);
-            return ResponseEntity.ok().build();
+            if (!tagOpt.isPresent()) return ResponseEntity.notFound().build();
+            Utente utente = utenteService.findById(Integer.parseInt(userid)).get();
+            utente.setActiveTag(tagOpt.get());
+            Utente uSaved = utenteService.save(utente);
+            return ResponseEntity.ok(uSaved);
         } catch (Exception e) {
             e.printStackTrace();
             Sentry.captureException(e);
-return ResponseEntity.internalServerError().build();
+            return ResponseEntity.internalServerError().build();
         }
     }
 

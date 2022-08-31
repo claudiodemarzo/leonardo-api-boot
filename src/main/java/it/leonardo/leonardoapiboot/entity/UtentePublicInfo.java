@@ -66,6 +66,10 @@ public class UtentePublicInfo {
     @PrimaryKeyJoinColumn
     private UtentiAvgRating avgRating;
 
+    @ManyToOne
+    @JoinColumn(name = "activeTag")
+    private Tag activeTag;
+
     @Transient
     private List<Recensione> recensioniRicevute;
 
@@ -214,6 +218,14 @@ public class UtentePublicInfo {
 
     public void setRecensioniFatte(List<Recensione> recensioniFatte) {
         this.recensioniFatte = recensioniFatte;
+    }
+
+    public Tag getActiveTag() {
+        return activeTag;
+    }
+
+    public void setActiveTag(Tag activeTag) {
+        this.activeTag = activeTag;
     }
 
     public UtentePublicInfo() {
