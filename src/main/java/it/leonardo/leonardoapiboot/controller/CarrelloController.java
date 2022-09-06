@@ -155,7 +155,6 @@ public class CarrelloController {
             @ApiResponse(responseCode = "404", description = "La entry specificata è inesistente"),
             @ApiResponse(responseCode = "401", description = "Sessione non settata e/o token invalido")
     })
-    @Transactional
     @DeleteMapping
     public ResponseEntity<Object> delete(@RequestParam(required = false, defaultValue = "-1") Integer annuncio) {
         log.info("Invoked CarrelloController.delete(" + annuncio + ")");
