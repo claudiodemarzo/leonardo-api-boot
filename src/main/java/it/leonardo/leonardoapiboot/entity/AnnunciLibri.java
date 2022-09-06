@@ -55,6 +55,10 @@ public class AnnunciLibri {
     @JoinColumn(name = "soldTo")
     private UtentePublicInfo soldTo;
 
+    @Column(name = "sale_date")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date saleDate;
+
     @OneToOne(mappedBy = "annuncio")
     private Recensione recensione;
 
@@ -138,6 +142,14 @@ public class AnnunciLibri {
         this.soldTo = soldTo;
     }
 
+    public Date getSaleDate() {
+        return saleDate;
+    }
+
+    public void setSaleDate(Date saleDate) {
+        this.saleDate = saleDate;
+    }
+
     public AnnunciLibri() {
     }
 
@@ -162,7 +174,7 @@ public class AnnunciLibri {
         return al;
     }
 
-    public static char calcolaLivelloUsura(UpdateAnnuncioForm form){
+    public static char calcolaLivelloUsura(UpdateAnnuncioForm form) {
         return calcolaLivelloUsura(form.getSottCanc(), form.getSottNonCanc(), form.getScrittCanc(), form.getScrittNonCanc(), form.getPagManc(), form.getPagRov(), form.getPagRovMol(), form.getCopRov(), form.getInsManc());
     }
 

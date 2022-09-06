@@ -348,6 +348,7 @@ public class AnnunciLibriController {
                 Optional<UtentePublicInfo> optUser = utentePublicInfoService.getById(idUser);
                 if (opt.isEmpty()) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
                 ann.setSoldTo(optUser.get());
+                ann.setSaleDate(Date.from(Instant.now()));
                 AnnunciLibri annUpdated = service.save(ann);
 
                 carrelloService.deleteByAnnuncio(annUpdated);
