@@ -133,6 +133,9 @@ public class AnnunciLibriController {
     public ResponseEntity<Libro> getById(@PathVariable Integer id, @RequestParam(required = false, name = "all") Optional<Boolean> allOpt) {
         log.info("Invoked AnnunciLibriController.getById(" + id + ", " + allOpt + ")");
         boolean all = (allOpt.orElse(true));
+
+        String userID = session.getAttribute("userID") != null ? session.getAttribute("userID").toString() : null;
+
         try {
             Optional<AnnunciLibri> opt = service.findById(id);
             if (!opt.isPresent()) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -145,7 +148,10 @@ public class AnnunciLibriController {
 
             Libro l = lOpt.get();
             if (!all) {
-                l.getAnnunci().removeIf(ann -> ann.getStato() != 1);
+                l.getAnnunci().removeIf(ann -> ann.getStato() != 1 && (userID == null || ann.getUtente().getId() != Integer.parseInt(userID)));
+            } else {
+                if(al.getStato() != 1 && (userID == null || al.getUtente().getId() != Integer.parseInt(userID)))
+                    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
 
             int index = l.getAnnunci().indexOf(al);
