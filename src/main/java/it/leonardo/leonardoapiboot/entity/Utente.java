@@ -109,11 +109,11 @@ public class Utente implements Serializable {
     @OneToMany(mappedBy = "utente")
     private Set<Carrello> carrello;
 
-    @JsonBackReference
+    @JsonManagedReference
     @OneToMany(mappedBy = "utenteRecensito")
     private List<Recensione> recensioniRicevute;
 
-    @JsonBackReference
+    @JsonManagedReference
     @OneToMany(mappedBy = "utenteRecensore")
     private List<Recensione> recensioniFatte;
 
