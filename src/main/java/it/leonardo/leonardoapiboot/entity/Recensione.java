@@ -42,6 +42,12 @@ public class Recensione implements Serializable {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date createdAt;
 
+	@Transient
+	private UtentePublicInfo utenteRecensorePublicInfo;
+
+	@Transient
+	private UtentePublicInfo utenteRecensitoPublicInfo;
+
 	public Integer getRecensioneId() {
 		return recensioneId;
 	}
@@ -96,6 +102,22 @@ public class Recensione implements Serializable {
 
 	public void setCreatedAt(Date createdAt) {
 		this.createdAt = createdAt;
+	}
+
+	public UtentePublicInfo getUtenteRecensorePublicInfo() {
+		return utenteRecensorePublicInfo;
+	}
+
+	public void setUtenteRecensorePublicInfo(UtentePublicInfo utenteRecensorePublicInfo) {
+		this.utenteRecensorePublicInfo = utenteRecensorePublicInfo;
+	}
+
+	public UtentePublicInfo getUtenteRecensitoPublicInfo() {
+		return utenteRecensitoPublicInfo;
+	}
+
+	public void setUtenteRecensitoPublicInfo(UtentePublicInfo utenteRecensitoPublicInfo) {
+		this.utenteRecensitoPublicInfo = utenteRecensitoPublicInfo;
 	}
 
 	public Recensione(){}
