@@ -38,7 +38,7 @@ public class ImageUtils {
         }
 
         // Compute the size of the square
-        int squareSize = (Math.min(height, width));
+        int squareSize = (Math.min(Math.min(height, width), 1080));
 
         // Coordinates of the image's middle
         int xc = width / 2;
