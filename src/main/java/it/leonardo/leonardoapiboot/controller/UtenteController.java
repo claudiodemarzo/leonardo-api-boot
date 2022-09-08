@@ -116,6 +116,7 @@ public class UtenteController {
             u.setConfirmToken(confirmToken);
 
             SimpleMailMessage smm = new SimpleMailMessage();
+            smm.setFrom("leonardo.start0@gmail.com");
             smm.setTo(u.getEmail());
             smm.setSubject("Conferma Email");
             smm.setText("Pijate sto token de conferma zi: " + confirmToken + "\n oppure segui questo collegamento: https://leonardostart.tk/confirmemail?token=" + confirmToken);
@@ -470,6 +471,7 @@ public class UtenteController {
                 u.setConfirmToken(confirmToken);
 
                 SimpleMailMessage smm = new SimpleMailMessage();
+                smm.setFrom("leonardo.start0@gmail.com");
                 smm.setTo(u.getEmail());
                 smm.setSubject("Conferma Email");
                 smm.setText("Pijate sto token de conferma zi: " + confirmToken + "\n oppure segui questo collegamento: https://leonardostart.tk/confirmemail?token=" + confirmToken);
@@ -617,6 +619,7 @@ public class UtenteController {
             String uuid = String.valueOf(UUID.randomUUID());
             u.setResetToken(uuid);
 
+            smm.setFrom("leonardo.start0@gmail.com");
             smm.setTo(u.getEmail());
             smm.setSubject("Reset Password");
             smm.setText("Ecco il link di reset password: https://leonardostart.tk/reset-password?token=" + uuid);
@@ -660,6 +663,7 @@ public class UtenteController {
             Utente uSaved = service.save(u);
 
             SimpleMailMessage smm = new SimpleMailMessage();
+            smm.setFrom("leonardo.start0@gmail.com");
             smm.setTo(u.getEmail());
             smm.setSubject("Password Resettata");
             smm.setText("Uè vedi che la password è stata resettata");
@@ -699,6 +703,7 @@ public class UtenteController {
             u.setConfirmToken(confirmToken);
 
             SimpleMailMessage smm = new SimpleMailMessage();
+            smm.setFrom("leonardo.start0@gmail.com");
             smm.setTo(u.getEmail());
             smm.setSubject("Conferma Email");
             smm.setText("Pijate sto token de conferma zi: " + confirmToken + "\n oppure segui questo collegamento: https://leonardostart.tk/confirmemail?token=" + confirmToken);
