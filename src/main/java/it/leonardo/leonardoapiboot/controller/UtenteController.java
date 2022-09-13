@@ -40,6 +40,7 @@ import java.awt.image.DataBufferByte;
 import java.io.*;
 import java.net.URI;
 import java.security.GeneralSecurityException;
+import java.time.Instant;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -184,6 +185,7 @@ public class UtenteController {
                 u.setPassword(passwordEncoder.encode(password));
                 u.setEmail_confermata(true);
                 u.setFoto(foto);
+                u.setDataNascita(Date.from(Instant.parse("1970-1-1T00:00:00.00Z")));
 
                 String resetToken = UUID.randomUUID().toString();
                 u.setResetToken(resetToken);
