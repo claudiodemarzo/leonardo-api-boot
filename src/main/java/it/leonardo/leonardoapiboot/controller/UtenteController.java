@@ -215,7 +215,7 @@ public class UtenteController {
     }
 
     private String generateUsername(String nome, String cognome) {
-        String username = nome.toLowerCase() + "." + cognome.toLowerCase();
+        String username = nome.toLowerCase().replace(" ", "") + "." + cognome.toLowerCase().replace(" ", "");
         int i = 1;
         while (service.findByUsername(username).isPresent()) {
             username = nome.toLowerCase() + "." + cognome.toLowerCase() + i;
