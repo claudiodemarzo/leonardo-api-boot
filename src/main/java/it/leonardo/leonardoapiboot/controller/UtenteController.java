@@ -350,7 +350,7 @@ public class UtenteController {
             UtentePublicInfo upi_ = upi.get();
             upi_.setRecensioniRicevute(recensioneService.getByUtenteRecensito(service.findById(upi_.getId()).get()) == null ? new ArrayList<>() : recensioneService.getByUtenteRecensito(service.findById(upi_.getId()).get()));
             upi_.setRecensioniFatte(recensioneService.getByUtenteRecensore(service.findById(upi_.getId()).get()) == null ? new ArrayList<>() : recensioneService.getByUtenteRecensore(service.findById(upi_.getId()).get()));
-            return ResponseEntity.ok(upi_);
+            return ResponseEntity.ok(upi_.toMap());
         } catch (Exception e) {
             Sentry.captureException(e);
             return ResponseEntity.internalServerError().build();
