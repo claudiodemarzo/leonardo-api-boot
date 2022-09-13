@@ -186,6 +186,7 @@ public class UtenteController {
                 u.setEmail_confermata(true);
                 u.setFoto(foto);
                 u.setDataNascita(Date.from(Instant.parse("1970-01-01T00:00:00.00Z")));
+                u.setGenere("n");
 
                 String resetToken = UUID.randomUUID().toString();
                 u.setResetToken(resetToken);
