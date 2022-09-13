@@ -1,5 +1,10 @@
 package it.leonardo.leonardoapiboot.controller;
 
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.gson.GsonFactory;
+import io.sentry.Breadcrumb;
 import io.sentry.Sentry;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -31,6 +36,8 @@ import javax.servlet.http.HttpSession;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.io.*;
+import java.net.URI;
+import java.security.GeneralSecurityException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -127,7 +134,7 @@ public class UtenteController {
             String token = UUID.randomUUID().toString();
 
             session.setAttribute("token", token);
-            session.setAttribute("userID", u.getUtenteId());
+            session.setAttribute("userID", uSaved.getUtenteId());
             return ResponseEntity.ok(uSaved);
         } catch (Exception e) {
             Sentry.captureException(e);
@@ -135,6 +142,73 @@ public class UtenteController {
         }
     }
 
+   /* @Operation(description = "Endpoint per callback di registrazione con Google")
+    @PostMapping("/googleRegister")
+    public ResponseEntity<Object> googleRegister(String credential) {
+        log.info("Invoked UtenteController.googleRegister(" + credential + ")");
+        Sentry.addBreadcrumb(Breadcrumb.debug(credential));
+        try {
+            GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), new GsonFactory())
+                    .setAudience(Collections.singletonList("330035935477-n072k8tgsb3hd343qm3ft8lefl5ktse5.apps.googleusercontent.com"))
+                    .build();
+            GoogleIdToken idToken = verifier.verify(credential);
+            if (idToken != null) {
+                GoogleIdToken.Payload payload = idToken.getPayload();
+                String email = payload.getEmail();
+                String nome = (String) payload.get("given_name");
+                String cognome = (String) payload.get("family_name");
+                String username = generateUsername(nome, cognome);
+                String password = UUID.randomUUID().toString();
+                String foto = (String) payload.get("picture");
+
+                Utente u = new Utente();
+
+                if(service.findByEmail(email).isPresent()) return ResponseEntity.status(HttpStatus.CONFLICT).body("Email già registrata");
+                u.setEmail(email);
+
+                u.setNome(nome);
+                u.setCognome(cognome);
+                u.setUsername(username);
+                u.setPassword(passwordEncoder.encode(password));
+                u.setEmail_confermata(true);
+                u.setFoto(foto);
+
+                String resetToken = UUID.randomUUID().toString();
+                u.setResetToken(resetToken);
+
+                SimpleMailMessage smm = new SimpleMailMessage();
+                smm.setFrom("leonardo.start0@gmail.com");
+                smm.setTo(u.getEmail());
+                smm.setSubject("Registrazione con Google");
+                smm.setText("Ecco il link di reset password: https://leonardostart.tk/reset-password?token=" + resetToken);
+                mailSender.send(smm);
+
+                Utente uSaved = service.save(u);
+
+                String token = UUID.randomUUID().toString();
+
+                session.setAttribute("token", token);
+                session.setAttribute("userID", uSaved.getUtenteId());
+                return ResponseEntity.ok(uSaved);
+            }else{
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("{}");
+            }
+        } catch (Exception e) {
+            Sentry.captureException(e);
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    private String generateUsername(String nome, String cognome) {
+        String username = nome.toLowerCase() + "." + cognome.toLowerCase();
+        int i = 1;
+        while (service.findByUsername(username).isPresent()) {
+            username = nome.toLowerCase() + "." + cognome.toLowerCase() + i;
+            i++;
+        }
+        return username;
+    }
+*/
     @PostMapping("/confirmemail")
     @Operation(description = "Esegue la conferma dell'indirizzo email di un utente")
     @ApiResponses(value = {
@@ -276,7 +350,7 @@ public class UtenteController {
             UtentePublicInfo upi_ = upi.get();
             upi_.setRecensioniRicevute(recensioneService.getByUtenteRecensito(service.findById(upi_.getId()).get()) == null ? new ArrayList<>() : recensioneService.getByUtenteRecensito(service.findById(upi_.getId()).get()));
             upi_.setRecensioniFatte(recensioneService.getByUtenteRecensore(service.findById(upi_.getId()).get()) == null ? new ArrayList<>() : recensioneService.getByUtenteRecensore(service.findById(upi_.getId()).get()));
-            return ResponseEntity.ok(upi.get());
+            return ResponseEntity.ok(upi_);
         } catch (Exception e) {
             Sentry.captureException(e);
             return ResponseEntity.internalServerError().build();
@@ -424,7 +498,6 @@ public class UtenteController {
 
 
     //crop a webp image to a square and return the bytes of the new image
-
 
 
     @PatchMapping("/private")
