@@ -185,7 +185,7 @@ public class UtenteController {
                 u.setPassword(passwordEncoder.encode(password));
                 u.setEmail_confermata(true);
                 u.setFoto(foto);
-                u.setDataNascita(Date.from(Instant.parse("1970-1-1T00:00:00.00Z")));
+                u.setDataNascita(Date.from(Instant.parse("1970-01-01T00:00:00.00Z")));
 
                 String resetToken = UUID.randomUUID().toString();
                 u.setResetToken(resetToken);
@@ -196,7 +196,7 @@ public class UtenteController {
                 smm.setFrom("leonardo.start0@gmail.com");
                 smm.setTo(u.getEmail());
                 smm.setSubject("Registrazione con Google");
-                smm.setText("Ti sei registrato con Google, e devi resettare la password: Ecco il link di reset: https://leonardostart.tk/reset-password?token=" + resetToken);
+                smm.setText("Ti sei registrato con Google, e devi resettare la password, e cambiare la tua data di nascita: Ecco il link di reset: https://leonardostart.tk/reset-password?token=" + resetToken);
                 mailSender.send(smm);
 
                 String token = UUID.randomUUID().toString();
