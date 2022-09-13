@@ -7,6 +7,8 @@ import com.google.api.client.json.gson.GsonFactory;
 import io.sentry.Breadcrumb;
 import io.sentry.Sentry;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import it.leonardo.leonardoapiboot.entity.*;
@@ -142,7 +144,16 @@ public class UtenteController {
         }
     }
 
-   /* @Operation(description = "Endpoint per callback di registrazione con Google")
+    @Operation(description = "Esegue la registrazione tramite Google sul db per un utente")
+    @Parameters({
+            @Parameter(name = "credential", description = "JWT restituito dal flow di login di Google", required = true)
+    })
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Registrazione effettuata con successo."),
+            @ApiResponse(responseCode = "401", description = "JWT non valido."),
+            @ApiResponse(responseCode = "409", description = "L'email associata all'account google è l'email di un utente già registrato."),
+            @ApiResponse(responseCode = "500", description = "Errore generico del server.")
+    })
     @PostMapping("/googleRegister")
     public ResponseEntity<Object> googleRegister(String credential) {
         log.info("Invoked UtenteController.googleRegister(" + credential + ")");
@@ -163,7 +174,8 @@ public class UtenteController {
 
                 Utente u = new Utente();
 
-                if(service.findByEmail(email).isPresent()) return ResponseEntity.status(HttpStatus.CONFLICT).body("Email già registrata");
+                if (service.findByEmail(email).isPresent())
+                    return ResponseEntity.status(HttpStatus.CONFLICT).body("Email già registrata");
                 u.setEmail(email);
 
                 u.setNome(nome);
@@ -176,21 +188,21 @@ public class UtenteController {
                 String resetToken = UUID.randomUUID().toString();
                 u.setResetToken(resetToken);
 
+                Utente uSaved = service.save(u);
+
                 SimpleMailMessage smm = new SimpleMailMessage();
                 smm.setFrom("leonardo.start0@gmail.com");
                 smm.setTo(u.getEmail());
                 smm.setSubject("Registrazione con Google");
-                smm.setText("Ecco il link di reset password: https://leonardostart.tk/reset-password?token=" + resetToken);
+                smm.setText("Ti sei registrato con Google, e devi resettare la password: Ecco il link di reset: https://leonardostart.tk/reset-password?token=" + resetToken);
                 mailSender.send(smm);
-
-                Utente uSaved = service.save(u);
 
                 String token = UUID.randomUUID().toString();
 
                 session.setAttribute("token", token);
                 session.setAttribute("userID", uSaved.getUtenteId());
                 return ResponseEntity.ok(uSaved);
-            }else{
+            } else {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("{}");
             }
         } catch (Exception e) {
@@ -208,7 +220,7 @@ public class UtenteController {
         }
         return username;
     }
-*/
+
     @PostMapping("/confirmemail")
     @Operation(description = "Esegue la conferma dell'indirizzo email di un utente")
     @ApiResponses(value = {
