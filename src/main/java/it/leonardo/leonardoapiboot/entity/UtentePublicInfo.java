@@ -246,7 +246,7 @@ public class UtentePublicInfo {
         map.put("online", online);
         map.put("avgRating", avgRating);
         List<Recensione> rr = new ArrayList<>(), rf = new ArrayList<>();
-        if (!recensioniFatte.isEmpty()) {
+        if (recensioniFatte != null && !recensioniFatte.isEmpty()) {
             recensioniFatte.forEach(r -> {
                 Recensione recensione = new Recensione();
                 recensione.setRecensioneId(r.getRecensioneId());
@@ -268,7 +268,7 @@ public class UtentePublicInfo {
             });
         }
 
-        if (!recensioniRicevute.isEmpty()) {
+        if (recensioniRicevute != null && !recensioniRicevute.isEmpty()) {
             recensioniRicevute.forEach(r -> {
                 Recensione recensione = new Recensione();
                 recensione.setRecensioneId(r.getRecensioneId());
