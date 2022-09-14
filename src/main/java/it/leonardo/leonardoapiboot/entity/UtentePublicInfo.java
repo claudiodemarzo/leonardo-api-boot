@@ -227,7 +227,7 @@ public class UtentePublicInfo {
         this.activeTag = activeTag;
     }
 
-    public Map<Object, Object> toMap(){
+    public Map<Object, Object> toMap() {
         Map<Object, Object> map = new HashMap<>();
         map.put("id", id);
         map.put("username", username);
@@ -246,44 +246,49 @@ public class UtentePublicInfo {
         map.put("online", online);
         map.put("avgRating", avgRating);
         List<Recensione> rr = new ArrayList<>(), rf = new ArrayList<>();
-        recensioniFatte.forEach(r -> {
-            Recensione recensione = new Recensione();
-            recensione.setRecensioneId(r.getRecensioneId());
-            UtentePublicInfo rpi = r.getUtenteRecensorePublicInfo();
-            rpi.setRecensioniFatte(null);
-            rpi.setRecensioniRicevute(null);
-            recensione.setUtenteRecensorePublicInfo(rpi);
-            UtentePublicInfo rpi2 = r.getUtenteRecensitoPublicInfo();
-            rpi2.setRecensioniFatte(null);
-            rpi2.setRecensioniRicevute(null);
-            recensione.setUtenteRecensitoPublicInfo(rpi2);
-            recensione.setUtenteRecensito(r.getUtenteRecensito());
-            recensione.setVoto(r.getVoto());
-            recensione.setAnnuncio(r.getAnnuncio());
-            recensione.setCreatedAt(r.getCreatedAt());
-            recensione.setCommento(r.getCommento());
-            recensione.setUtenteRecensore(r.getUtenteRecensore());
-            rf.add(recensione);
-        });
-        recensioniRicevute.forEach(r -> {
-            Recensione recensione = new Recensione();
-            recensione.setRecensioneId(r.getRecensioneId());
-            UtentePublicInfo rpi = r.getUtenteRecensorePublicInfo();
-            rpi.setRecensioniFatte(null);
-            rpi.setRecensioniRicevute(null);
-            recensione.setUtenteRecensorePublicInfo(rpi);
-            UtentePublicInfo rpi2 = r.getUtenteRecensitoPublicInfo();
-            rpi2.setRecensioniFatte(null);
-            rpi2.setRecensioniRicevute(null);
-            recensione.setUtenteRecensitoPublicInfo(rpi2);
-            recensione.setUtenteRecensito(r.getUtenteRecensito());
-            recensione.setVoto(r.getVoto());
-            recensione.setAnnuncio(r.getAnnuncio());
-            recensione.setCreatedAt(r.getCreatedAt());
-            recensione.setCommento(r.getCommento());
-            recensione.setUtenteRecensore(r.getUtenteRecensore());
-            rr.add(recensione);
-        });
+        if (!recensioniFatte.isEmpty()) {
+            recensioniFatte.forEach(r -> {
+                Recensione recensione = new Recensione();
+                recensione.setRecensioneId(r.getRecensioneId());
+                UtentePublicInfo rpi = r.getUtenteRecensorePublicInfo();
+                rpi.setRecensioniFatte(null);
+                rpi.setRecensioniRicevute(null);
+                recensione.setUtenteRecensorePublicInfo(rpi);
+                UtentePublicInfo rpi2 = r.getUtenteRecensitoPublicInfo();
+                rpi2.setRecensioniFatte(null);
+                rpi2.setRecensioniRicevute(null);
+                recensione.setUtenteRecensitoPublicInfo(rpi2);
+                recensione.setUtenteRecensito(r.getUtenteRecensito());
+                recensione.setVoto(r.getVoto());
+                recensione.setAnnuncio(r.getAnnuncio());
+                recensione.setCreatedAt(r.getCreatedAt());
+                recensione.setCommento(r.getCommento());
+                recensione.setUtenteRecensore(r.getUtenteRecensore());
+                rf.add(recensione);
+            });
+        }
+
+        if (!recensioniRicevute.isEmpty()) {
+            recensioniRicevute.forEach(r -> {
+                Recensione recensione = new Recensione();
+                recensione.setRecensioneId(r.getRecensioneId());
+                UtentePublicInfo rpi = r.getUtenteRecensorePublicInfo();
+                rpi.setRecensioniFatte(null);
+                rpi.setRecensioniRicevute(null);
+                recensione.setUtenteRecensorePublicInfo(rpi);
+                UtentePublicInfo rpi2 = r.getUtenteRecensitoPublicInfo();
+                rpi2.setRecensioniFatte(null);
+                rpi2.setRecensioniRicevute(null);
+                recensione.setUtenteRecensitoPublicInfo(rpi2);
+                recensione.setUtenteRecensito(r.getUtenteRecensito());
+                recensione.setVoto(r.getVoto());
+                recensione.setAnnuncio(r.getAnnuncio());
+                recensione.setCreatedAt(r.getCreatedAt());
+                recensione.setCommento(r.getCommento());
+                recensione.setUtenteRecensore(r.getUtenteRecensore());
+                rr.add(recensione);
+            });
+        }
         map.put("recensioniRicevute", rr);
         map.put("recensioniFatte", rf);
         map.put("activeTag", activeTag);
