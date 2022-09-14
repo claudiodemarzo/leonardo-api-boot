@@ -831,7 +831,7 @@ public class UtenteController {
             @ApiResponse(responseCode = "500", description = "Errore generico del server")
     })
     @GetMapping("{query}")
-    public ResponseEntity<UtentePublicInfo> getExact(@PathVariable String query) {
+    public ResponseEntity<Map<Object, Object>> getExact(@PathVariable String query) {
         log.info("Invoked UtenteController.getExact(" + query + ")");
         try {
             UtentePublicInfo upf;
@@ -846,7 +846,7 @@ public class UtenteController {
                 upf = upfOptional.get();
             }
             upf.setRecensioniRicevute(recensioneService.getByUtenteRecensito(service.findById(upf.getId()).get()) == null ? new ArrayList<>() : recensioneService.getByUtenteRecensito(service.findById(upf.getId()).get()));
-            return ResponseEntity.ok(upf);
+            return ResponseEntity.ok(upf.toMap());
         } catch (Exception e) {
             Sentry.captureException(e);
             return ResponseEntity.internalServerError().build();
