@@ -8,6 +8,7 @@ import io.sentry.Sentry;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import it.leonardo.leonardoapiboot.entity.*;
@@ -246,6 +247,77 @@ public class UtenteController {
         }
     }
 
+    @Operation(summary = "Effettua il login/registrazione con Facebook, a partire dai dati recuperabili dalle loro API")
+    @Parameters(value = {
+            @Parameter(name = "form", description = "Form costituito dai dati recuperabili dalle api di Facebook", required = true, schema = @Schema(implementation = FacebookLoginForm.class))
+    })
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Utente registrato con successo"),
+            @ApiResponse(responseCode = "400", description = "L'utente è gia loggato"),
+            @ApiResponse(responseCode = "401", description = "JWT non valido."),
+            @ApiResponse(responseCode = "409", description = "L'email è associata all'account Facebook è l'email di un utente già registrato, la quale mail non è verificata"),
+            @ApiResponse(responseCode = "500", description = "Errore generico del server.")
+    })
+    @PostMapping("/facebookSignIn")
+    public ResponseEntity<Object> facebookSignIn(FacebookLoginForm form) {
+        log.info("Invoked UtenteController.googleSignIn(" + form + ")");
+
+        if (session.getAttribute("token") != null)
+            return ResponseEntity.badRequest().body("{\"error\" : \"Utente già loggato\"}");
+
+        try {
+            String email = form.getEmail();
+            String nome = form.getNome();
+            String cognome = form.getCognome();
+            String username = generateUsername(nome, cognome);
+            String password = UUID.randomUUID().toString();
+            String foto = form.getFoto();
+
+            Utente u = new Utente();
+            Optional<Utente> lookup = service.findByEmail(email);
+
+            if (lookup.isPresent()) {
+                if (lookup.get().getEmail_confermata()) {
+                    session.setAttribute("token", UUID.randomUUID().toString());
+                    session.setAttribute("userID", lookup.get().getUtenteId());
+                    return ResponseEntity.ok("{\"userID\" : \"" + lookup.get().getUtenteId() + "\", \"propic\" : \"" + lookup.get().getFoto() + "\"}");
+                } else
+                    return ResponseEntity.status(HttpStatus.CONFLICT).body("{}");
+            }
+            u.setEmail(email);
+
+            u.setNome(nome);
+            u.setCognome(cognome);
+            u.setUsername(username);
+            u.setPassword(passwordEncoder.encode(password));
+            u.setEmail_confermata(true);
+            u.setFoto(foto);
+            u.setDataNascita(Date.from(Instant.parse("1970-01-01T00:00:00.00Z")));
+            u.setGenere("n");
+
+            String resetToken = UUID.randomUUID().toString();
+            u.setResetToken(resetToken);
+
+            Utente uSaved = service.save(u);
+
+            SimpleMailMessage smm = new SimpleMailMessage();
+            smm.setFrom("leonardo.start0@gmail.com");
+            smm.setTo(u.getEmail());
+            smm.setSubject("Registrazione con Google");
+            smm.setText("Ti sei registrato con Google, e devi resettare la password, e cambiare la tua data di nascita: Ecco il link di reset: https://leonardostart.tk/reset-password?token=" + resetToken);
+            mailSender.send(smm);
+
+            String token = UUID.randomUUID().toString();
+
+            session.setAttribute("token", token);
+            session.setAttribute("userID", uSaved.getUtenteId());
+            return ResponseEntity.status(201).body("{\"userID\" : \"" + uSaved.getUtenteId() + "\", \"propic\" : \"" + uSaved.getFoto() + "\"}");
+        } catch (Exception e) {
+            Sentry.captureException(e);
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
     private String generateUsername(String nome, String cognome) {
         String username = nome.toLowerCase().replace(" ", "") + "." + cognome.toLowerCase().replace(" ", "");
         int i = 1;
@@ -382,6 +454,7 @@ public class UtenteController {
                 if (!u.isPresent()) {
                     return ResponseEntity.internalServerError().build();
                 }
+
                 return ResponseEntity.ok(u.get());
             } catch (Exception e) {
                 Sentry.captureException(e);

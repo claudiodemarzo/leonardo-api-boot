@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import it.leonardo.leonardoapiboot.entity.form.FacebookLoginForm;
 import it.leonardo.leonardoapiboot.entity.form.RegisterForm;
 import it.leonardo.leonardoapiboot.entity.form.UpdatePrivateForm;
 import it.leonardo.leonardoapiboot.entity.form.UpdatePublicForm;
