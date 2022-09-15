@@ -161,7 +161,7 @@ public class UtenteController {
     public ResponseEntity<Object> googleSignIn(String credential) {
         log.info("Invoked UtenteController.googleSignIn(" + credential + ")");
 
-        if (session.getAttribute("token") == null)
+        if (session.getAttribute("token") != null)
             return ResponseEntity.badRequest().body("{\"error\" : \"Utente già loggato\"}");
         try {
             GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), new GsonFactory())
