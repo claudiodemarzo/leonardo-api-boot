@@ -35,6 +35,7 @@ import java.nio.channels.ReadableByteChannel;
 import java.time.Instant;
 import java.util.*;
 
+import static it.leonardo.leonardoapiboot.utils.ImageUtils.downloadFile;
 import static it.leonardo.leonardoapiboot.utils.ImageUtils.encodeWebp;
 
 @RestController
@@ -426,14 +427,5 @@ public class AnnunciLibriController {
             Sentry.captureException(e);
             return ResponseEntity.internalServerError().build();
         }
-    }
-
-    private static void downloadFile(String urlStr, String file) throws IOException {
-        URL url = new URL(urlStr);
-        ReadableByteChannel rbc = Channels.newChannel(url.openStream());
-        FileOutputStream fos = new FileOutputStream(file);
-        fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
-        fos.close();
-        rbc.close();
     }
 }

@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import it.leonardo.leonardoapiboot.entity.*;
 import it.leonardo.leonardoapiboot.entity.form.*;
 import it.leonardo.leonardoapiboot.service.*;
+import it.leonardo.leonardoapiboot.utils.ImageUtils;
 import nu.pattern.OpenCV;
 import org.apache.batik.transcoder.TranscoderInput;
 import org.apache.batik.transcoder.TranscoderOutput;
@@ -203,6 +204,27 @@ public class UtenteController {
                 u.setResetToken(resetToken);
 
                 Utente uSaved = service.save(u);
+
+                String fotoPath = "/var/www/html/assets/imgs/utenti/"+uSaved.getUtenteId()+".webp", tmpFotoPath = "/var/www/html/assets/imgs/utenti/"+uSaved.getUtenteId()+".tmp.webp";
+                ImageUtils.downloadFile(foto, tmpFotoPath);
+
+                File tmpFotoFile = new File(tmpFotoPath);
+                BufferedImage image = ImageIO.read(tmpFotoFile);
+                BufferedImage imageCopy = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
+
+                imageCopy.getGraphics().drawImage(image, 0, 0, null);
+                byte[] imageCopyBytes = ((DataBufferByte) imageCopy.getRaster().getDataBuffer()).getData();
+
+                Mat imageMatrix = new Mat(image.getHeight(), image.getWidth(), CvType.CV_8UC3);
+                imageMatrix.put(0, 0, imageCopyBytes);
+
+                imageCopyBytes = encodeWebp(imageMatrix, 50);
+                OutputStream webpOutputStream = new FileOutputStream(fotoPath);
+                webpOutputStream.write(imageCopyBytes);
+                tmpFotoFile.delete();
+
+                uSaved.setFoto(fotoPath.replace("/var/www/html", ""));
+                uSaved = service.save(uSaved);
 
                 SimpleMailMessage smm = new SimpleMailMessage();
                 smm.setFrom("leonardo.start0@gmail.com");
