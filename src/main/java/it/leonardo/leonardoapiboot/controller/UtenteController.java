@@ -4,7 +4,6 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
-import io.sentry.Breadcrumb;
 import io.sentry.Sentry;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -22,6 +21,7 @@ import org.apache.batik.transcoder.image.PNGTranscoder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.tomcat.util.codec.binary.Base64;
+import org.hibernate.exception.ConstraintViolationException;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.opencv.core.CvType;
@@ -39,9 +39,10 @@ import javax.imageio.ImageIO;
 import javax.servlet.http.HttpSession;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
-import java.io.*;
-import java.net.URI;
-import java.security.GeneralSecurityException;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.time.Instant;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -206,7 +207,7 @@ public class UtenteController {
 
                 Utente uSaved = service.save(u);
 
-                String fotoPath = "/var/www/html/assets/imgs/utenti/"+uSaved.getUtenteId()+".webp", tmpFotoPath = "/var/www/html/assets/imgs/utenti/"+uSaved.getUtenteId()+".tmp.webp";
+                String fotoPath = "/var/www/html/assets/imgs/utenti/" + uSaved.getUtenteId() + ".webp", tmpFotoPath = "/var/www/html/assets/imgs/utenti/" + uSaved.getUtenteId() + ".tmp.webp";
                 ImageUtils.downloadFile(foto, tmpFotoPath);
 
                 File tmpFotoFile = new File(tmpFotoPath);
@@ -603,9 +604,10 @@ public class UtenteController {
             Utente uSaved = service.save(u);
 
             return ResponseEntity.ok(uSaved);
-        }catch(DataIntegrityViolationException ex){
+        } catch (DataIntegrityViolationException | ConstraintViolationException |
+                 SQLIntegrityConstraintViolationException ex) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("{\"duplicatedField\":\"email\"}");
-        } catch(Exception e) {
+        } catch (Exception e) {
             Sentry.captureException(e);
             return ResponseEntity.internalServerError().build();
         }
