@@ -215,7 +215,7 @@ public class UtenteController {
 
                 session.setAttribute("token", token);
                 session.setAttribute("userID", uSaved.getUtenteId());
-                return ResponseEntity.status(201).body("{\"userID\" : \"" + lookup.get().getUtenteId() + "\", \"propic\" : \"" + lookup.get().getFoto() + "\"}");
+                return ResponseEntity.status(201).body("{\"userID\" : \"" + uSaved.getUtenteId() + "\", \"propic\" : \"" + uSaved.getFoto() + "\"}");
             } else {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("{}");
             }
