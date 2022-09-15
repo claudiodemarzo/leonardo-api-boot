@@ -263,13 +263,13 @@ public class UtenteController {
     })
     @PostMapping("/facebookSignIn")
     public ResponseEntity<Object> facebookSignIn(String token) {
-        log.info("Invoked UtenteController.googleSignIn(" + token + ")");
+        log.info("Invoked UtenteController.facebookSignIn(" + token + ")");
 
         if (session.getAttribute("token") != null)
             return ResponseEntity.badRequest().body("{\"error\" : \"Utente già loggato\"}");
 
         try {
-            String url = "https://graph.facebook.com/v14.0/me?fields=id%2Clast_name%2Cfirst_name%2Cemail%2Cpicture%2Cbirthday&access_token=" + token;
+            String url = "https://graph.facebook.com/v14.0/me?fields=id,last_name,first_name,email,picture,birthday&access_token=" + token;
             RestTemplate restTemplate = new RestTemplate();
             ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<>(null), String.class);
 
@@ -278,7 +278,7 @@ public class UtenteController {
 
             JSONObject json = new JSONObject(response.getBody());
 
-            String email = json.getString("email");
+            String email = json.getString("email").replace("\\u0040", "@");
             String nome = json.getString("first_name");
             String cognome = json.getString("last_name");
             String username = generateUsername(nome, cognome);
