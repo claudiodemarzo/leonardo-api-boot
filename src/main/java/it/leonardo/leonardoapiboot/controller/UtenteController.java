@@ -247,7 +247,7 @@ public class UtenteController {
         }
     }
 
-    @Operation(summary = "Effettua il login/registrazione con Facebook, a partire dai dati recuperabili dalle loro API")
+    @Operation(description = "Effettua il login/registrazione con Facebook, a partire dai dati recuperabili dalle loro API")
     @Parameters(value = {
             @Parameter(name = "form", description = "Form costituito dai dati recuperabili dalle api di Facebook", required = true, schema = @Schema(implementation = FacebookLoginForm.class))
     })
