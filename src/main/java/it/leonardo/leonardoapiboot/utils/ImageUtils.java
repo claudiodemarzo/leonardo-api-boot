@@ -1,5 +1,6 @@
 package it.leonardo.leonardoapiboot.utils;
 
+import nu.pattern.OpenCV;
 import org.opencv.core.*;
 import org.opencv.imgcodecs.Imgcodecs;
 
@@ -13,7 +14,7 @@ import java.nio.channels.ReadableByteChannel;
 public class ImageUtils {
 
     static{
-        System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+        OpenCV.loadShared();
     }
 
     public static byte[] encodeWebp(Mat image, int quality) {
