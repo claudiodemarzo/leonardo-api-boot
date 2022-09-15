@@ -1,9 +1,6 @@
 package it.leonardo.leonardoapiboot.utils;
 
-import org.opencv.core.Mat;
-import org.opencv.core.MatOfByte;
-import org.opencv.core.MatOfInt;
-import org.opencv.core.Rect;
+import org.opencv.core.*;
 import org.opencv.imgcodecs.Imgcodecs;
 
 import java.awt.image.BufferedImage;
@@ -14,6 +11,10 @@ import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 
 public class ImageUtils {
+
+    static{
+        System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+    }
 
     public static byte[] encodeWebp(Mat image, int quality) {
         /*int min = Math.min(image.rows(), image.cols());
@@ -28,7 +29,6 @@ public class ImageUtils {
         } else
             throw new IllegalStateException("Failed to encode the image as webp with quality " + quality);
     }
-
 
     public static BufferedImage cropImageSquare(BufferedImage originalImage) throws IOException {
 
