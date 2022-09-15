@@ -604,12 +604,12 @@ public class UtenteController {
             Utente uSaved = service.save(u);
 
             return ResponseEntity.ok(uSaved);
-        } catch (DataIntegrityViolationException | ConstraintViolationException |
-                 SQLIntegrityConstraintViolationException ex) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("{\"duplicatedField\":\"email\"}");
         } catch (Exception e) {
+            if (e instanceof DataIntegrityViolationException || e instanceof ConstraintViolationException || e instanceof SQLIntegrityConstraintViolationException ex)
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("{\"duplicatedField\":\"email\"}");
             Sentry.captureException(e);
             return ResponseEntity.internalServerError().build();
+
         }
     }
 
@@ -709,12 +709,14 @@ public class UtenteController {
 
             if (token == null) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 
-            if (!form.getNewPassword().equals(form.getConfirmPassword())) return ResponseEntity.badRequest().build();
+            if (!form.getNewPassword().equals(form.getConfirmPassword()))
+                return ResponseEntity.badRequest().build();
 
             Utente u = service.findById(Integer.parseInt(session.getAttribute("userID").toString())).get();
             String password = u.getPassword();
 
-            if (!passwordEncoder.matches(form.getOldPassword(), password)) return ResponseEntity.badRequest().build();
+            if (!passwordEncoder.matches(form.getOldPassword(), password))
+                return ResponseEntity.badRequest().build();
 
             String newPass = passwordEncoder.encode(form.getNewPassword());
 
