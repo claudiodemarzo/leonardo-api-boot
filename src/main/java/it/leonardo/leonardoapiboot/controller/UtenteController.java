@@ -152,14 +152,17 @@ public class UtenteController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Registrazione effettuata con successo."),
             @ApiResponse(responseCode = "200", description = "Utente già registrato, la mail era già verificata, quindi il login è stato effettuato"),
+            @ApiResponse(responseCode = "400", description = "L'utente è gia loggato"),
             @ApiResponse(responseCode = "401", description = "JWT non valido."),
             @ApiResponse(responseCode = "409", description = "L'email è associata all'account Google è l'email di un utente già registrato, la quale mail non è verificata"),
             @ApiResponse(responseCode = "500", description = "Errore generico del server.")
     })
-    @PostMapping("/googleRegister")
-    public ResponseEntity<Object> googleRegister(String credential) {
-        log.info("Invoked UtenteController.googleRegister(" + credential + ")");
-        Sentry.addBreadcrumb(Breadcrumb.debug(credential));
+    @PostMapping("/googleSignIn")
+    public ResponseEntity<Object> googleSignIn(String credential) {
+        log.info("Invoked UtenteController.googleSignIn(" + credential + ")");
+
+        if (session.getAttribute("token") == null)
+            return ResponseEntity.badRequest().body("{\"error\" : \"Utente già loggato\"}");
         try {
             GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), new GsonFactory())
                     .setAudience(Collections.singletonList("330035935477-n072k8tgsb3hd343qm3ft8lefl5ktse5.apps.googleusercontent.com"))
@@ -178,9 +181,11 @@ public class UtenteController {
                 Optional<Utente> lookup = service.findByEmail(email);
 
                 if (lookup.isPresent()) {
-                    if (lookup.get().getEmail_confermata())
-                        return ResponseEntity.ok(lookup.get());
-                    else
+                    if (lookup.get().getEmail_confermata()) {
+                        session.setAttribute("token", UUID.randomUUID().toString());
+                        session.setAttribute("userID", lookup.get().getUtenteId());
+                        return ResponseEntity.ok("{\"userID\" : \"" + lookup.get().getUtenteId() + "\", \"propic\" : \"" + lookup.get().getFoto() + "\"}");
+                    } else
                         return ResponseEntity.status(HttpStatus.CONFLICT).body("{}");
                 }
                 u.setEmail(email);
