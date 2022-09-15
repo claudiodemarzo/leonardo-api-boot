@@ -218,7 +218,7 @@ public class UtenteController {
                 Mat imageMatrix = new Mat(image.getHeight(), image.getWidth(), CvType.CV_8UC3);
                 imageMatrix.put(0, 0, imageCopyBytes);
 
-                imageCopyBytes = encodeWebp(imageMatrix, 50);
+                imageCopyBytes = encodeWebp(imageMatrix, 100);
                 OutputStream webpOutputStream = new FileOutputStream(fotoPath);
                 webpOutputStream.write(imageCopyBytes);
                 tmpFotoFile.delete();
@@ -504,7 +504,7 @@ public class UtenteController {
                 Mat imageMatrix = new Mat(image.getHeight(), image.getWidth(), CvType.CV_8UC3);
                 imageMatrix.put(0, 0, imageCopyBytes);
 
-                imageCopyBytes = encodeWebp(imageMatrix, 50);
+                imageCopyBytes = encodeWebp(imageMatrix, 100);
                 OutputStream webpOutputStream = new FileOutputStream(filePath);
                 webpOutputStream.write(imageCopyBytes);
                 pngFile.delete();
