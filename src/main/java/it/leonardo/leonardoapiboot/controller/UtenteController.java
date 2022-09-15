@@ -138,7 +138,7 @@ public class UtenteController {
 
             session.setAttribute("token", token);
             session.setAttribute("userID", uSaved.getUtenteId());
-            return ResponseEntity.ok(uSaved);
+            return ResponseEntity.ok("{\"userID\" : \"" + uSaved.getUtenteId() + "\", \"propic\" : \"" + uSaved.getFoto() + "\"}");
         } catch (Exception e) {
             Sentry.captureException(e);
             return ResponseEntity.internalServerError().build();
@@ -215,7 +215,7 @@ public class UtenteController {
 
                 session.setAttribute("token", token);
                 session.setAttribute("userID", uSaved.getUtenteId());
-                return ResponseEntity.created(null).body(uSaved);
+                return ResponseEntity.created(null).body("{\"userID\" : \"" + lookup.get().getUtenteId() + "\", \"propic\" : \"" + lookup.get().getFoto() + "\"}");
             } else {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("{}");
             }
