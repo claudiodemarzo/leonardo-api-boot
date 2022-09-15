@@ -150,9 +150,10 @@ public class UtenteController {
             @Parameter(name = "credential", description = "JWT restituito dal flow di login di Google", required = true)
     })
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Registrazione effettuata con successo."),
+            @ApiResponse(responseCode = "201", description = "Registrazione effettuata con successo."),
+            @ApiResponse(responseCode = "200", description = "Utente già registrato, la mail era già verificata, quindi il login è stato effettuato"),
             @ApiResponse(responseCode = "401", description = "JWT non valido."),
-            @ApiResponse(responseCode = "409", description = "L'email associata all'account google è l'email di un utente già registrato."),
+            @ApiResponse(responseCode = "409", description = "L'email è associata all'account Google è l'email di un utente già registrato, la quale mail non è verificata"),
             @ApiResponse(responseCode = "500", description = "Errore generico del server.")
     })
     @PostMapping("/googleRegister")
@@ -174,9 +175,14 @@ public class UtenteController {
                 String foto = (String) payload.get("picture");
 
                 Utente u = new Utente();
+                Optional<Utente> lookup = service.findByEmail(email);
 
-                if (service.findByEmail(email).isPresent())
-                    return ResponseEntity.status(HttpStatus.CONFLICT).body("Email già registrata");
+                if (lookup.isPresent()) {
+                    if (lookup.get().getEmail_confermata())
+                        return ResponseEntity.ok(lookup.get());
+                    else
+                        return ResponseEntity.status(HttpStatus.CONFLICT).body("{}");
+                }
                 u.setEmail(email);
 
                 u.setNome(nome);
@@ -204,7 +210,7 @@ public class UtenteController {
 
                 session.setAttribute("token", token);
                 session.setAttribute("userID", uSaved.getUtenteId());
-                return ResponseEntity.ok(uSaved);
+                return ResponseEntity.created(null).body(uSaved);
             } else {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("{}");
             }
