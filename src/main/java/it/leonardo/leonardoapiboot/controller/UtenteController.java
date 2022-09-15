@@ -573,6 +573,7 @@ public class UtenteController {
             if (utente.isPresent()) log.info("Utente trovato");
 
             if (utente.isPresent() && !oldEmail.equalsIgnoreCase(newEmail)) {
+                log.info("Dentro");
                 return ResponseEntity.status(HttpStatus.CONFLICT).body("{\"duplicatedField\":\"email\"}");
             }
 
