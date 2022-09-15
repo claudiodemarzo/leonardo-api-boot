@@ -269,7 +269,7 @@ public class UtenteController {
             return ResponseEntity.badRequest().body("{\"error\" : \"Utente già loggato\"}");
 
         try {
-            String url = "https://graph.facebook.com/v14.0/me?fields=id,last_name,first_name,email,picture,birthday&access_token=" + token;
+            String url = "https://graph.facebook.com/v14.0/me?fields=id,last_name,first_name,email,birthday&access_token=" + token;
             RestTemplate restTemplate = new RestTemplate();
             ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<>(null), String.class);
 
@@ -283,7 +283,18 @@ public class UtenteController {
             String cognome = json.getString("last_name");
             String username = generateUsername(nome, cognome);
             String password = UUID.randomUUID().toString();
+
+            url = "https://graph.facebook.com/v14.0/me/picture?type=large&access_token=" + token;
+
+            restTemplate = new RestTemplate();
+            response = restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<>(null), String.class);
+            if(response.getStatusCodeValue() != 200)
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("{}");
+
+            json = new JSONObject(response.getBody());
+
             String foto = json.getJSONObject("picture").getJSONObject("data").getString("url");
+
 
             Utente u = new Utente();
             Optional<Utente> lookup = service.findByEmail(email);
