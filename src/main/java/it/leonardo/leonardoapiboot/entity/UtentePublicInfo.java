@@ -60,6 +60,12 @@ public class UtentePublicInfo {
     @Column(name = "online")
     private Boolean online;
 
+    @Column(name = "ig_username")
+    private String igUsername;
+
+    @Column(name = "tt_username")
+    private String ttUsername;
+
     @JsonManagedReference
     @OneToOne(mappedBy = "utentePublicInfo")
     @PrimaryKeyJoinColumn
@@ -227,6 +233,22 @@ public class UtentePublicInfo {
         this.activeTag = activeTag;
     }
 
+    public String getIgUsername() {
+        return igUsername;
+    }
+
+    public void setIgUsername(String igUsername) {
+        this.igUsername = igUsername;
+    }
+
+    public String getTtUsername() {
+        return ttUsername;
+    }
+
+    public void setTtUsername(String ttUsername) {
+        this.ttUsername = ttUsername;
+    }
+
     public Map<Object, Object> toMap() {
         Map<Object, Object> map = new HashMap<>();
         map.put("id", id);
@@ -245,6 +267,8 @@ public class UtentePublicInfo {
         map.put("libriVenduti", libriVenduti);
         map.put("online", online);
         map.put("avgRating", avgRating);
+        map.put("igUsername", igUsername);
+        map.put("ttUsername", ttUsername);
         List<Recensione> rr = new ArrayList<>(), rf = new ArrayList<>();
         if (recensioniFatte != null && !recensioniFatte.isEmpty()) {
             recensioniFatte.forEach(r -> {

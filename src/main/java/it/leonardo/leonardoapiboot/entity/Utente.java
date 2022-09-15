@@ -97,6 +97,12 @@ public class Utente implements Serializable {
     @Column(name = "online")
     private Boolean online = false;
 
+    @Column(name = "ig_username")
+    private String igUsername;
+
+    @Column(name = "tt_username")
+    private String ttUsername;
+
     @ManyToOne
     @JoinColumn(name = "activeTag")
     private Tag activeTag;
@@ -142,7 +148,6 @@ public class Utente implements Serializable {
     @OneToMany(mappedBy = "utente")
     @JsonBackReference
     private List<Notifica> notifiche;
-
 
     @OneToMany(mappedBy = "soldTo")
     @JsonBackReference
@@ -420,6 +425,22 @@ public class Utente implements Serializable {
         this.acquisti = acquisti;
     }
 
+    public String getIgUsername() {
+        return igUsername;
+    }
+
+    public void setIgUsername(String igUsername) {
+        this.igUsername = igUsername;
+    }
+
+    public String getTtUsername() {
+        return ttUsername;
+    }
+
+    public void setTtUsername(String ttUsername) {
+        this.ttUsername = ttUsername;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -451,6 +472,8 @@ public class Utente implements Serializable {
         this.cognome = upf.getCognome();
         this.bio = upf.getBio();
         this.moreInfo = upf.getMoreInfo();
+        this.igUsername = upf.getIgUsername();
+        this.ttUsername = upf.getTtUsername();
     }
 
     public void copyFromPrivateUpdateForm(UpdatePrivateForm upf) {
