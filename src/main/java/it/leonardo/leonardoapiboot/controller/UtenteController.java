@@ -27,12 +27,15 @@ import org.json.JSONObject;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpSession;
@@ -249,29 +252,38 @@ public class UtenteController {
 
     @Operation(description = "Effettua il login/registrazione con Facebook, a partire dai dati recuperabili dalle loro API")
     @Parameters(value = {
-            @Parameter(name = "form", description = "Form costituito dai dati recuperabili dalle api di Facebook", required = true, schema = @Schema(implementation = FacebookLoginForm.class))
+            @Parameter(name = "accessToken", description = "Token di accesso recuperato da Facebook", required = true)
     })
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Utente registrato con successo"),
             @ApiResponse(responseCode = "400", description = "L'utente è gia loggato"),
-            @ApiResponse(responseCode = "401", description = "JWT non valido."),
+            @ApiResponse(responseCode = "401", description = "Token non valido."),
             @ApiResponse(responseCode = "409", description = "L'email è associata all'account Facebook è l'email di un utente già registrato, la quale mail non è verificata"),
             @ApiResponse(responseCode = "500", description = "Errore generico del server.")
     })
     @PostMapping("/facebookSignIn")
-    public ResponseEntity<Object> facebookSignIn(FacebookLoginForm form) {
-        log.info("Invoked UtenteController.googleSignIn(" + form + ")");
+    public ResponseEntity<Object> facebookSignIn(String token) {
+        log.info("Invoked UtenteController.googleSignIn(" + token + ")");
 
         if (session.getAttribute("token") != null)
             return ResponseEntity.badRequest().body("{\"error\" : \"Utente già loggato\"}");
 
         try {
-            String email = form.getEmail();
-            String nome = form.getNome();
-            String cognome = form.getCognome();
+            String url = "https://graph.facebook.com/v14.0/me?fields=id%2Clast_name%2Cfirst_name%2Cemail%2Cpicture%2Cbirthday&access_token=" + token;
+            RestTemplate restTemplate = new RestTemplate();
+            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<>(null), String.class);
+
+            if(response.getStatusCodeValue() != 200)
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("{}");
+
+            JSONObject json = new JSONObject(response.getBody());
+
+            String email = json.getString("email");
+            String nome = json.getString("first_name");
+            String cognome = json.getString("last_name");
             String username = generateUsername(nome, cognome);
             String password = UUID.randomUUID().toString();
-            String foto = form.getFoto();
+            String foto = json.getJSONObject("picture").getJSONObject("data").getString("url");
 
             Utente u = new Utente();
             Optional<Utente> lookup = service.findByEmail(email);
@@ -307,9 +319,9 @@ public class UtenteController {
             smm.setText("Ti sei registrato con Google, e devi resettare la password, e cambiare la tua data di nascita: Ecco il link di reset: https://leonardostart.tk/reset-password?token=" + resetToken);
             mailSender.send(smm);
 
-            String token = UUID.randomUUID().toString();
+            String aToken = UUID.randomUUID().toString();
 
-            session.setAttribute("token", token);
+            session.setAttribute("token", aToken);
             session.setAttribute("userID", uSaved.getUtenteId());
             return ResponseEntity.status(201).body("{\"userID\" : \"" + uSaved.getUtenteId() + "\", \"propic\" : \"" + uSaved.getFoto() + "\"}");
         } catch (Exception e) {
