@@ -27,6 +27,7 @@ import org.json.JSONObject;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
@@ -602,7 +603,9 @@ public class UtenteController {
             Utente uSaved = service.save(u);
 
             return ResponseEntity.ok(uSaved);
-        } catch (Exception e) {
+        }catch(DataIntegrityViolationException ex){
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("{\"duplicatedField\":\"email\"}");
+        } catch(Exception e) {
             Sentry.captureException(e);
             return ResponseEntity.internalServerError().build();
         }
