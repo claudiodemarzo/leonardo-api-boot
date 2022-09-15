@@ -21,13 +21,11 @@ import org.apache.batik.transcoder.image.PNGTranscoder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.tomcat.util.codec.binary.Base64;
-import org.hibernate.exception.ConstraintViolationException;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
@@ -42,7 +40,6 @@ import java.awt.image.DataBufferByte;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
-import java.sql.SQLIntegrityConstraintViolationException;
 import java.time.Instant;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -572,7 +569,7 @@ public class UtenteController {
             String newEmail = u.getEmail();
 
             Optional<Utente> utente = service.findByEmail(newEmail);
-            if (utente.isPresent() && !oldEmail.equals(newEmail)) {
+            if (!oldEmail.equalsIgnoreCase(newEmail) && utente.isPresent()) {
                 return ResponseEntity.status(HttpStatus.CONFLICT).body("{\"duplicatedField\":\"email\"}");
             }
 
@@ -605,8 +602,6 @@ public class UtenteController {
 
             return ResponseEntity.ok(uSaved);
         } catch (Exception e) {
-            if (e instanceof DataIntegrityViolationException || e instanceof ConstraintViolationException || e instanceof SQLIntegrityConstraintViolationException ex)
-                return ResponseEntity.status(HttpStatus.CONFLICT).body("{\"duplicatedField\":\"email\"}");
             Sentry.captureException(e);
             return ResponseEntity.internalServerError().build();
 
