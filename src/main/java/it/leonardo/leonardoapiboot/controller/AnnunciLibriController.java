@@ -117,6 +117,7 @@ public class AnnunciLibriController {
                 Collections.reverse(lstAnn);
                 libro.setAnnunci(lstAnn);
             });
+            lst.removeIf(l -> l.getAnnunci().isEmpty());
             return ResponseEntity.ok(lst);
         } catch (Exception e) {
             Sentry.captureException(e);
