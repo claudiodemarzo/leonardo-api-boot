@@ -24,7 +24,7 @@ public class UtenteServiceImpl implements UtenteService {
     @Override
     @SentrySpan
     public Optional<Utente> findByEmail(String e) {
-        return repo.findAllByEmail(e);
+        return repo.findByEmail(e);
     }
 
     @Override

@@ -569,7 +569,10 @@ public class UtenteController {
             String newEmail = u.getEmail();
 
             Optional<Utente> utente = service.findByEmail(newEmail);
-            if (!oldEmail.equalsIgnoreCase(newEmail) && utente.isPresent()) {
+            if (!oldEmail.equalsIgnoreCase(newEmail)) log.debug("Email modificata");
+            if (utente.isPresent()) log.debug("Utente trovato");
+
+            if (utente.isPresent() && !oldEmail.equalsIgnoreCase(newEmail)) {
                 return ResponseEntity.status(HttpStatus.CONFLICT).body("{\"duplicatedField\":\"email\"}");
             }
 
