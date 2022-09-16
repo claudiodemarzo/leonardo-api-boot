@@ -53,6 +53,7 @@ public class ChatWSController {
         Integer utenteDest = message.getUtenteDest();
         Utente mit = utenteService.findById(utenteMit).orElse(null);
         if (mit == null) return;
+        if(!mit.getEmail_confermata()) return;
         Utente dest = utenteService.findById(utenteDest).orElse(null);
         if (dest == null) return;
         if (mit.getUtenteId().equals(dest.getUtenteId())) return;

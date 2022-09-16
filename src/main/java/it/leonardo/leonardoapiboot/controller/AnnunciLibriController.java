@@ -245,6 +245,7 @@ public class AnnunciLibriController {
             @ApiResponse(responseCode = "201", description = "La richiesta è andata a buon fine, l'annuncio è stato creato."),
             @ApiResponse(responseCode = "400", description = "Alcuni dei campi specificati sono non validi. Maggiori informazioni nell'attributo 'invalidField' del body json di risposta, oppure l'annuncio non è pubblicabile a causa del suo stato di usura."),
             @ApiResponse(responseCode = "401", description = "Sessione non settata e/o token invalido"),
+            @ApiResponse(responseCode = "403", description = "L'utente non ha ancora verificato l'email"),
             @ApiResponse(responseCode = "500", description = "Errore generico del server")})
     @PostMapping
     public ResponseEntity<Object> insert(CreateAnnuncioForm form) {
@@ -255,6 +256,7 @@ public class AnnunciLibriController {
         String userid = session.getAttribute("userID").toString();
         try {
             Optional<Libro> opt = libroService.findByIsbn(form.getIsbn());
+            if(!utenteService.findById(Integer.parseInt(userid)).get().getEmail_confermata()) return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
 
             Libro l = null;
             if (opt.isPresent()) l = opt.get();
@@ -337,6 +339,7 @@ public class AnnunciLibriController {
             @ApiResponse(responseCode = "200", description = "La richiesta è andata a buon fine, l'annuncio è stato impostato come venduto."),
             @ApiResponse(responseCode = "404", description = "L'annuncio non esiste/non è di proprietà dell'utente, o l'utente specificato non esiste"),
             @ApiResponse(responseCode = "401", description = "Sessione non settata e/o token invalido"),
+            @ApiResponse(responseCode = "403", description = "L'utente non ha ancora verificato l'email"),
             @ApiResponse(responseCode = "500", description = "Errore generico del server"),
             @ApiResponse(responseCode = "409", description = "L'annuncio è già stato impostato come venduto")
     })
@@ -346,6 +349,7 @@ public class AnnunciLibriController {
         String token = session.getAttribute("token") == null ? null : session.getAttribute("token").toString();
         if (token == null) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         try {
+            if(!utenteService.findById(Integer.parseInt(session.getAttribute("userID").toString())).get().getEmail_confermata()) return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
             Optional<AnnunciLibri> opt = service.findById(idAnn);
             if (!opt.isPresent()) return new ResponseEntity<>("{\"invalidField\" : \"id\"}", HttpStatus.NOT_FOUND);
             AnnunciLibri ann = opt.get();
@@ -375,6 +379,7 @@ public class AnnunciLibriController {
             @ApiResponse(responseCode = "400", description = "Non è stato passato il parametro id o il parametro ha valore null"),
             @ApiResponse(responseCode = "404", description = "L'annuncio non esiste/è di proprietà dell'utente stesso"),
             @ApiResponse(responseCode = "401", description = "Sessione non settata e/o token invalido"),
+            @ApiResponse(responseCode = "403", description = "L'utente non ha ancora verificato l'email"),
             @ApiResponse(responseCode = "500", description = "Errore generico del server")
     })
     @PostMapping("/contact")
@@ -390,6 +395,9 @@ public class AnnunciLibriController {
             if (ann.getUtente().getId().equals(utenteService.findById(Integer.parseInt(session.getAttribute("userID").toString())).get().getUtenteId()) || ann.getStato() != 1) {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
+
+            if(!utenteService.findById(Integer.parseInt(session.getAttribute("userID").toString())).get().getEmail_confermata()) return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+
             ChatWSController.sendNotification(ann.getUtente().getId().toString(), new Notifica(Notifica.TipoNotifica.info, "Richiesta di contatto", "@" + utenteService.findById(Integer.parseInt(session.getAttribute("userID").toString())).get().getUsername() + " è interessato al tuo annuncio: " + ann.getLibro().getNome(), utenteService.findById(ann.getUtente().getId()).get()), notificaService);
 
             BigDecimal costo = BigDecimal.valueOf(ann.getPrezzo());
