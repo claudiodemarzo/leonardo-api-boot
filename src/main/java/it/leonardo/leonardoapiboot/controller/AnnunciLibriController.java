@@ -372,6 +372,7 @@ public class AnnunciLibriController {
     @Operation(description = "Invia una notifica al proprietario dell'annuncio")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "La richiesta è andata a buon fine, la notifica è stata inviata."),
+            @ApiResponse(responseCode = "400", description = "Non è stato passato il parametro id o il parametro ha valore null"),
             @ApiResponse(responseCode = "404", description = "L'annuncio non esiste/è di proprietà dell'utente stesso"),
             @ApiResponse(responseCode = "401", description = "Sessione non settata e/o token invalido"),
             @ApiResponse(responseCode = "500", description = "Errore generico del server")
@@ -381,6 +382,7 @@ public class AnnunciLibriController {
         log.info("Invoked AnnunciLibriController.contact(" + id + ")");
         String token = session.getAttribute("token") == null ? null : session.getAttribute("token").toString();
         if (token == null) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        if(id == null) return ResponseEntity.badRequest().build();
         try {
             Optional<AnnunciLibri> opt = service.findById(id);
             if (!opt.isPresent()) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
