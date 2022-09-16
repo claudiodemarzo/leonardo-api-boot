@@ -4,7 +4,9 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
+import io.sentry.Breadcrumb;
 import io.sentry.Sentry;
+import io.sentry.SentryLevel;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -284,18 +286,6 @@ public class UtenteController {
             String username = generateUsername(nome, cognome);
             String password = UUID.randomUUID().toString();
 
-            url = "https://graph.facebook.com/v14.0/me/picture?type=large&access_token=" + token;
-
-            restTemplate = new RestTemplate();
-            response = restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<>(null), String.class);
-            if(response.getStatusCodeValue() != 200)
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("{}");
-
-            json = new JSONObject(response.getBody());
-
-            String foto = json.getJSONObject("picture").getJSONObject("data").getString("url");
-
-
             Utente u = new Utente();
             Optional<Utente> lookup = service.findByEmail(email);
 
@@ -308,6 +298,22 @@ public class UtenteController {
                     return ResponseEntity.status(HttpStatus.CONFLICT).body("{}");
             }
             u.setEmail(email);
+
+            url = "https://graph.facebook.com/v14.0/me/picture?type=large&access_token=" + token;
+
+            restTemplate = new RestTemplate();
+            response = restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<>(null), String.class);
+            if(response.getStatusCodeValue() != 200)
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("{}");
+
+            Breadcrumb b = new Breadcrumb();
+            b.setLevel(SentryLevel.DEBUG);
+            b.setMessage("Response graphQL api facebook per picture");
+            b.setData("response", response.getBody());
+
+            json = new JSONObject(response.getBody());
+
+            String foto = json.getJSONObject("picture").getJSONObject("data").getString("url");
 
             u.setNome(nome);
             u.setCognome(cognome);
