@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import it.leonardo.leonardoapiboot.entity.AnnunciLibri;
 import it.leonardo.leonardoapiboot.entity.AnnuncioWithoutRecensione;
 import it.leonardo.leonardoapiboot.entity.Recensione;
 import it.leonardo.leonardoapiboot.entity.form.InserisciRecensioneForm;
@@ -115,9 +116,10 @@ public class RecensioniController {
         String userid = session.getAttribute("userID").toString();
 
         try {
-            Optional<Recensione> recensioneOptional = recensioneService.getById(id);
-            if (recensioneOptional.isEmpty()) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            Recensione rec = recensioneOptional.get();
+            Optional<AnnunciLibri> annunciLibriOptional = annunciLibriService.findById(id);
+            if (annunciLibriOptional.isEmpty()) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            Recensione rec = annunciLibriOptional.get().getRecensione();
+            if (rec == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             if (!rec.getUtenteRecensore().getUtenteId().equals(Integer.parseInt(userid))) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
             rec.setCommento(form.getCommento().trim().isBlank() ? null : form.getCommento());
