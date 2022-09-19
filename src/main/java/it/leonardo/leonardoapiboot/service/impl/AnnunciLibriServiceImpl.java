@@ -80,9 +80,10 @@ public class AnnunciLibriServiceImpl implements AnnunciLibriService {
 
         List<AnnunciLibri> lstAnnunciFiltered = new ArrayList<>();
         lstAnnunci.forEach(a -> {
-            if (stato.equalsIgnoreCase("t") || (a.getLivello_usura() + "").equalsIgnoreCase(stato))
-                if (prezzoMax == -1 || a.getPrezzo() <= prezzoMax)
-                    lstAnnunciFiltered.add(a);
+            if (a.getStato() == 1)
+                if (stato.equalsIgnoreCase("t") || (a.getLivello_usura() + "").equalsIgnoreCase(stato))
+                    if (prezzoMax == -1 || a.getPrezzo() <= prezzoMax)
+                        lstAnnunciFiltered.add(a);
         });
 
         lstAnnunciFiltered.sort((a1, a2) -> switch (orderBy.toLowerCase()) {
