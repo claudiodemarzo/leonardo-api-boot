@@ -155,7 +155,7 @@ public class AnnunciLibriController {
             if (!all) {
                 l.getAnnunci().removeIf(ann -> ann.getStato() != 1 && (userID == null || ann.getUtente().getId() != Integer.parseInt(userID)));
             } else {
-                if (al.getStato() != 1 && (userID == null || al.getUtente().getId() != Integer.parseInt(userID)))
+                if (al.getStato() != 1 && (userID == null || al.getUtente().getId() != Integer.parseInt(userID) || (al.getSoldTo() != null && Integer.parseInt(userID) != al.getSoldTo().getId())))
                     return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
 
@@ -447,7 +447,6 @@ public class AnnunciLibriController {
     }
 
 
-    //TODO: non funzia!
     @Operation(description = "Restituisce la lista di libri ed annunci libri acquistati dall'utente loggato")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "La richiesta è andata a buon fine, la lista è stata popolata"),
