@@ -77,11 +77,12 @@ public class AnnunciLibriServiceImpl implements AnnunciLibriService {
 
         List<Integer> uniqueIDs = new ArrayList<>();
 
-        for (Libro l : lstLibri) {
-            if (!uniqueIDs.contains(l.getLibroId())) {
-                uniqueIDs.add(l.getLibroId());
+        for (int i = 0; i < lstLibri.size(); i++) {
+            if (!uniqueIDs.contains(lstLibri.get(i).getLibroId())) {
+                uniqueIDs.add(lstLibri.get(i).getLibroId());
             }else{
-                lstLibri.remove(l);
+                lstLibri.remove(i);
+                i--;
             }
         }
 
