@@ -155,7 +155,9 @@ public class AnnunciLibriController {
             if (!all) {
                 l.getAnnunci().removeIf(ann -> ann.getStato() != 1 && (userID == null || ann.getUtente().getId() != Integer.parseInt(userID)));
             } else {
-                if (al.getStato() != 1 && (userID == null || al.getUtente().getId() != Integer.parseInt(userID) || (al.getSoldTo() != null && Integer.parseInt(userID) != al.getSoldTo().getId())))
+                //utente che richiede deve poter vedere. utente che ha comprato deve poter vedere
+                // al.getStato() != 1 && (Integer.parseInt(userID) != al.getUtente().getId() || (al.getSoldTo() != null && Integer.parseInt(userID) == al.getSoldTo().getId()))
+                if (al.getStato() != 1 && (userID != null && ((Integer.parseInt(userID) == al.getUtente().getId()) || (al.getSoldTo() != null && Integer.parseInt(userID) == al.getSoldTo().getId()))))//(al.getStato() != 1 && ((userID == null || al.getUtente().getId() != Integer.parseInt(userID)) || (al.getSoldTo() != null && Integer.parseInt(userID) != al.getSoldTo().getId())))
                     return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
 
@@ -501,7 +503,7 @@ public class AnnunciLibriController {
 
             for (AnnunciLibri al : annunci) {
                 int index = findIndex(libri, al.getLibro().getLibroId());
-                if(index == -1){
+                if (index == -1) {
                     Libro l = al.getLibro();
                     l.setAnnunci(new ArrayList<>());
                     l.getAnnunci().add(al);
@@ -518,7 +520,7 @@ public class AnnunciLibriController {
         }
     }
 
-    private int findIndex(List<Libro> list, Integer libroId){
+    private int findIndex(List<Libro> list, Integer libroId) {
         for (int i = 0; i < list.size(); i++) {
             if (list.get(i).getLibroId().equals(libroId)) return i;
         }
