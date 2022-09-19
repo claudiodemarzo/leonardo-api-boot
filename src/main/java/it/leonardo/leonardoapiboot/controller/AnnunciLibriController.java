@@ -522,30 +522,33 @@ public class AnnunciLibriController {
             Sentry.addBreadcrumb(b);
             libri.sort((l1, l2) -> switch (orderBy){
                 case "prezzoasc" -> {
-                    b.setMessage("Confronto libro");
-                    b.setData("l1", l1);
-                    b.setData("l2", l2);
-                    b.setData("result", l1.getAnnunci().get(0).getPrezzo().compareTo(l2.getAnnunci().get(0).getPrezzo()));
-                    b.setLevel(SentryLevel.DEBUG);
-                    Sentry.addBreadcrumb(b);
+                    Breadcrumb b2 = new Breadcrumb();
+                    b2.setMessage("Confronto libro");
+                    b2.setData("l1", l1);
+                    b2.setData("l2", l2);
+                    b2.setData("result", l1.getAnnunci().get(0).getPrezzo().compareTo(l2.getAnnunci().get(0).getPrezzo()));
+                    b2.setLevel(SentryLevel.DEBUG);
+                    Sentry.addBreadcrumb(b2);
                     yield l1.getAnnunci().get(0).getPrezzo().compareTo(l2.getAnnunci().get(0).getPrezzo());
                 }
                 case "prezzodesc" -> {
-                    b.setMessage("Confronto libro");
-                    b.setData("l1", l1);
-                    b.setData("l2", l2);
-                    b.setData("result", l1.getAnnunci().get(0).getPrezzo().compareTo(l2.getAnnunci().get(0).getPrezzo()));
-                    b.setLevel(SentryLevel.DEBUG);
-                    Sentry.addBreadcrumb(b);
+                    Breadcrumb b2 = new Breadcrumb();
+                    b2.setMessage("Confronto libro");
+                    b2.setData("l1", l1);
+                    b2.setData("l2", l2);
+                    b2.setData("result", l1.getAnnunci().get(0).getPrezzo().compareTo(l2.getAnnunci().get(0).getPrezzo()));
+                    b2.setLevel(SentryLevel.DEBUG);
+                    Sentry.addBreadcrumb(b2);
                     yield l2.getAnnunci().get(0).getPrezzo().compareTo(l1.getAnnunci().get(0).getPrezzo());
                 }
                 case "rec" -> {
-                    b.setMessage("Confronto libro");
-                    b.setData("l1", l1);
-                    b.setData("l2", l2);
-                    b.setData("result", l1.getAnnunci().get(0).getPrezzo().compareTo(l2.getAnnunci().get(0).getPrezzo()));
-                    b.setLevel(SentryLevel.DEBUG);
-                    Sentry.addBreadcrumb(b);
+                    Breadcrumb b2 = new Breadcrumb();
+                    b2.setMessage("Confronto libro");
+                    b2.setData("l1", l1);
+                    b2.setData("l2", l2);
+                    b2.setData("result", l1.getAnnunci().get(0).getPrezzo().compareTo(l2.getAnnunci().get(0).getPrezzo()));
+                    b2.setLevel(SentryLevel.DEBUG);
+                    Sentry.addBreadcrumb(b2);
                     if (l1.getAnnunci().get(0).getUtente().getAvgRating() == null) yield 1;
                     if (l2.getAnnunci().get(0).getUtente().getAvgRating() == null) yield -1;
                     yield l2.getAnnunci().get(0).getUtente().getAvgRating().getAvgVoto().compareTo(l1.getAnnunci().get(0).getUtente().getAvgRating().getAvgVoto());
@@ -553,10 +556,11 @@ public class AnnunciLibriController {
                 case "data" -> l2.getAnnunci().get(0).getCreated_at().compareTo(l1.getAnnunci().get(0).getCreated_at());
                 default -> 0;
             } );
-            b.setMessage("Libri dopo il sorting");
-            b.setData("libri", libri);
-            b.setLevel(SentryLevel.DEBUG);
-            Sentry.addBreadcrumb(b);
+            Breadcrumb b1 = new Breadcrumb();
+            b1.setMessage("Libri dopo il sorting");
+            b1.setData("libri", libri);
+            b1.setLevel(SentryLevel.DEBUG);
+            Sentry.addBreadcrumb(b1);
 
             return ResponseEntity.ok(libri);
         } catch (Exception e) {
