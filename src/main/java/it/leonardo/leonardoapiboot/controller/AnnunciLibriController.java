@@ -15,6 +15,7 @@ import it.leonardo.leonardoapiboot.entity.form.CreateAnnuncioForm;
 import it.leonardo.leonardoapiboot.entity.form.UpdateAnnuncioForm;
 import it.leonardo.leonardoapiboot.service.*;
 import it.leonardo.leonardoapiboot.utils.AnnunciComparator;
+import it.leonardo.leonardoapiboot.utils.LibriComparator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.opencv.core.CvType;
@@ -520,7 +521,9 @@ public class AnnunciLibriController {
             b.setData("libri", libri);
             b.setLevel(SentryLevel.DEBUG);
             Sentry.addBreadcrumb(b);
-            libri.sort((l1, l2) -> switch (orderBy){
+            Comparator<Libro> comparator = new LibriComparator(orderBy);
+            libri.sort(comparator);
+            /*libri.sort((l1, l2) -> switch (orderBy){
                 case "prezzoasc" -> {
                     Breadcrumb b2 = new Breadcrumb();
                     b2.setMessage("Confronto libro");
@@ -555,7 +558,7 @@ public class AnnunciLibriController {
                 }
                 case "data" -> l2.getAnnunci().get(0).getCreated_at().compareTo(l1.getAnnunci().get(0).getCreated_at());
                 default -> 0;
-            } );
+            } );*/
             Breadcrumb b1 = new Breadcrumb();
             b1.setMessage("Libri dopo il sorting");
             b1.setData("libri", libri);
