@@ -1,7 +1,9 @@
 package it.leonardo.leonardoapiboot.controller;
 
 
+import io.sentry.Breadcrumb;
 import io.sentry.Sentry;
+import io.sentry.SentryLevel;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -513,10 +515,37 @@ public class AnnunciLibriController {
                 }
             }
 
+            Breadcrumb b = new Breadcrumb();
+            b.setMessage("Libri prima del sorting");
+            b.setData("libri", libri);
+            b.setLevel(SentryLevel.DEBUG);
+            Sentry.addBreadcrumb(b);
             libri.sort((l1, l2) -> switch (orderBy){
-                case "prezzoasc" -> l1.getAnnunci().get(0).getPrezzo().compareTo(l2.getAnnunci().get(0).getPrezzo());
-                case "prezzodesc" -> l2.getAnnunci().get(0).getPrezzo().compareTo(l1.getAnnunci().get(0).getPrezzo());
+                case "prezzoasc" -> {
+                    b.setMessage("Confronto libro");
+                    b.setData("l1", l1);
+                    b.setData("l2", l2);
+                    b.setData("result", l1.getAnnunci().get(0).getPrezzo().compareTo(l2.getAnnunci().get(0).getPrezzo()));
+                    b.setLevel(SentryLevel.DEBUG);
+                    Sentry.addBreadcrumb(b);
+                    yield l1.getAnnunci().get(0).getPrezzo().compareTo(l2.getAnnunci().get(0).getPrezzo());
+                }
+                case "prezzodesc" -> {
+                    b.setMessage("Confronto libro");
+                    b.setData("l1", l1);
+                    b.setData("l2", l2);
+                    b.setData("result", l1.getAnnunci().get(0).getPrezzo().compareTo(l2.getAnnunci().get(0).getPrezzo()));
+                    b.setLevel(SentryLevel.DEBUG);
+                    Sentry.addBreadcrumb(b);
+                    yield l2.getAnnunci().get(0).getPrezzo().compareTo(l1.getAnnunci().get(0).getPrezzo());
+                }
                 case "rec" -> {
+                    b.setMessage("Confronto libro");
+                    b.setData("l1", l1);
+                    b.setData("l2", l2);
+                    b.setData("result", l1.getAnnunci().get(0).getPrezzo().compareTo(l2.getAnnunci().get(0).getPrezzo()));
+                    b.setLevel(SentryLevel.DEBUG);
+                    Sentry.addBreadcrumb(b);
                     if (l1.getAnnunci().get(0).getUtente().getAvgRating() == null) yield 1;
                     if (l2.getAnnunci().get(0).getUtente().getAvgRating() == null) yield -1;
                     yield l2.getAnnunci().get(0).getUtente().getAvgRating().getAvgVoto().compareTo(l1.getAnnunci().get(0).getUtente().getAvgRating().getAvgVoto());
@@ -524,6 +553,10 @@ public class AnnunciLibriController {
                 case "data" -> l2.getAnnunci().get(0).getCreated_at().compareTo(l1.getAnnunci().get(0).getCreated_at());
                 default -> 0;
             } );
+            b.setMessage("Libri dopo il sorting");
+            b.setData("libri", libri);
+            b.setLevel(SentryLevel.DEBUG);
+            Sentry.addBreadcrumb(b);
 
             return ResponseEntity.ok(libri);
         } catch (Exception e) {
