@@ -150,6 +150,14 @@ public class AnnunciLibri {
         this.saleDate = saleDate;
     }
 
+    public Recensione getRecensione() {
+        return recensione;
+    }
+
+    public void setRecensione(Recensione recensione) {
+        this.recensione = recensione;
+    }
+
     public AnnunciLibri() {
     }
 
