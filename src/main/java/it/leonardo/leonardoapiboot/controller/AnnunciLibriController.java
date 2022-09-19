@@ -513,6 +513,18 @@ public class AnnunciLibriController {
                 }
             }
 
+            libri.sort((l1, l2) -> switch (orderBy){
+                case "prezzoasc" -> l1.getAnnunci().get(0).getPrezzo().compareTo(l2.getAnnunci().get(0).getPrezzo());
+                case "prezzodesc" -> l2.getAnnunci().get(0).getPrezzo().compareTo(l1.getAnnunci().get(0).getPrezzo());
+                case "rec" -> {
+                    if (l1.getAnnunci().get(0).getUtente().getAvgRating() == null) yield 1;
+                    if (l2.getAnnunci().get(0).getUtente().getAvgRating() == null) yield -1;
+                    yield l2.getAnnunci().get(0).getUtente().getAvgRating().getAvgVoto().compareTo(l1.getAnnunci().get(0).getUtente().getAvgRating().getAvgVoto());
+                }
+                case "data" -> l2.getAnnunci().get(0).getCreated_at().compareTo(l1.getAnnunci().get(0).getCreated_at());
+                default -> 0;
+            } );
+
             return ResponseEntity.ok(libri);
         } catch (Exception e) {
             Sentry.captureException(e);
