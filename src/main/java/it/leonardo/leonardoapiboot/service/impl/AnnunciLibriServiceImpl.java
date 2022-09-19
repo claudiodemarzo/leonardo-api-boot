@@ -88,8 +88,11 @@ public class AnnunciLibriServiceImpl implements AnnunciLibriService {
         lstAnnunciFiltered.sort((a1, a2) -> switch (orderBy.toLowerCase()) {
             case "prezzoasc" -> a1.getPrezzo().compareTo(a2.getPrezzo());
             case "prezzodesc" -> a2.getPrezzo().compareTo(a1.getPrezzo());
-            case "rec" ->
-                    a2.getUtente().getAvgRating().getAvgVoto().compareTo(a1.getUtente().getAvgRating().getAvgVoto());
+            case "rec" -> {
+                if (a1.getUtente().getAvgRating() == null) yield 1;
+                if (a2.getUtente().getAvgRating() == null) yield -1;
+                yield a2.getUtente().getAvgRating().getAvgVoto().compareTo(a1.getUtente().getAvgRating().getAvgVoto());
+            }
             default -> 0;
         });
 
