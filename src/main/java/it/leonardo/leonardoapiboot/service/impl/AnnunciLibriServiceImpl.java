@@ -75,6 +75,16 @@ public class AnnunciLibriServiceImpl implements AnnunciLibriService {
         lstLibri.addAll(libriRepo.findAllByCasaedLikeIgnoreCase("%" + query + "%"));
         lstLibri.addAll(libriRepo.findAllByCategoriaLikeIgnoreCase("%" + query + "%"));
 
+        List<Integer> uniqueIDs = new ArrayList<>();
+
+        for (Libro l : lstLibri) {
+            if (!uniqueIDs.contains(l.getLibroId())) {
+                uniqueIDs.add(l.getLibroId());
+            }else{
+                lstLibri.remove(l);
+            }
+        }
+
         List<AnnunciLibri> lstAnnunci = new ArrayList<>();
         lstLibri.forEach(l -> lstAnnunci.addAll(l.getAnnunci()));
 
