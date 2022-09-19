@@ -18,6 +18,8 @@ public interface AnnunciLibriService {
 
     List<AnnunciLibri> getByLibro(Libro l);
 
+    List<AnnunciLibri> getAnnunciAcquistati(Utente u);
+
     AnnunciLibri save(AnnunciLibri al);
 
 }

@@ -7,6 +7,7 @@ import it.leonardo.leonardoapiboot.entity.Utente;
 import it.leonardo.leonardoapiboot.entity.UtentePublicInfo;
 import it.leonardo.leonardoapiboot.repository.AnnunciLibriRepository;
 import it.leonardo.leonardoapiboot.service.AnnunciLibriService;
+import it.leonardo.leonardoapiboot.service.UtentePublicInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +19,9 @@ public class AnnunciLibriServiceImpl implements AnnunciLibriService {
 
     @Autowired
     private AnnunciLibriRepository repo;
+
+    @Autowired
+    private UtentePublicInfoService utentePublicInfoService;
 
     @Override
     @SentrySpan
@@ -41,6 +45,13 @@ public class AnnunciLibriServiceImpl implements AnnunciLibriService {
     @SentrySpan
     public List<AnnunciLibri> getByLibro(Libro l) {
         return repo.findAllByLibro(l);
+    }
+
+    @Override
+    @SentrySpan
+    public List<AnnunciLibri> getAnnunciAcquistati(Utente u) {
+        UtentePublicInfo upf = utentePublicInfoService.getById(u.getUtenteId()).get();
+        return repo.findAllBySoldToAndStato(upf, 1);
     }
 
     @Override

@@ -439,4 +439,35 @@ public class AnnunciLibriController {
             return ResponseEntity.internalServerError().build();
         }
     }
+
+    @Operation(description = "Restituisce la lista di libri ed annunci libri acquistati dall'utente loggato")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "La richiesta è andata a buon fine, la lista è stata popolata"),
+            @ApiResponse(responseCode = "204", description = "La richiesta è andata a buon fine, la lista è vuota"),
+            @ApiResponse(responseCode = "401", description = "Sessione non settata e/o token invalido"),
+            @ApiResponse(responseCode = "500", description = "Errore generico del server")
+    })
+    @GetMapping("/bought")
+    public ResponseEntity<List<Libro>> getBought() {
+        log.info("Invoked AnnunciLibriController.getBought()");
+        String token = session.getAttribute("token") == null ? null : session.getAttribute("token").toString();
+        if (token == null) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        try {
+            List<Libro> libri = new ArrayList<>();
+            List<AnnunciLibri> annunci = service.getAnnunciAcquistati(utenteService.findById(Integer.parseInt(session.getAttribute("userID").toString())).get());
+
+            if(annunci.isEmpty()) return ResponseEntity.noContent().build();
+
+            for(AnnunciLibri al : annunci) {
+                Libro l = al.getLibro();
+                l.setAnnunci(Collections.singletonList(al));
+                libri.add(l);
+            }
+
+            return ResponseEntity.ok(libri);
+        } catch (Exception e) {
+            Sentry.captureException(e);
+            return ResponseEntity.internalServerError().build();
+        }
+    }
 }
