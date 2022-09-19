@@ -3,6 +3,9 @@ package it.leonardo.leonardoapiboot.controller;
 
 import io.sentry.Sentry;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import it.leonardo.leonardoapiboot.entity.*;
@@ -152,13 +155,13 @@ public class AnnunciLibriController {
             if (!all) {
                 l.getAnnunci().removeIf(ann -> ann.getStato() != 1 && (userID == null || ann.getUtente().getId() != Integer.parseInt(userID)));
             } else {
-                if(al.getStato() != 1 && (userID == null || al.getUtente().getId() != Integer.parseInt(userID)))
+                if (al.getStato() != 1 && (userID == null || al.getUtente().getId() != Integer.parseInt(userID)))
                     return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
 
             int index = l.getAnnunci().indexOf(al);
 
-            al =  l.getAnnunci().remove(index);
+            al = l.getAnnunci().remove(index);
 
             l.getAnnunci().add(0, al);
 
@@ -256,7 +259,8 @@ public class AnnunciLibriController {
         String userid = session.getAttribute("userID").toString();
         try {
             Optional<Libro> opt = libroService.findByIsbn(form.getIsbn());
-            if(!utenteService.findById(Integer.parseInt(userid)).get().getEmail_confermata()) return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            if (!utenteService.findById(Integer.parseInt(userid)).get().getEmail_confermata())
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
 
             Libro l = null;
             if (opt.isPresent()) l = opt.get();
@@ -344,12 +348,13 @@ public class AnnunciLibriController {
             @ApiResponse(responseCode = "409", description = "L'annuncio è già stato impostato come venduto")
     })
     @PostMapping("/sold")
-    public ResponseEntity<Object> setSold(Integer idAnn,Integer idUser) {
+    public ResponseEntity<Object> setSold(Integer idAnn, Integer idUser) {
         log.info("Invoked AnnunciLibriController.setSold(" + idAnn + ", " + idUser + ")");
         String token = session.getAttribute("token") == null ? null : session.getAttribute("token").toString();
         if (token == null) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         try {
-            if(!utenteService.findById(Integer.parseInt(session.getAttribute("userID").toString())).get().getEmail_confermata()) return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            if (!utenteService.findById(Integer.parseInt(session.getAttribute("userID").toString())).get().getEmail_confermata())
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
             Optional<AnnunciLibri> opt = service.findById(idAnn);
             if (!opt.isPresent()) return new ResponseEntity<>("{\"invalidField\" : \"id\"}", HttpStatus.NOT_FOUND);
             AnnunciLibri ann = opt.get();
@@ -387,7 +392,7 @@ public class AnnunciLibriController {
         log.info("Invoked AnnunciLibriController.contact(" + id + ")");
         String token = session.getAttribute("token") == null ? null : session.getAttribute("token").toString();
         if (token == null) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        if(id == null) return ResponseEntity.badRequest().build();
+        if (id == null) return ResponseEntity.badRequest().build();
         try {
             Optional<AnnunciLibri> opt = service.findById(id);
             if (!opt.isPresent()) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -396,7 +401,8 @@ public class AnnunciLibriController {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
 
-            if(!utenteService.findById(Integer.parseInt(session.getAttribute("userID").toString())).get().getEmail_confermata()) return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            if (!utenteService.findById(Integer.parseInt(session.getAttribute("userID").toString())).get().getEmail_confermata())
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
 
             ChatWSController.sendNotification(ann.getUtente().getId().toString(), new Notifica(Notifica.TipoNotifica.info, "Richiesta di contatto", "@" + utenteService.findById(Integer.parseInt(session.getAttribute("userID").toString())).get().getUsername() + " è interessato al tuo annuncio: " + ann.getLibro().getNome(), utenteService.findById(ann.getUtente().getId()).get()), notificaService);
 
@@ -440,6 +446,8 @@ public class AnnunciLibriController {
         }
     }
 
+
+    //TODO: non funzia!
     @Operation(description = "Restituisce la lista di libri ed annunci libri acquistati dall'utente loggato")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "La richiesta è andata a buon fine, la lista è stata popolata"),
@@ -456,9 +464,9 @@ public class AnnunciLibriController {
             List<Libro> libri = new ArrayList<>();
             List<AnnunciLibri> annunci = service.getAnnunciAcquistati(utenteService.findById(Integer.parseInt(session.getAttribute("userID").toString())).get());
 
-            if(annunci.isEmpty()) return ResponseEntity.noContent().build();
+            if (annunci.isEmpty()) return ResponseEntity.noContent().build();
 
-            for(AnnunciLibri al : annunci) {
+            for (AnnunciLibri al : annunci) {
                 Libro l = al.getLibro();
                 l.setAnnunci(Collections.singletonList(al));
                 libri.add(l);
@@ -469,5 +477,52 @@ public class AnnunciLibriController {
             Sentry.captureException(e);
             return ResponseEntity.internalServerError().build();
         }
+    }
+
+    @Operation(description = "Effettua una ricerca degli annunci dei libri a partire da una query, utilizzando dei filtri")
+    @Parameters(value = {
+            @Parameter(name = "query", description = "La query di ricerca", required = true),
+            @Parameter(name = "stato", description = "Lo stato del libro", schema = @Schema(allowableValues = {"t", "n", "o", "b", "d", "a"})),
+            @Parameter(name = "prezzoMax", description = "Il prezzo massimo del libro", schema = @Schema(type = "number")),
+            @Parameter(name = "orderBy", description = "Il campo su cui ordinare i risultati", schema = @Schema(allowableValues = {"prezzoAsc", "prezzoDesc", "rec"})),
+    })
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "La richiesta è andata a buon fine, la lista è stata popolata"),
+            @ApiResponse(responseCode = "204", description = "La richiesta è andata a buon fine, la lista è vuota"),
+            @ApiResponse(responseCode = "500", description = "Errore generico del server")
+    })
+    @GetMapping("/search")
+    public ResponseEntity<List<Libro>> searchFilters(@RequestParam String query, @RequestParam(required = false, defaultValue = "t") String stato, @RequestParam(required = false, defaultValue = "-1") Float prezzoMax, @RequestParam(required = false, defaultValue = "rec") String orderBy) {
+        log.info("Invoked AnnunciLibriController.searchFilters(" + query + ", " + stato + ", " + prezzoMax + ", " + orderBy + ")");
+        try {
+            List<Libro> libri = new ArrayList<>();
+            List<AnnunciLibri> annunci = service.searchFilters(query, stato, prezzoMax, orderBy);
+
+            if (annunci.isEmpty()) return ResponseEntity.noContent().build();
+
+            for (AnnunciLibri al : annunci) {
+                int index = findIndex(libri, al.getLibro().getLibroId());
+                if(index == -1){
+                    Libro l = al.getLibro();
+                    l.setAnnunci(new ArrayList<>());
+                    l.getAnnunci().add(al);
+                    libri.add(l);
+                } else {
+                    libri.get(index).getAnnunci().add(al);
+                }
+            }
+
+            return ResponseEntity.ok(libri);
+        } catch (Exception e) {
+            Sentry.captureException(e);
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    private int findIndex(List<Libro> list, Integer libroId){
+        for (int i = 0; i < list.size(); i++) {
+            if (list.get(i).getLibroId().equals(libroId)) return i;
+        }
+        return -1;
     }
 }

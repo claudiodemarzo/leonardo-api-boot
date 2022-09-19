@@ -6,11 +6,14 @@ import it.leonardo.leonardoapiboot.entity.Libro;
 import it.leonardo.leonardoapiboot.entity.Utente;
 import it.leonardo.leonardoapiboot.entity.UtentePublicInfo;
 import it.leonardo.leonardoapiboot.repository.AnnunciLibriRepository;
+import it.leonardo.leonardoapiboot.repository.LibriRepository;
 import it.leonardo.leonardoapiboot.service.AnnunciLibriService;
 import it.leonardo.leonardoapiboot.service.UtentePublicInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,6 +22,9 @@ public class AnnunciLibriServiceImpl implements AnnunciLibriService {
 
     @Autowired
     private AnnunciLibriRepository repo;
+
+    @Autowired
+    private LibriRepository libriRepo;
 
     @Autowired
     private UtentePublicInfoService utentePublicInfoService;
@@ -58,5 +64,35 @@ public class AnnunciLibriServiceImpl implements AnnunciLibriService {
     @SentrySpan
     public AnnunciLibri save(AnnunciLibri al) {
         return repo.save(al);
+    }
+
+    @Override
+    @SentrySpan
+    public List<AnnunciLibri> searchFilters(String query, String stato, Float prezzoMax, String orderBy) {
+        List<Libro> lstLibri = libriRepo.findAllByIsbnLikeIgnoreCase("%" + query + "%");
+        lstLibri.addAll(libriRepo.findAllByNomeLikeIgnoreCase("%" + query + "%"));
+        lstLibri.addAll(libriRepo.findAllByAutoriLikeIgnoreCase("%" + query + "%"));
+        lstLibri.addAll(libriRepo.findAllByCasaedLikeIgnoreCase("%" + query + "%"));
+        lstLibri.addAll(libriRepo.findAllByCategoriaLikeIgnoreCase("%" + query + "%"));
+
+        List<AnnunciLibri> lstAnnunci = new ArrayList<>();
+        lstLibri.forEach(l -> lstAnnunci.addAll(l.getAnnunci()));
+
+        List<AnnunciLibri> lstAnnunciFiltered = new ArrayList<>();
+        lstAnnunci.forEach(a -> {
+            if (stato.equalsIgnoreCase("t") || (a.getLivello_usura() + "").equalsIgnoreCase(stato))
+                if (prezzoMax == -1 || a.getPrezzo() <= prezzoMax)
+                    lstAnnunciFiltered.add(a);
+        });
+
+        lstAnnunciFiltered.sort((a1, a2) -> switch (orderBy.toLowerCase()) {
+            case "prezzoasc" -> a1.getPrezzo().compareTo(a2.getPrezzo());
+            case "prezzodesc" -> a2.getPrezzo().compareTo(a1.getPrezzo());
+            case "rec" ->
+                    a2.getUtente().getAvgRating().getAvgVoto().compareTo(a1.getUtente().getAvgRating().getAvgVoto());
+            default -> 0;
+        });
+
+        return lstAnnunciFiltered;
     }
 }

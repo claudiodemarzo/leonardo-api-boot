@@ -22,4 +22,5 @@ public interface AnnunciLibriService {
 
     AnnunciLibri save(AnnunciLibri al);
 
+    List<AnnunciLibri> searchFilters(String query, String stato, Float prezzoMax, String orderBy);
 }
