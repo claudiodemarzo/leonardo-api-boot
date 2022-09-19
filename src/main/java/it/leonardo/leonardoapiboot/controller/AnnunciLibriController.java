@@ -155,9 +155,9 @@ public class AnnunciLibriController {
             if (!all) {
                 l.getAnnunci().removeIf(ann -> ann.getStato() != 1 && (userID == null || ann.getUtente().getId() != Integer.parseInt(userID)));
             } else {
-                //utente che richiede deve poter vedere. utente che ha comprato deve poter vedere
-                // al.getStato() != 1 && (Integer.parseInt(userID) != al.getUtente().getId() || (al.getSoldTo() != null && Integer.parseInt(userID) == al.getSoldTo().getId()))
-                if (al.getStato() != 1 && (userID != null && ((Integer.parseInt(userID) == al.getUtente().getId()) || (al.getSoldTo() != null && Integer.parseInt(userID) == al.getSoldTo().getId()))))//(al.getStato() != 1 && ((userID == null || al.getUtente().getId() != Integer.parseInt(userID)) || (al.getSoldTo() != null && Integer.parseInt(userID) != al.getSoldTo().getId())))
+
+                boolean isPubblicatore = userID != null && al.getUtente().getId() == Integer.parseInt(userID), isAcquirente = userID != null && al.getSoldTo() != null && al.getSoldTo().getId() == Integer.parseInt(userID);
+                if (al.getStato() != 1 && !isPubblicatore && !isAcquirente)
                     return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
 
