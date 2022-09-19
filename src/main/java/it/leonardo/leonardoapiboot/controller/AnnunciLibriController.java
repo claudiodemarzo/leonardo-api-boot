@@ -485,7 +485,7 @@ public class AnnunciLibriController {
             @Parameter(name = "query", description = "La query di ricerca", required = true),
             @Parameter(name = "stato", description = "Lo stato del libro", schema = @Schema(allowableValues = {"t", "n", "o", "b", "d", "a"})),
             @Parameter(name = "prezzoMax", description = "Il prezzo massimo del libro", schema = @Schema(type = "number")),
-            @Parameter(name = "orderBy", description = "Il campo su cui ordinare i risultati", schema = @Schema(allowableValues = {"prezzoAsc", "prezzoDesc", "rec"})),
+            @Parameter(name = "orderBy", description = "Il campo su cui ordinare i risultati", schema = @Schema(allowableValues = {"prezzoAsc", "prezzoDesc", "rec", "data"})),
     })
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "La richiesta è andata a buon fine, la lista è stata popolata"),
@@ -493,7 +493,7 @@ public class AnnunciLibriController {
             @ApiResponse(responseCode = "500", description = "Errore generico del server")
     })
     @GetMapping("/search")
-    public ResponseEntity<List<Libro>> searchFilters(@RequestParam String query, @RequestParam(required = false, defaultValue = "t") String stato, @RequestParam(required = false, defaultValue = "-1") Float prezzoMax, @RequestParam(required = false, defaultValue = "rec") String orderBy) {
+    public ResponseEntity<List<Libro>> searchFilters(@RequestParam String query, @RequestParam(required = false, defaultValue = "t") String stato, @RequestParam(required = false, defaultValue = "-1") Float prezzoMax, @RequestParam(required = false, defaultValue = "data") String orderBy) {
         log.info("Invoked AnnunciLibriController.searchFilters(" + query + ", " + stato + ", " + prezzoMax + ", " + orderBy + ")");
         try {
             List<Libro> libri = new ArrayList<>();

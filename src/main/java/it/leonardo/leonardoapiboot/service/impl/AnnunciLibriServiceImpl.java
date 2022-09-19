@@ -94,6 +94,7 @@ public class AnnunciLibriServiceImpl implements AnnunciLibriService {
                 if (a2.getUtente().getAvgRating() == null) yield -1;
                 yield a2.getUtente().getAvgRating().getAvgVoto().compareTo(a1.getUtente().getAvgRating().getAvgVoto());
             }
+            case "data" -> a2.getCreated_at().compareTo(a1.getCreated_at());
             default -> 0;
         });
 
