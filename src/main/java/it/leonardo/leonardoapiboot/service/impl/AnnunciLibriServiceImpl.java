@@ -57,7 +57,7 @@ public class AnnunciLibriServiceImpl implements AnnunciLibriService {
     @SentrySpan
     public List<AnnunciLibri> getAnnunciAcquistati(Utente u) {
         UtentePublicInfo upf = utentePublicInfoService.getById(u.getUtenteId()).get();
-        return repo.findAllBySoldToAndStato(upf, 1);
+        return repo.findAllBySoldToAndStato(upf, 2);
     }
 
     @Override
