@@ -31,6 +31,12 @@ public class CarrelloServiceImpl implements CarrelloService {
 
     @Override
     @SentrySpan
+    public List<Carrello> getByAnnuncio(AnnunciLibri ann) {
+        return repo.findAllByAnnuncio(ann);
+    }
+
+    @Override
+    @SentrySpan
     public Carrello save(Carrello c) {
         return repo.save(c);
     }

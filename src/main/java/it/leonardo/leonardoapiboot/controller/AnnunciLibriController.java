@@ -335,6 +335,11 @@ public class AnnunciLibriController {
             al.copyFromUpdateAnnuncioForm(form, statusLibroService.getStatus(form.getSottCanc(), form.getSottNonCanc(), form.getScrittCanc(), form.getScrittNonCanc(), form.getPagManc(), form.getPagRov(), form.getPagRovMol(), form.getCopRov(), form.getInsManc()).get());
 
             AnnunciLibri alSaved = service.save(al);
+
+            for(Carrello c : carrelloService.getByAnnuncio(alSaved)) {
+                ChatWSController.sendNotification(c.getUtente().getUtenteId().toString(), new Notifica(Notifica.TipoNotifica.warning, "Annuncio Modificato", "Un annuncio nel tuo carrello è stato modificato!", c.getUtente()), notificaService);
+            }
+
             return new ResponseEntity<>(alSaved, HttpStatus.OK);
 
         } catch (Exception e) {
@@ -376,6 +381,7 @@ public class AnnunciLibriController {
                 AnnunciLibri annUpdated = service.save(ann);
 
                 carrelloService.deleteByAnnuncio(annUpdated);
+                ChatWSController.sendNotification(annUpdated.getSoldTo().getId().toString(), new Notifica(Notifica.TipoNotifica.info, "Lascia una recensione!", "Lascia una recensione a @"+annUpdated.getUtente().getUsername()+" per il tuo nuovo acquisto!", utenteService.findById(annUpdated.getSoldTo().getId()).get()), notificaService);
                 return ResponseEntity.ok(annUpdated);
             }
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -477,6 +483,12 @@ public class AnnunciLibriController {
                 l.setAnnunci(Collections.singletonList(al));
                 libri.add(l);
             }
+
+            libri.sort((o1, o2) -> {
+                if(o1.getAnnunci().size() == 0) return -1;
+                if(o2.getAnnunci().size() == 0) return 1;
+                return o1.getAnnunci().get(0).getSaleDate().compareTo(o2.getAnnunci().get(0).getSaleDate());
+            });
 
             return ResponseEntity.ok(libri);
         } catch (Exception e) {

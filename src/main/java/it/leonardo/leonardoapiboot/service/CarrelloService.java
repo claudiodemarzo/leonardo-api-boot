@@ -9,6 +9,8 @@ import java.util.List;
 public interface CarrelloService {
 	List<Carrello> getByUtente(Utente u);
 
+	List<Carrello> getByAnnuncio(AnnunciLibri ann);
+
 	Carrello save(Carrello c);
 
 	void deleteById(Integer id);

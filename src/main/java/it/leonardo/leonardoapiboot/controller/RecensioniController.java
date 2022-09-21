@@ -10,13 +10,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import it.leonardo.leonardoapiboot.entity.AnnunciLibri;
 import it.leonardo.leonardoapiboot.entity.AnnuncioWithoutRecensione;
+import it.leonardo.leonardoapiboot.entity.Notifica;
 import it.leonardo.leonardoapiboot.entity.Recensione;
 import it.leonardo.leonardoapiboot.entity.form.InserisciRecensioneForm;
 import it.leonardo.leonardoapiboot.entity.form.UpdateRecensioneForm;
-import it.leonardo.leonardoapiboot.service.AnnunciLibriService;
-import it.leonardo.leonardoapiboot.service.AnnuncioWithoutRecensioneService;
-import it.leonardo.leonardoapiboot.service.RecensioneService;
-import it.leonardo.leonardoapiboot.service.UtenteService;
+import it.leonardo.leonardoapiboot.service.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +44,9 @@ public class RecensioniController {
 
     @Autowired
     private RecensioneService recensioneService;
+
+    @Autowired
+    private NotificaService notificaService;
 
     @Autowired
     private HttpSession session;
@@ -87,6 +88,7 @@ public class RecensioniController {
             r.setCreatedAt(Date.from(Instant.now()));
 
             Recensione rSaved = recensioneService.save(r);
+            ChatWSController.sendNotification(rSaved.getUtenteRecensito().getUtenteId().toString(), new Notifica(Notifica.TipoNotifica.info, "Nuova recensione", "Hai ricevuto una nuova recensione!", rSaved.getUtenteRecensito()), notificaService);
 
             return ResponseEntity.ok(rSaved);
         } catch (Exception e) {
@@ -127,6 +129,7 @@ public class RecensioniController {
             rec.setCreatedAt(Date.from(Instant.now()));
 
             Recensione rSaved = recensioneService.save(rec);
+            ChatWSController.sendNotification(rSaved.getUtenteRecensito().getUtenteId().toString(), new Notifica(Notifica.TipoNotifica.info, "Recensione aggiornata", "@"+rSaved.getUtenteRecensore().getUsername()+" ha appena aggiornato una recensione su di te!", rSaved.getUtenteRecensito()), notificaService);
 
             return ResponseEntity.ok(rSaved);
         } catch (Exception e) {
