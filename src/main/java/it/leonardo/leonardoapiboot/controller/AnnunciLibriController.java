@@ -353,7 +353,7 @@ public class AnnunciLibriController {
             @ApiResponse(responseCode = "409", description = "L'annuncio è già stato impostato come venduto")
     })
     @PostMapping("/sold")
-    public ResponseEntity<Object> setSold(Integer idAnn, Integer idUser) {
+    public ResponseEntity<Object> setSold(Integer idAnn, Integer idUser, Float prezzo) {
         log.info("Invoked AnnunciLibriController.setSold(" + idAnn + ", " + idUser + ")");
         String token = session.getAttribute("token") == null ? null : session.getAttribute("token").toString();
         if (token == null) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -366,6 +366,8 @@ public class AnnunciLibriController {
             if (ann.getUtente().getId().equals(utenteService.findById(Integer.parseInt(session.getAttribute("userID").toString())).get().getUtenteId())) {
                 if (ann.getStato() != 1) return new ResponseEntity<>(HttpStatus.CONFLICT);
                 ann.setStato(2);
+                if(prezzo <= 0) return ResponseEntity.badRequest().body("{\"invalidField\" : \"prezzo\"}");
+                ann.setPrezzo(prezzo);
 
                 Optional<UtentePublicInfo> optUser = utentePublicInfoService.getById(idUser);
                 if (opt.isEmpty()) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
