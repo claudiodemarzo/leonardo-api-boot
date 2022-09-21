@@ -58,6 +58,7 @@ public class UtenteServiceImpl implements UtenteService {
     }
 
     @Override
+    @SentrySpan
     public void setOnlineStatus(boolean onlineStatus, Integer utenteID) {
         Utente u = repo.findById(utenteID).get();
         u.setOnline(onlineStatus);

@@ -324,7 +324,7 @@ public class AnnunciLibriController {
 
         try {
             Optional<AnnunciLibri> opt = service.findById(form.getId());
-            if (!opt.isPresent()) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            if (!opt.isPresent() || opt.get().getStato() != 1) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             AnnunciLibri al = opt.get();
             if (al.getUtente().getId() != Integer.parseInt(session.getAttribute("userID").toString()))
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
