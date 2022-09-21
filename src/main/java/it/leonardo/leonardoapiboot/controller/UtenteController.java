@@ -971,13 +971,23 @@ public class UtenteController {
             @ApiResponse(responseCode = "204", description = "Utente non trovato"),
             @ApiResponse(responseCode = "500", description = "Errore generico del server")
     })
-    @GetMapping("search/{username}")
-    public ResponseEntity<List<UtentePublicInfo>> searchUtente(@PathVariable String username) {
-        log.info("Invoked UtenteController.searchUtente(" + username + ")");
+    @GetMapping("search/{query}")
+    public ResponseEntity<List<UtentePublicInfo>> searchUtente(@PathVariable String query) {
+        log.info("Invoked UtenteController.searchUtente(" + query + ")");
         try {
-            List<UtentePublicInfo> utenti = utentePublicInfoService.searchUsername(username);
+            List<UtentePublicInfo> utenti = utentePublicInfoService.searchUsername(query);
+            utenti.addAll(utentePublicInfoService.searchNome(query));
+            utenti.addAll(utentePublicInfoService.searchCognome(query));
+
+            List<UtentePublicInfo> utentiNoDuplicates = new ArrayList<>();
+            for (UtentePublicInfo u : utenti) {
+                if (!utentiNoDuplicates.contains(u)) {
+                    utentiNoDuplicates.add(u);
+                }
+            }
+
             if (utenti.isEmpty()) return ResponseEntity.noContent().build();
-            return ResponseEntity.ok(utenti);
+            return ResponseEntity.ok(utentiNoDuplicates);
         } catch (Exception e) {
             Sentry.captureException(e);
             return ResponseEntity.internalServerError().build();

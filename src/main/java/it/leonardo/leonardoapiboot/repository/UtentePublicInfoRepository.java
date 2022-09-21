@@ -11,4 +11,8 @@ public interface UtentePublicInfoRepository extends JpaRepository<UtentePublicIn
     List<UtentePublicInfo> findAllByUsernameLikeIgnoreCase(String username);
 
     Optional<UtentePublicInfo> findByUsername(String username);
+
+    List<UtentePublicInfo> findAllByNomeLikeIgnoreCase(String nome);
+
+    List<UtentePublicInfo> findAllByCognomeLikeIgnoreCase(String cognome);
 }

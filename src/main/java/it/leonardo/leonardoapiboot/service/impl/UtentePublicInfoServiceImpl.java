@@ -33,4 +33,16 @@ public class UtentePublicInfoServiceImpl implements UtentePublicInfoService {
     public Optional<UtentePublicInfo> getByUsername(String username) {
         return repo.findByUsername(username);
     }
+
+    @Override
+    @SentrySpan
+    public List<UtentePublicInfo> searchNome(String query) {
+        return repo.findAllByNomeLikeIgnoreCase("%"+query+"%");
+    }
+
+    @Override
+    @SentrySpan
+    public List<UtentePublicInfo> searchCognome(String query) {
+        return repo.findAllByCognomeLikeIgnoreCase("%"+query+"%");
+    }
 }
