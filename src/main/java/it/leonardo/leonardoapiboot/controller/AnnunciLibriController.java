@@ -502,6 +502,18 @@ public class AnnunciLibriController {
             List<Libro> libri = new ArrayList<>();
             List<AnnunciLibri> annunci = service.searchFilters(query, stato, prezzoMax, orderBy);
 
+            annunci.sort((a1, a2) -> switch (orderBy.toLowerCase()) {
+                case "priceasc" -> a1.getPrezzo().compareTo(a2.getPrezzo());
+                case "pricedesc" -> a2.getPrezzo().compareTo(a1.getPrezzo());
+                case "rec" -> {
+                    if (a1.getUtente().getAvgRating() == null) yield 1;
+                    if (a2.getUtente().getAvgRating() == null) yield -1;
+                    yield a2.getUtente().getAvgRating().getAvgVoto().compareTo(a1.getUtente().getAvgRating().getAvgVoto());
+                }
+                case "data" -> a2.getCreated_at().compareTo(a1.getCreated_at());
+                default -> 0;
+            });
+
             if (annunci.isEmpty()) return ResponseEntity.noContent().build();
 
             for (AnnunciLibri al : annunci) {

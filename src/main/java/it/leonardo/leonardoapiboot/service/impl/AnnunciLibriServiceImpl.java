@@ -97,18 +97,6 @@ public class AnnunciLibriServiceImpl implements AnnunciLibriService {
                         lstAnnunciFiltered.add(a);
         });
 
-        lstAnnunciFiltered.sort((a1, a2) -> switch (orderBy.toLowerCase()) {
-            case "prezzoasc" -> a1.getPrezzo().compareTo(a2.getPrezzo());
-            case "prezzodesc" -> a2.getPrezzo().compareTo(a1.getPrezzo());
-            case "rec" -> {
-                if (a1.getUtente().getAvgRating() == null) yield 1;
-                if (a2.getUtente().getAvgRating() == null) yield -1;
-                yield a2.getUtente().getAvgRating().getAvgVoto().compareTo(a1.getUtente().getAvgRating().getAvgVoto());
-            }
-            case "data" -> a2.getCreated_at().compareTo(a1.getCreated_at());
-            default -> 0;
-        });
-
         return lstAnnunciFiltered;
     }
 }
