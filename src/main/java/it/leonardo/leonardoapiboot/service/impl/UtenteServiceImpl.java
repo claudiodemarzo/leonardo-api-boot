@@ -67,6 +67,6 @@ public class UtenteServiceImpl implements UtenteService {
     @Override
     @SentrySpan
     public Utente save(Utente u) {
-        return repo.saveAndFlush(u);
+        return repo.save(u);
     }
 }
