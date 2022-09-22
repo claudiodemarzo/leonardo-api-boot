@@ -54,7 +54,9 @@ public class ChatWSController {
         Utente mit = utenteService.findById(utenteMit).orElse(null);
         if (mit == null) return;
         if(!mit.getEmail_confermata()) {
-            sendNotification(mit.getUtenteId().toString(), new Notifica(Notifica.TipoNotifica.internal, "Errore", "{\"error\" : \"email_not_verified\"}", null, null), null);
+            log.info("Utente non ha confermato l'email");
+            ChatWSController.sendNotification(mit.getUtenteId().toString(), new Notifica(Notifica.TipoNotifica.internal, "", "{\"context\" : \"userNotVerified\", \"value\" : true}", null, null), null);
+            return;
         }
         Utente dest = utenteService.findById(utenteDest).orElse(null);
         if (dest == null) return;
