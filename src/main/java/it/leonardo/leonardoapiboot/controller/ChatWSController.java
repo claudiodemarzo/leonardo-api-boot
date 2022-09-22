@@ -46,14 +46,16 @@ public class ChatWSController {
 
     @Operation(description = "Invia un messaggio all'utente specificato")
     @MessageMapping("/private-message")
-    public void privateMessage(@Payload MessaggioWS message, Principal principal) {
+    public void privateMessage( @Payload MessaggioWS message, Principal principal) {
         log.info("Invoked ChatWSController.privateMessage()");
         Messaggio m = new Messaggio();
         Integer utenteMit = Integer.parseInt(principal.getName());
         Integer utenteDest = message.getUtenteDest();
         Utente mit = utenteService.findById(utenteMit).orElse(null);
         if (mit == null) return;
-        if(!mit.getEmail_confermata()) return;
+        if(!mit.getEmail_confermata()) {
+            sendNotification(mit.getUtenteId().toString(), new Notifica(Notifica.TipoNotifica.internal, "Errore", "{\"error\" : \"email_not_verified\"}", null, null), null);
+        }
         Utente dest = utenteService.findById(utenteDest).orElse(null);
         if (dest == null) return;
         if (mit.getUtenteId().equals(dest.getUtenteId())) return;
