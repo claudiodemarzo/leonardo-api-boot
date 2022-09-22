@@ -88,7 +88,7 @@ public class RecensioniController {
             r.setCreatedAt(Date.from(Instant.now()));
 
             Recensione rSaved = recensioneService.save(r);
-            ChatWSController.sendNotification(rSaved.getUtenteRecensito().getUtenteId().toString(), new Notifica(Notifica.TipoNotifica.info, "Nuova recensione", "Hai ricevuto una nuova recensione!", rSaved.getUtenteRecensito(), "https://leonardostart.tk/profile?sec=ord-hist"), notificaService);
+            ChatWSController.sendNotification(rSaved.getUtenteRecensito().getUtenteId().toString(), new Notifica(Notifica.TipoNotifica.info, "Nuova recensione", "Hai ricevuto una nuova recensione!", rSaved.getUtenteRecensito(), "/profile?sec=ord-hist"), notificaService);
 
             return ResponseEntity.ok(rSaved);
         } catch (Exception e) {
@@ -129,7 +129,7 @@ public class RecensioniController {
             rec.setCreatedAt(Date.from(Instant.now()));
 
             Recensione rSaved = recensioneService.save(rec);
-            ChatWSController.sendNotification(rSaved.getUtenteRecensito().getUtenteId().toString(), new Notifica(Notifica.TipoNotifica.info, "Recensione aggiornata", "@"+rSaved.getUtenteRecensore().getUsername()+" ha appena aggiornato una recensione su di te!", rSaved.getUtenteRecensito(), "https://leonardostart.tk/profile?sec=ord-hist"), notificaService);
+            ChatWSController.sendNotification(rSaved.getUtenteRecensito().getUtenteId().toString(), new Notifica(Notifica.TipoNotifica.info, "Recensione aggiornata", "@"+rSaved.getUtenteRecensore().getUsername()+" ha appena aggiornato una recensione su di te!", rSaved.getUtenteRecensito(), "/profile?sec=ord-hist"), notificaService);
 
             return ResponseEntity.ok(rSaved);
         } catch (Exception e) {
