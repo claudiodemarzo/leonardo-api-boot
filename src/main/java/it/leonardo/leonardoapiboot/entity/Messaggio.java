@@ -75,6 +75,7 @@ public class Messaggio {
         return new JSONObject()
                 .put("messaggioId", this.messaggioId)
                 .put("senderId", this.chatroom.getUtenteMit().getUtenteId())
+                .put("senderUsername", this.chatroom.getUtenteMit().getUsername())
                 .put("messaggio", this.messaggio)
                 .put("status", this.status)
                 .put("timestamp", this.timestamp.toInstant().toString())
