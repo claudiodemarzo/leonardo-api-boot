@@ -7,6 +7,7 @@ import it.leonardo.leonardoapiboot.entity.Utente;
 import it.leonardo.leonardoapiboot.entity.UtentePublicInfo;
 import it.leonardo.leonardoapiboot.repository.AnnunciLibriRepository;
 import it.leonardo.leonardoapiboot.repository.LibriRepository;
+import it.leonardo.leonardoapiboot.repository.UtentiRepository;
 import it.leonardo.leonardoapiboot.service.AnnunciLibriService;
 import it.leonardo.leonardoapiboot.service.UtentePublicInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,9 @@ public class AnnunciLibriServiceImpl implements AnnunciLibriService {
 
     @Autowired
     private UtentePublicInfoService utentePublicInfoService;
+
+    @Autowired
+    private UtentiRepository utentiRepo;
 
     @Override
     @SentrySpan
@@ -74,6 +78,17 @@ public class AnnunciLibriServiceImpl implements AnnunciLibriService {
         lstLibri.addAll(libriRepo.findAllByAutoriLikeIgnoreCase("%" + query + "%"));
         lstLibri.addAll(libriRepo.findAllByCasaedLikeIgnoreCase("%" + query + "%"));
         lstLibri.addAll(libriRepo.findAllByCategoriaLikeIgnoreCase("%" + query + "%"));
+        List<Utente> potentialUsers = utentiRepo.findAllByUsernameLikeIgnoreCase("%" + query + "%");
+        List<AnnunciLibri> potentialUsersAnnunci = new ArrayList<>();
+        for(Utente u : potentialUsers) {
+            potentialUsersAnnunci.addAll(u.getAnnunciLibri());
+        }
+
+        for(AnnunciLibri al : potentialUsersAnnunci) {
+            if(!lstLibri.contains(al.getLibro())) {
+                lstLibri.add(al.getLibro());
+            }
+        }
 
         List<Integer> uniqueIDs = new ArrayList<>();
 

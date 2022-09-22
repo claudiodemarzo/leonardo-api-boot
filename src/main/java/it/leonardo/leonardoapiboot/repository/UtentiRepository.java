@@ -3,6 +3,7 @@ package it.leonardo.leonardoapiboot.repository;
 import it.leonardo.leonardoapiboot.entity.Utente;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface UtentiRepository extends JpaRepository<Utente, Integer> {
@@ -17,4 +18,6 @@ public interface UtentiRepository extends JpaRepository<Utente, Integer> {
     Optional<Utente> findAllByResetToken(String s);
 
     Optional<Utente> findAllByConfirmToken(String s);
+
+    List<Utente> findAllByUsernameLikeIgnoreCase(String s);
 }
