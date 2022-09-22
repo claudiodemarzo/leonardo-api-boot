@@ -336,7 +336,7 @@ public class AnnunciLibriController {
 
             AnnunciLibri alSaved = service.save(al);
 
-            for(Carrello c : carrelloService.getByAnnuncio(alSaved)) {
+            for (Carrello c : carrelloService.getByAnnuncio(alSaved)) {
                 ChatWSController.sendNotification(c.getUtente().getUtenteId().toString(), new Notifica(Notifica.TipoNotifica.warning, "Annuncio Modificato", "Un annuncio nel tuo carrello è stato modificato!", c.getUtente(), "/list"), notificaService);
             }
 
@@ -371,7 +371,7 @@ public class AnnunciLibriController {
             if (ann.getUtente().getId().equals(utenteService.findById(Integer.parseInt(session.getAttribute("userID").toString())).get().getUtenteId())) {
                 if (ann.getStato() != 1) return new ResponseEntity<>(HttpStatus.CONFLICT);
                 ann.setStato(2);
-                if(prezzo <= 0) return ResponseEntity.badRequest().body("{\"invalidField\" : \"prezzo\"}");
+                if (prezzo <= 0) return ResponseEntity.badRequest().body("{\"invalidField\" : \"prezzo\"}");
                 ann.setPrezzo(prezzo);
 
                 Optional<UtentePublicInfo> optUser = utentePublicInfoService.getById(idUser);
@@ -381,7 +381,7 @@ public class AnnunciLibriController {
                 AnnunciLibri annUpdated = service.save(ann);
 
                 carrelloService.deleteByAnnuncio(annUpdated);
-                ChatWSController.sendNotification(annUpdated.getSoldTo().getId().toString(), new Notifica(Notifica.TipoNotifica.info, "Lascia una recensione!", "Lascia una recensione a @"+annUpdated.getUtente().getUsername()+" per il tuo nuovo acquisto!", utenteService.findById(annUpdated.getSoldTo().getId()).get(), "/profile?sec=ord-hist"), notificaService);
+                ChatWSController.sendNotification(annUpdated.getSoldTo().getId().toString(), new Notifica(Notifica.TipoNotifica.info, "Lascia una recensione!", "Lascia una recensione a @" + annUpdated.getUtente().getUsername() + " per il tuo nuovo acquisto!", utenteService.findById(annUpdated.getSoldTo().getId()).get(), "/profile?sec=ord-hist"), notificaService);
                 return ResponseEntity.ok(annUpdated);
             }
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -417,11 +417,13 @@ public class AnnunciLibriController {
             if (!utenteService.findById(Integer.parseInt(session.getAttribute("userID").toString())).get().getEmail_confermata())
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
 
-            ChatWSController.sendNotification(ann.getUtente().getId().toString(), new Notifica(Notifica.TipoNotifica.info, "Richiesta di contatto", "@" + utenteService.findById(Integer.parseInt(session.getAttribute("userID").toString())).get().getUsername() + " è interessato al tuo annuncio: " + ann.getLibro().getNome(), utenteService.findById(ann.getUtente().getId()).get(), "/chat/"+session.getAttribute("userID").toString()), notificaService);
+            ChatWSController.sendNotification(ann.getUtente().getId().toString(), new Notifica(Notifica.TipoNotifica.info, "Richiesta di contatto", "@" + utenteService.findById(Integer.parseInt(session.getAttribute("userID").toString())).get().getUsername() + " è interessato al tuo annuncio: " + ann.getLibro().getNome(), utenteService.findById(ann.getUtente().getId()).get(), "/chat/" + session.getAttribute("userID").toString()), notificaService);
 
             BigDecimal costo = BigDecimal.valueOf(ann.getPrezzo());
             costo = costo.setScale(2, RoundingMode.HALF_UP);
-            ChatWSController.sendMessage(utenteService.findById(Integer.parseInt(session.getAttribute("userID").toString())).get(), utenteService.findById(ann.getUtente().getId()).get(), "Ciao! Sono interessato all'acquisto di un libro<div ad-id=\"" + ann.getAnnuncio_id() + "\" class=\"ad-contacted card flex-row w-100\"><img src=\"" + ann.getLibro().getCopertina() + "\" alt=\"" + ann.getLibro().getNome() + "\"><div class=\"card-body d-flex flex-column\"><div class=\"ad-title\">" + ann.getLibro().getNome() + "</div><div class=\"ad-isbn\">" + ann.getLibro().getIsbn() + "</div><div class=\"ad-description\">" + ann.getLibro().getDescrizione() + "</div><div class=\"ad-price\">Prezzo: € " + costo.toPlainString() + "</div></div></div>", chatroomService, utentePublicInfoService, messaggioService);
+
+
+            ChatWSController.sendMessage(utenteService.findById(Integer.parseInt(session.getAttribute("userID").toString())).get(), utenteService.findById(ann.getUtente().getId()).get(), "Ciao! Mi piacerebbe acquistare il libro<div ad-id=\"" + ann.getAnnuncio_id() + "\" class=\"ad-contacted card flex-row w-100\"><img src=\"" + ann.getLibro().getCopertina() + "\" alt=\"" + ann.getLibro().getNome() + "\"><div class=\"card-body d-flex flex-column\"><div class=\"ad-title\">" + ann.getLibro().getNome() + "</div><div class=\"ad-isbn\">" + ann.getLibro().getIsbn() + "</div><div class=\"ad-description\">" + ann.getLibro().getDescrizione() + "</div><div class=\"ad-price\">Prezzo: € " + costo.toPlainString() + "</div></div></div>", chatroomService, utentePublicInfoService, messaggioService);
 
             return ResponseEntity.ok().body("{}");
         } catch (Exception e) {
@@ -485,8 +487,8 @@ public class AnnunciLibriController {
             }
 
             libri.sort((o1, o2) -> {
-                if(o1.getAnnunci().size() == 0) return -1;
-                if(o2.getAnnunci().size() == 0) return 1;
+                if (o1.getAnnunci().size() == 0) return -1;
+                if (o2.getAnnunci().size() == 0) return 1;
                 return o1.getAnnunci().get(0).getSaleDate().compareTo(o2.getAnnunci().get(0).getSaleDate());
             });
 
