@@ -42,7 +42,7 @@ public class Notifica {
     @Column(name = "cancellato")
     private Boolean cancellato = false;
 
-    @Transient
+    @Column(name = "redirect_to")
     private String redirectTo;
 
     @ManyToOne
