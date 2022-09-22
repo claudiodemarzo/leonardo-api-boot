@@ -42,17 +42,21 @@ public class Notifica {
     @Column(name = "cancellato")
     private Boolean cancellato = false;
 
+    @Transient
+    private String redirectTo;
+
     @ManyToOne
     @JsonIgnore
     @JoinColumn(name = "utente")
     private Utente utente;
 
-    public Notifica(TipoNotifica type, String title, String content, Utente utente) {
+    public Notifica(TipoNotifica type, String title, String content, Utente utente, String redirectTo) {
         this.type = type;
         this.title = title;
         this.content = content;
         this.letto = false;
         this.utente = utente;
+        this.redirectTo = redirectTo;
     }
 
     public Notifica() {
@@ -122,6 +126,14 @@ public class Notifica {
         this.cancellato = cancellato;
     }
 
+    public String getRedirectTo() {
+        return redirectTo;
+    }
+
+    public void setRedirectTo(String redirectTo) {
+        this.redirectTo = redirectTo;
+    }
+
     @Override
     public String toString() {
         String obj = new JSONObject()
@@ -131,6 +143,7 @@ public class Notifica {
                 .put("content", content)
                 .put("timestamp", timestamp.toInstant().toString())
                 .put("letto", letto)
+                .put("redirectTo", redirectTo)
                 .toString();
         return obj;
     }

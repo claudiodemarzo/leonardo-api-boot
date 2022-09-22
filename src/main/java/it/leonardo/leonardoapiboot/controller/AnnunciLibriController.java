@@ -337,7 +337,7 @@ public class AnnunciLibriController {
             AnnunciLibri alSaved = service.save(al);
 
             for(Carrello c : carrelloService.getByAnnuncio(alSaved)) {
-                ChatWSController.sendNotification(c.getUtente().getUtenteId().toString(), new Notifica(Notifica.TipoNotifica.warning, "Annuncio Modificato", "Un annuncio nel tuo carrello è stato modificato!", c.getUtente()), notificaService);
+                ChatWSController.sendNotification(c.getUtente().getUtenteId().toString(), new Notifica(Notifica.TipoNotifica.warning, "Annuncio Modificato", "Un annuncio nel tuo carrello è stato modificato!", c.getUtente(), "https://leonardostart.tk/list"), notificaService);
             }
 
             return new ResponseEntity<>(alSaved, HttpStatus.OK);
@@ -381,7 +381,7 @@ public class AnnunciLibriController {
                 AnnunciLibri annUpdated = service.save(ann);
 
                 carrelloService.deleteByAnnuncio(annUpdated);
-                ChatWSController.sendNotification(annUpdated.getSoldTo().getId().toString(), new Notifica(Notifica.TipoNotifica.info, "Lascia una recensione!", "Lascia una recensione a @"+annUpdated.getUtente().getUsername()+" per il tuo nuovo acquisto!", utenteService.findById(annUpdated.getSoldTo().getId()).get()), notificaService);
+                ChatWSController.sendNotification(annUpdated.getSoldTo().getId().toString(), new Notifica(Notifica.TipoNotifica.info, "Lascia una recensione!", "Lascia una recensione a @"+annUpdated.getUtente().getUsername()+" per il tuo nuovo acquisto!", utenteService.findById(annUpdated.getSoldTo().getId()).get(), "https://leonardostart.tk/profile?sec=ord-hist"), notificaService);
                 return ResponseEntity.ok(annUpdated);
             }
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -417,7 +417,7 @@ public class AnnunciLibriController {
             if (!utenteService.findById(Integer.parseInt(session.getAttribute("userID").toString())).get().getEmail_confermata())
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
 
-            ChatWSController.sendNotification(ann.getUtente().getId().toString(), new Notifica(Notifica.TipoNotifica.info, "Richiesta di contatto", "@" + utenteService.findById(Integer.parseInt(session.getAttribute("userID").toString())).get().getUsername() + " è interessato al tuo annuncio: " + ann.getLibro().getNome(), utenteService.findById(ann.getUtente().getId()).get()), notificaService);
+            ChatWSController.sendNotification(ann.getUtente().getId().toString(), new Notifica(Notifica.TipoNotifica.info, "Richiesta di contatto", "@" + utenteService.findById(Integer.parseInt(session.getAttribute("userID").toString())).get().getUsername() + " è interessato al tuo annuncio: " + ann.getLibro().getNome(), utenteService.findById(ann.getUtente().getId()).get(), "https://leonardostart.tk/chat/"+session.getAttribute("userID").toString()), notificaService);
 
             BigDecimal costo = BigDecimal.valueOf(ann.getPrezzo());
             costo = costo.setScale(2, RoundingMode.HALF_UP);

@@ -81,7 +81,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                             utenteService.setOnlineStatus(true, Integer.parseInt(session.getAttributes().get("userID").toString()));
                             chatroomService.getByUtenteMit(utenteService.findById(Integer.parseInt(session.getAttributes().get("userID").toString())).get()).forEach(c -> {
                                 int id = c.getUtenteDest().getUtenteId();
-                                ChatWSController.sendNotification(String.valueOf(id), new Notifica(Notifica.TipoNotifica.internal, "", "{\"context\" : \"userStatusUpdate\", \"value\" : {\"userID\" : " + session.getAttributes().get("userID").toString() + ", \"status\" : true}}", null), null);
+                                ChatWSController.sendNotification(String.valueOf(id), new Notifica(Notifica.TipoNotifica.internal, "", "{\"context\" : \"userStatusUpdate\", \"value\" : {\"userID\" : " + session.getAttributes().get("userID").toString() + ", \"status\" : true}}", null, null), null);
                             });
                         } else {
                             log.warn("Connessione non autorizzata");
@@ -97,7 +97,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                             utenteService.setOnlineStatus(false, Integer.parseInt(session.getAttributes().get("userID").toString()));
                             chatroomService.getByUtenteMit(utenteService.findById(Integer.parseInt(session.getAttributes().get("userID").toString())).get()).forEach(c -> {
                                 int id = c.getUtenteDest().getUtenteId();
-                                ChatWSController.sendNotification(String.valueOf(id), new Notifica(Notifica.TipoNotifica.internal, "", "{\"context\" : \"userStatusUpdate\", \"value\" : {\"userID\" : " + session.getAttributes().get("userID").toString() + ", \"status\" : false}}", null), null);
+                                ChatWSController.sendNotification(String.valueOf(id), new Notifica(Notifica.TipoNotifica.internal, "", "{\"context\" : \"userStatusUpdate\", \"value\" : {\"userID\" : " + session.getAttributes().get("userID").toString() + ", \"status\" : false}}", null, null), null);
                             });
                         }
                         super.afterConnectionClosed(session, closeStatus);

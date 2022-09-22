@@ -53,7 +53,7 @@ public class CarrelloServiceImpl implements CarrelloService {
         List<Carrello> entries = repo.findAllByAnnuncio(ann);
 
         for (Carrello c : entries) {
-            ChatWSController.sendNotification(c.getUtente().getUtenteId().toString(), new Notifica(Notifica.TipoNotifica.warning, "Annuncio non più disponibile", "L'annuncio al quale eri interessato, " + ann.getLibro().getNome() + ", di @" + ann.getUtente().getUsername() + " non è più disponibile.", c.getUtente()), notificaService);
+            ChatWSController.sendNotification(c.getUtente().getUtenteId().toString(), new Notifica(Notifica.TipoNotifica.warning, "Annuncio non più disponibile", "L'annuncio al quale eri interessato, " + ann.getLibro().getNome() + ", di @" + ann.getUtente().getUsername() + " non è più disponibile.", c.getUtente(), null), notificaService);
             repo.deleteById(c.getEntryId());
         }
     }
