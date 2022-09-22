@@ -275,7 +275,7 @@ public class UtenteController {
             RestTemplate restTemplate = new RestTemplate();
             ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<>(null), String.class);
 
-            if(response.getStatusCodeValue() != 200)
+            if (response.getStatusCodeValue() != 200)
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("{}");
 
             JSONObject json = new JSONObject(response.getBody());
@@ -303,7 +303,7 @@ public class UtenteController {
 
             restTemplate = new RestTemplate();
             response = restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<>(null), String.class);
-            if(response.getStatusCodeValue() != 200)
+            if (response.getStatusCodeValue() != 200)
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("{}");
 
             Breadcrumb b = new Breadcrumb();
@@ -978,6 +978,21 @@ public class UtenteController {
             List<UtentePublicInfo> utenti = utentePublicInfoService.searchUsername(query);
             utenti.addAll(utentePublicInfoService.searchNome(query));
             utenti.addAll(utentePublicInfoService.searchCognome(query));
+
+            List<UtentePublicInfo> splitSearch = new ArrayList<>();
+            splitSearch.addAll(utentePublicInfoService.searchUsername(query.split(" ")[0]));
+            splitSearch.addAll(utentePublicInfoService.searchNome(query.split(" ")[0]));
+            splitSearch.addAll(utentePublicInfoService.searchCognome(query.split(" ")[0]));
+            for(int i = 1; i < query.split(" ").length; i++){
+                List<UtentePublicInfo> temp = new ArrayList<>();
+                temp.addAll(utentePublicInfoService.searchUsername(query.split(" ")[i]));
+                temp.addAll(utentePublicInfoService.searchNome(query.split(" ")[i]));
+                temp.addAll(utentePublicInfoService.searchCognome(query.split(" ")[i]));
+                splitSearch.retainAll(temp);
+                if(splitSearch.size() == 0) break;
+            }
+            utenti.addAll(splitSearch);
+
 
             List<UtentePublicInfo> utentiNoDuplicates = new ArrayList<>();
             for (UtentePublicInfo u : utenti) {
