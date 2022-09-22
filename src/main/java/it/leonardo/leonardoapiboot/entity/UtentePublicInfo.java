@@ -81,6 +81,9 @@ public class UtentePublicInfo {
     @Transient
     private List<Recensione> recensioniFatte;
 
+    @Transient
+    private UtentiPreferences preferences;
+
     public Integer getId() {
         return id;
     }
@@ -249,6 +252,10 @@ public class UtentePublicInfo {
         this.ttUsername = ttUsername;
     }
 
+    public void setPreferences(UtentiPreferences preferences) {
+        this.preferences = preferences;
+    }
+
     public Map<Object, Object> toMap() {
         Map<Object, Object> map = new HashMap<>();
         map.put("id", id);
@@ -269,6 +276,7 @@ public class UtentePublicInfo {
         map.put("avgRating", avgRating);
         map.put("igUsername", igUsername);
         map.put("ttUsername", ttUsername);
+        if(preferences != null) map.put("preferences", preferences);
         List<Recensione> rr = new ArrayList<>(), rf = new ArrayList<>();
         if (recensioniFatte != null && !recensioniFatte.isEmpty()) {
             recensioniFatte.forEach(r -> {
