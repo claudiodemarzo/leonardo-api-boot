@@ -84,6 +84,9 @@ public class UtentePublicInfo {
     @Transient
     private UtentiPreferences preferences;
 
+    @Transient
+    private Boolean emailConfermata;
+
     public Integer getId() {
         return id;
     }
@@ -256,6 +259,8 @@ public class UtentePublicInfo {
         this.preferences = preferences;
     }
 
+    public void setEmailConfermata(Boolean emailConfermata){ this.emailConfermata = emailConfermata;}
+
     public Map<Object, Object> toMap() {
         Map<Object, Object> map = new HashMap<>();
         map.put("id", id);
@@ -277,6 +282,7 @@ public class UtentePublicInfo {
         map.put("igUsername", igUsername);
         map.put("ttUsername", ttUsername);
         if(preferences != null) map.put("preferences", preferences);
+        if(emailConfermata != null) map.put("emailConferma", emailConfermata);
         List<Recensione> rr = new ArrayList<>(), rf = new ArrayList<>();
         if (recensioniFatte != null && !recensioniFatte.isEmpty()) {
             recensioniFatte.forEach(r -> {

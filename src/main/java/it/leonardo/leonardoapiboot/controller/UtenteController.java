@@ -521,6 +521,7 @@ public class UtenteController {
             upi_.setRecensioniRicevute(recensioneService.getByUtenteRecensito(service.findById(upi_.getId()).get()) == null ? new ArrayList<>() : recensioneService.getByUtenteRecensito(service.findById(upi_.getId()).get()));
             upi_.setRecensioniFatte(recensioneService.getByUtenteRecensore(service.findById(upi_.getId()).get()) == null ? new ArrayList<>() : recensioneService.getByUtenteRecensore(service.findById(upi_.getId()).get()));
             upi_.setPreferences(utentiPreferencesService.getById(upi_.getId()).get());
+            upi_.setEmailConfermata(service.findById(upi_.getId()).get().getEmail_confermata());
             return ResponseEntity.ok(upi_.toMap());
         } catch (Exception e) {
             Sentry.captureException(e);
