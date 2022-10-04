@@ -6,6 +6,7 @@ public class MessaggioWS {
     private String messaggio;
     private Date timestamp;
     private Integer utenteDest;
+    private TipoMessaggio tipo;
 
     public String getMessaggio() {
         return messaggio;
@@ -31,15 +32,31 @@ public class MessaggioWS {
         this.utenteDest = utenteDest;
     }
 
+    public TipoMessaggio getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(TipoMessaggio tipo) {
+        this.tipo = tipo;
+    }
+
     @Override
     public String toString() {
         return "MessaggioWS{" +
                 "messaggio='" + messaggio + '\'' +
                 ", timestamp=" + timestamp +
                 ", utenteDest=" + utenteDest +
+                ", tipo=" + tipo +
                 '}';
     }
 
     public MessaggioWS() {
+    }
+
+    public enum TipoMessaggio {
+        TEXT,
+        IMAGE,
+        LOCATION,
+        AD
     }
 }

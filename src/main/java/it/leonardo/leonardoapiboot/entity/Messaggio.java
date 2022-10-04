@@ -30,6 +30,9 @@ public class Messaggio {
     @Column(name = "timestamp")
     private Date timestamp;
 
+    @Column(name = "tipo")
+    private String tipo;
+
     public Integer getMessaggioId() {
         return messaggioId;
     }
@@ -70,6 +73,14 @@ public class Messaggio {
         this.timestamp = timestamp;
     }
 
+    public String getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
+    }
+
     @Override
     public String toString() {
         return new JSONObject()
@@ -79,6 +90,7 @@ public class Messaggio {
                 .put("messaggio", this.messaggio)
                 .put("status", this.status)
                 .put("timestamp", this.timestamp.toInstant().toString())
+                .put("tipo", this.tipo)
                 .toString();
     }
 

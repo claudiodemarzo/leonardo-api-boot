@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import it.leonardo.leonardoapiboot.entity.Chatroom;
 import it.leonardo.leonardoapiboot.entity.Messaggio;
 import it.leonardo.leonardoapiboot.entity.Utente;
+import it.leonardo.leonardoapiboot.entity.form.MessaggioWS;
 import it.leonardo.leonardoapiboot.service.ChatroomService;
 import it.leonardo.leonardoapiboot.service.MessaggioService;
 import it.leonardo.leonardoapiboot.service.UtentePublicInfoService;
@@ -20,12 +21,14 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpSession;
+import java.io.File;
+import java.sql.Date;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -246,6 +249,48 @@ public class ChatController {
 
             chatroomService.save(chatroom);
 
+            return ResponseEntity.ok("{}");
+        } catch (Exception e) {
+            Sentry.captureException(e);
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @PostMapping("/sendImage")
+    public ResponseEntity<Object> sendImage(String id, MultipartFile file, String tipo){
+        log.info("Invoked ChatController.sendImage()");
+        String token = session.getAttribute("token") == null ? null : session.getAttribute("token").toString();
+
+        if (token == null) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+
+        String userID = session.getAttribute("userID").toString();
+        try {
+            Optional<Utente> otherUtenteOptional = utenteService.findById(Integer.parseInt(id));
+            if (!otherUtenteOptional.isPresent())
+                return new ResponseEntity<>("{\"invalidField\" : \"id\"}", HttpStatus.NOT_FOUND);
+            Utente dest = otherUtenteOptional.get(), mit = utenteService.findById(Integer.parseInt(userID)).get();
+            Chatroom chatroom = chatroomService.getOrCreate(dest, mit);
+
+            Instant now = Instant.now();
+
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+
+            String fileName = chatroom.getChatroomId()+"/" + sdf.format(Date.from(now)) + file.getOriginalFilename().split(".")[file.getOriginalFilename().split(".").length-1];
+
+            file.transferTo(new File("/var/www/html/assets/imgs/chat/"+fileName));
+
+            Messaggio messaggio = new Messaggio();
+            messaggio.setChatroom(chatroom);
+            messaggio.setTimestamp(Date.from(now));
+            messaggio.setMessaggio(fileName);
+            messaggio.setTipo(String.valueOf(switch (tipo) {
+                case "image" -> MessaggioWS.TipoMessaggio.IMAGE;
+                case "location" -> MessaggioWS.TipoMessaggio.LOCATION;
+            }));
+
+            ChatWSController.sendMessage(chatroom.getUtenteMit(), chatroom.getUtenteDest(), fileName, MessaggioWS.TipoMessaggio.IMAGE ,chatroomService, utentePublicInfoService, messaggioService);
+
+            messaggioService.save(messaggio);
             return ResponseEntity.ok("{}");
         } catch (Exception e) {
             Sentry.captureException(e);

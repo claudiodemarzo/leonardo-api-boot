@@ -46,7 +46,7 @@ public class ChatWSController {
 
     @Operation(description = "Invia un messaggio all'utente specificato")
     @MessageMapping("/private-message")
-    public void privateMessage( @Payload MessaggioWS message, Principal principal) {
+    public void privateMessage(@Payload MessaggioWS message, Principal principal) {
         log.info("Invoked ChatWSController.privateMessage()");
         Messaggio m = new Messaggio();
         Integer utenteMit = Integer.parseInt(principal.getName());
@@ -68,7 +68,7 @@ public class ChatWSController {
         m.setChatroom(c);
         m.setStatus(0);
         m.setTimestamp(Date.from(Instant.now()));
-        m.setMessaggio(message.getMessaggio());
+        m.setMessaggio(message.getMessaggio());;
 
         m = messaggioService.save(m);
 
@@ -84,7 +84,7 @@ public class ChatWSController {
     }
 
     @Operation(description = "Invia un messaggio all'utente fornito")
-    public static void sendMessage(Utente sender, Utente recipient, String messaggioStr, ChatroomService chatroomService, UtentePublicInfoService utentePublicInfoService, MessaggioService messaggioService) {
+    public static void sendMessage(Utente sender, Utente recipient, String messaggioStr, MessaggioWS.TipoMessaggio tipoMessaggio, ChatroomService chatroomService, UtentePublicInfoService utentePublicInfoService, MessaggioService messaggioService) {
         log.info("Invoked ChatWSController.sendMessage()");
         Messaggio messaggio = new Messaggio();
         Integer utenteMit = sender.getUtenteId();
@@ -98,6 +98,7 @@ public class ChatWSController {
         messaggio.setStatus(0);
         messaggio.setTimestamp(Date.from(Instant.now()));
         messaggio.setMessaggio(messaggioStr);
+        messaggio.setTipo(String.valueOf(tipoMessaggio));
 
         messaggio = messaggioService.save(messaggio);
 
