@@ -291,7 +291,7 @@ public class ChatController {
             ChatWSController.sendMessage(chatroom.getUtenteMit(), chatroom.getUtenteDest(), fileName, MessaggioWS.TipoMessaggio.IMAGE ,chatroomService, utentePublicInfoService, messaggioService);
 
             messaggioService.save(messaggio);
-            return ResponseEntity.ok("{}");
+            return ResponseEntity.ok("{fileName: \""+fileName+"\"}");
         } catch (Exception e) {
             Sentry.captureException(e);
             return ResponseEntity.internalServerError().build();
