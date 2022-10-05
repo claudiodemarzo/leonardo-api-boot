@@ -286,6 +286,7 @@ public class ChatController {
             messaggio.setTipo(String.valueOf(switch (tipo) {
                 case "image" -> MessaggioWS.TipoMessaggio.IMAGE;
                 case "location" -> MessaggioWS.TipoMessaggio.LOCATION;
+                default -> MessaggioWS.TipoMessaggio.IMAGE;
             }));
 
             ChatWSController.sendMessage(chatroom.getUtenteMit(), chatroom.getUtenteDest(), fileName, MessaggioWS.TipoMessaggio.IMAGE ,chatroomService, utentePublicInfoService, messaggioService);
