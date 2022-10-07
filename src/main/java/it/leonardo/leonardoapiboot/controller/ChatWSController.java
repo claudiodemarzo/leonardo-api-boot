@@ -19,6 +19,8 @@ import org.springframework.stereotype.Controller;
 import java.security.Principal;
 import java.time.Instant;
 import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Controller
 public class ChatWSController {
@@ -68,9 +70,19 @@ public class ChatWSController {
         m.setChatroom(c);
         m.setStatus(0);
         m.setTimestamp(Date.from(Instant.now()));
-        m.setMessaggio(message.getMessaggio());;
+        m.setMessaggio(message.getMessaggio());
 
         m = messaggioService.save(m);
+        
+        String msg = message.getMessaggio();
+        Matcher matcher = Pattern.compile("^(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]", Pattern.CASE_INSENSITIVE).matcher(msg);
+        for (int i = 0; matcher.find(); i++) {
+            String url = matcher.group();
+            String url2 = url.substring(1, url.length() - 1);
+            msg = msg.replace(url, "<a href=\"" + url2 + "\" target=\"_blank\">" + url2 + "</a>");
+        }
+
+        m.setMessaggio(msg);
 
         messagingTemplate.convertAndSendToUser(utenteDest.toString(), "/topic/private-message", m.toString());
     }
