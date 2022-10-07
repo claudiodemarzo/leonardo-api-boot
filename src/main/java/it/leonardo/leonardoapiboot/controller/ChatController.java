@@ -4,6 +4,9 @@ import io.sentry.Breadcrumb;
 import io.sentry.Sentry;
 import io.sentry.SentryLevel;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import it.leonardo.leonardoapiboot.entity.Chatroom;
@@ -256,6 +259,18 @@ public class ChatController {
         }
     }
 
+    @Operation(description = "Permette di inviare un'immagine via chat ad un utente")
+    @Parameters(value = {
+            @Parameter(name = "id", description = "ID dell'utente a cui inviare l'immagine"),
+            @Parameter(name = "file", description = "Immagine da inviare"),
+            @Parameter(name = "tipo", description = "Tipo del file inviato", schema = @Schema(implementation = MessaggioWS.TipoMessaggio.class))
+    })
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Immagine inviata"),
+            @ApiResponse(responseCode = "404", description = "Utente non trovato"),
+            @ApiResponse(responseCode = "401", description = "Login non effettuato"),
+            @ApiResponse(responseCode = "500", description = "Errore interno del server")
+    })
     @PostMapping("/sendImage")
     public ResponseEntity<Object> sendImage(String id, MultipartFile file, String tipo){
         log.info("Invoked ChatController.sendImage()");
