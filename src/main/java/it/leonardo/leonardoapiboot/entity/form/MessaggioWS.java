@@ -54,9 +54,9 @@ public class MessaggioWS {
     }
 
     public enum TipoMessaggio {
-        TEXT,
-        IMAGE,
-        LOCATION,
-        AD
+        text,
+        image,
+        location,
+        ad
     }
 }

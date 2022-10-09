@@ -299,12 +299,12 @@ public class ChatController {
             messaggio.setTimestamp(Date.from(now));
             messaggio.setMessaggio(fileName);
             messaggio.setTipo(String.valueOf(switch (tipo) {
-                case "image" -> MessaggioWS.TipoMessaggio.IMAGE;
-                case "location" -> MessaggioWS.TipoMessaggio.LOCATION;
-                default -> MessaggioWS.TipoMessaggio.IMAGE;
+                case "image" -> MessaggioWS.TipoMessaggio.image;
+                case "location" -> MessaggioWS.TipoMessaggio.location;
+                default -> MessaggioWS.TipoMessaggio.image;
             }));
 
-            ChatWSController.sendMessage(chatroom.getUtenteMit(), chatroom.getUtenteDest(), fileName, MessaggioWS.TipoMessaggio.IMAGE ,chatroomService, utentePublicInfoService, messaggioService);
+            ChatWSController.sendMessage(chatroom.getUtenteMit(), chatroom.getUtenteDest(), fileName, MessaggioWS.TipoMessaggio.image,chatroomService, utentePublicInfoService, messaggioService);
 
             messaggioService.save(messaggio);
             return ResponseEntity.ok("{fileName: \""+fileName+"\"}");
