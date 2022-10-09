@@ -6,7 +6,7 @@ public class MessaggioWS {
     private String messaggio;
     private Date timestamp;
     private Integer utenteDest;
-    private TipoMessaggio tipo;
+    private String tipo;
 
     public String getMessaggio() {
         return messaggio;
@@ -32,11 +32,11 @@ public class MessaggioWS {
         this.utenteDest = utenteDest;
     }
 
-    public TipoMessaggio getTipo() {
+    public String getTipo() {
         return tipo;
     }
 
-    public void setTipo(TipoMessaggio tipo) {
+    public void setTipo(String tipo) {
         this.tipo = tipo;
     }
 

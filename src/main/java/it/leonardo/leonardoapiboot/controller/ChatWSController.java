@@ -96,7 +96,7 @@ public class ChatWSController {
     }
 
     @Operation(description = "Invia un messaggio all'utente fornito")
-    public static void sendMessage(Utente sender, Utente recipient, String messaggioStr, MessaggioWS.TipoMessaggio tipoMessaggio, ChatroomService chatroomService, UtentePublicInfoService utentePublicInfoService, MessaggioService messaggioService) {
+    public static void sendMessage(Utente sender, Utente recipient, String messaggioStr, String tipoMessaggio, ChatroomService chatroomService, UtentePublicInfoService utentePublicInfoService, MessaggioService messaggioService) {
         log.info("Invoked ChatWSController.sendMessage()");
         Messaggio messaggio = new Messaggio();
         Integer utenteMit = sender.getUtenteId();
@@ -110,7 +110,7 @@ public class ChatWSController {
         messaggio.setStatus(0);
         messaggio.setTimestamp(Date.from(Instant.now()));
         messaggio.setMessaggio(messaggioStr);
-        messaggio.setTipo(String.valueOf(tipoMessaggio));
+        messaggio.setTipo(tipoMessaggio);
 
         messaggio = messaggioService.save(messaggio);
 

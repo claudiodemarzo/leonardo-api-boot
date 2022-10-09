@@ -263,7 +263,7 @@ public class ChatController {
     @Parameters(value = {
             @Parameter(name = "id", description = "ID dell'utente a cui inviare l'immagine"),
             @Parameter(name = "file", description = "Immagine da inviare"),
-            @Parameter(name = "tipo", description = "Tipo del file inviato", schema = @Schema(implementation = MessaggioWS.TipoMessaggio.class))
+            @Parameter(name = "tipo", description = "Tipo del file inviato")
     })
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Immagine inviata"),
@@ -298,13 +298,9 @@ public class ChatController {
             messaggio.setChatroom(chatroom);
             messaggio.setTimestamp(Date.from(now));
             messaggio.setMessaggio(fileName);
-            messaggio.setTipo(String.valueOf(switch (tipo) {
-                case "image" -> MessaggioWS.TipoMessaggio.image;
-                case "location" -> MessaggioWS.TipoMessaggio.location;
-                default -> MessaggioWS.TipoMessaggio.image;
-            }));
+            messaggio.setTipo(tipo);
 
-            ChatWSController.sendMessage(chatroom.getUtenteMit(), chatroom.getUtenteDest(), fileName, MessaggioWS.TipoMessaggio.image,chatroomService, utentePublicInfoService, messaggioService);
+            ChatWSController.sendMessage(chatroom.getUtenteMit(), chatroom.getUtenteDest(), fileName, "image",chatroomService, utentePublicInfoService, messaggioService);
 
             messaggioService.save(messaggio);
             return ResponseEntity.ok("{fileName: \""+fileName+"\"}");
