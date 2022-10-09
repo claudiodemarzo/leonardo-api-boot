@@ -71,6 +71,7 @@ public class ChatWSController {
         m.setStatus(0);
         m.setTimestamp(Date.from(Instant.now()));
         m.setMessaggio(message.getMessaggio());
+        m.setTipo(message.getTipo());
 
         m = messaggioService.save(m);
         
