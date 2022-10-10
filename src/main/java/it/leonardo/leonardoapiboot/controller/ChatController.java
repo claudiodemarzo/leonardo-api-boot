@@ -13,6 +13,7 @@ import it.leonardo.leonardoapiboot.entity.Chatroom;
 import it.leonardo.leonardoapiboot.entity.Messaggio;
 import it.leonardo.leonardoapiboot.entity.Utente;
 import it.leonardo.leonardoapiboot.entity.form.MessaggioWS;
+import it.leonardo.leonardoapiboot.entity.form.SendEmbedForm;
 import it.leonardo.leonardoapiboot.service.ChatroomService;
 import it.leonardo.leonardoapiboot.service.MessaggioService;
 import it.leonardo.leonardoapiboot.service.UtentePublicInfoService;
@@ -23,6 +24,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -261,9 +263,8 @@ public class ChatController {
 
     @Operation(description = "Permette di inviare un'immagine via chat ad un utente")
     @Parameters(value = {
-            @Parameter(name = "id", description = "ID dell'utente a cui inviare l'immagine"),
-            @Parameter(name = "file", description = "Immagine da inviare"),
-            @Parameter(name = "tipo", description = "Tipo del file inviato")
+            @Parameter(name = "data", description = "Oggetto contenente id e tipo dell'allegato", schema = @Schema(implementation = SendEmbedForm.class)),
+            @Parameter(name = "file", description = "Immagine da inviare")
     })
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Immagine inviata"),
@@ -271,8 +272,8 @@ public class ChatController {
             @ApiResponse(responseCode = "401", description = "Login non effettuato"),
             @ApiResponse(responseCode = "500", description = "Errore interno del server")
     })
-    @PostMapping("/sendImage")
-    public ResponseEntity<Object> sendImage(String id, MultipartFile file, String tipo){
+    @PostMapping(value = "/sendImage", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Object> sendImage(@RequestPart("data") SendEmbedForm form, @RequestPart("file") MultipartFile file) {
         log.info("Invoked ChatController.sendImage()");
         String token = session.getAttribute("token") == null ? null : session.getAttribute("token").toString();
 
@@ -280,7 +281,7 @@ public class ChatController {
 
         String userID = session.getAttribute("userID").toString();
         try {
-            Optional<Utente> otherUtenteOptional = utenteService.findById(Integer.parseInt(id));
+            Optional<Utente> otherUtenteOptional = utenteService.findById(Integer.parseInt(form.getId()));
             if (!otherUtenteOptional.isPresent())
                 return new ResponseEntity<>("{\"invalidField\" : \"id\"}", HttpStatus.NOT_FOUND);
             Utente dest = otherUtenteOptional.get(), mit = utenteService.findById(Integer.parseInt(userID)).get();
@@ -298,7 +299,7 @@ public class ChatController {
             messaggio.setChatroom(chatroom);
             messaggio.setTimestamp(Date.from(now));
             messaggio.setMessaggio(fileName);
-            messaggio.setTipo(tipo);
+            messaggio.setTipo(form.getTipo().toLowerCase());
 
             ChatWSController.sendMessage(chatroom.getUtenteMit(), chatroom.getUtenteDest(), fileName, "image",chatroomService, utentePublicInfoService, messaggioService);
 
