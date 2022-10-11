@@ -27,6 +27,7 @@ import org.apache.batik.transcoder.image.PNGTranscoder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.tomcat.util.codec.binary.Base64;
+import org.json.JSONObject;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -302,7 +303,10 @@ public class ChatController {
             messaggio.setChatroom(chatroom);
             Instant now = Instant.now();
             messaggio.setTimestamp(Date.from(now));
+            messaggio.setStatus(0);
+            messaggio.setTipo(form.getTipo());
             String filePath = "";
+            JSONObject payloadJson = new JSONObject(form.getPayload());
 
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
 
@@ -318,13 +322,13 @@ public class ChatController {
                     file = new File(filePath);
                     File pngFile = new File(filePath + ".png");
                     OutputStream png_ostream = null;
-                    boolean isSVG = form.getPayload().contains("data:image/svg");
-                    boolean isWEBP = form.getPayload().contains("data:image/webp");
-                    form.setPayload(form.getPayload().split(",")[1]);
+                    boolean isSVG = payloadJson.getString("image").contains("data:image/svg");
+                    boolean isWEBP = payloadJson.getString("image").contains("data:image/webp");
+                    payloadJson.put("image", payloadJson.getString("image").split(",")[1]);
                     if (!isWEBP) {
                         if (isSVG) {
                             OutputStream stream = new FileOutputStream(filePath);
-                            byte[] svgBytes = Base64.decodeBase64(form.getPayload());
+                            byte[] svgBytes = Base64.decodeBase64(payloadJson.getString("image"));
                             stream.write(svgBytes);
                             TranscoderInput input_svg_image = new TranscoderInput(file.toURI().toURL().toString());
                             png_ostream = new FileOutputStream(pngFile);
@@ -338,7 +342,7 @@ public class ChatController {
                             file.delete();
                         } else {
                             OutputStream stream = new FileOutputStream(pngFile);
-                            byte[] imageBytes = Base64.decodeBase64(form.getPayload());
+                            byte[] imageBytes = Base64.decodeBase64(payloadJson.getString("image"));
                             stream.write(imageBytes);
                             stream.flush();
                             stream.close();
@@ -357,22 +361,25 @@ public class ChatController {
                         webpOutputStream.write(imageCopyBytes);
                         pngFile.delete();
                     } else {
-                        byte[] webpBytes = Base64.decodeBase64(form.getPayload());
+                        byte[] webpBytes = Base64.decodeBase64(payloadJson.getString("image"));
                         try (OutputStream webpOutputStream = new FileOutputStream(filePath)) {
                             webpOutputStream.write(webpBytes);
                         }
                     }
-                    messaggio.setMessaggio(filePath.replace("/var/www/html/assets/imgs/chat/", ""));
+                    if(form.getTipo().equals("location")){
+                        messaggio.setMessaggio("{\"image\" : \""+filePath.replace("/var/www/html/assets/imgs/chat/", "")+"\", \"text\" : \""+payloadJson.getString("text")+"\", \"url\" : \""+payloadJson.getString("url")+"\"}");
+                        ChatWSController.sendMessage(chatroom.getUtenteMit(), chatroom.getUtenteDest(), messaggio.getMessaggio(), messaggio.getTipo(), chatroomService, utentePublicInfoService, messaggioService);
+                        return new ResponseEntity<>(messaggio.getMessaggio(), HttpStatus.OK);
+                    }else if (form.getTipo().equals("image")){
+                        messaggio.setMessaggio(filePath.replace("/var/www/html/assets/imgs/chat/", ""));
+                        ChatWSController.sendMessage(chatroom.getUtenteMit(), chatroom.getUtenteDest(), messaggio.getMessaggio(), messaggio.getTipo(), chatroomService, utentePublicInfoService, messaggioService);
+                        return ResponseEntity.ok("{\"fileName\": \"" + filePath.replace("/var/www/html/assets/imgs/chat/", "") + "\"}");
+                    }
                     break;
                 case "ad":
                     break;
             }
-
-            messaggio.setStatus(0);
-            messaggio.setTipo(form.getTipo());
-
-            ChatWSController.sendMessage(chatroom.getUtenteMit(), chatroom.getUtenteDest(), messaggio.getMessaggio(), messaggio.getTipo(), chatroomService, utentePublicInfoService, messaggioService);
-            return ResponseEntity.ok("{\"fileName\": \"" + filePath.replace("/var/www/html/assets/imgs/chat/", "") + "\"}");
+            return null;
         } catch (Exception e) {
             Sentry.captureException(e);
             return ResponseEntity.internalServerError().build();
@@ -390,7 +397,7 @@ public class ChatController {
             Utente utente = utenteService.findById(Integer.parseInt(userID)).get();
             Chatroom chatroom = chatroomService.getById(chatroomID);
             if(!Objects.equals(chatroom.getUtenteMit().getUtenteId(), utente.getUtenteId()) && !Objects.equals(chatroom.getUtenteDest().getUtenteId(), utente.getUtenteId()))
-                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
             InputStream in = new FileInputStream("/var/www/html/assets/imgs/chat/"+path);
 
             return ResponseEntity.ok()
