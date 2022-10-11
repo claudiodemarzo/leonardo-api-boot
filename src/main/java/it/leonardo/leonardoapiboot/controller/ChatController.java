@@ -371,9 +371,9 @@ public class ChatController {
                         ChatWSController.sendMessage(chatroom.getUtenteMit(), chatroom.getUtenteDest(), messaggio.getMessaggio(), messaggio.getTipo(), chatroomService, utentePublicInfoService, messaggioService);
                         return new ResponseEntity<>(messaggio.getMessaggio(), HttpStatus.OK);
                     }else if (form.getTipo().equals("image")){
-                        messaggio.setMessaggio(filePath.replace("/var/www/html/assets/imgs/chat/", ""));
+                        messaggio.setMessaggio("{\"image\" : \""+filePath.replace("/var/www/html/assets/imgs/chat/", "")+"\"}");
                         ChatWSController.sendMessage(chatroom.getUtenteMit(), chatroom.getUtenteDest(), messaggio.getMessaggio(), messaggio.getTipo(), chatroomService, utentePublicInfoService, messaggioService);
-                        return ResponseEntity.ok("{\"fileName\": \"" + filePath.replace("/var/www/html/assets/imgs/chat/", "") + "\"}");
+                        return ResponseEntity.ok("{\"image\": \"" + filePath.replace("/var/www/html/assets/imgs/chat/", "") + "\"}");
                     }
                     break;
                 case "ad":
