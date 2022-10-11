@@ -20,8 +20,15 @@ import it.leonardo.leonardoapiboot.service.UtentePublicInfoService;
 import it.leonardo.leonardoapiboot.service.UtenteService;
 import it.leonardo.leonardoapiboot.utils.ChatroomComparator;
 import it.leonardo.leonardoapiboot.utils.MessaggiComparator;
+import nu.pattern.OpenCV;
+import org.apache.batik.transcoder.TranscoderInput;
+import org.apache.batik.transcoder.TranscoderOutput;
+import org.apache.batik.transcoder.image.PNGTranscoder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.tomcat.util.codec.binary.Base64;
+import org.opencv.core.CvType;
+import org.opencv.core.Mat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -29,8 +36,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.ImageIO;
 import javax.servlet.http.HttpSession;
+import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferByte;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -38,6 +50,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
+import static it.leonardo.leonardoapiboot.utils.ImageUtils.cropImageSquare;
+import static it.leonardo.leonardoapiboot.utils.ImageUtils.encodeWebp;
 
 @RestController
 @RequestMapping("/chat")
@@ -263,8 +278,9 @@ public class ChatController {
 
     @Operation(description = "Permette di inviare un'immagine via chat ad un utente")
     @Parameters(value = {
-            @Parameter(name = "data", description = "Oggetto contenente id e tipo dell'allegato", schema = @Schema(implementation = SendEmbedForm.class)),
-            @Parameter(name = "file", description = "Immagine da inviare")
+            @Parameter(name = "id", description = "id del destinatario"),
+            @Parameter(name = "tipo", description = "tipo dell'embed"),
+            @Parameter(name = "payload", description = "payload dell'embed")
     })
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Immagine inviata"),
@@ -272,8 +288,8 @@ public class ChatController {
             @ApiResponse(responseCode = "401", description = "Login non effettuato"),
             @ApiResponse(responseCode = "500", description = "Errore interno del server")
     })
-    @PostMapping(value = "/sendImage", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Object> sendImage(@RequestPart("data") SendEmbedForm form, @RequestPart("file") MultipartFile file) {
+    @PostMapping("/embed")
+    public ResponseEntity<Object> sendEmbed(String id, String tipo, String payload) {
         log.info("Invoked ChatController.sendImage()");
         String token = session.getAttribute("token") == null ? null : session.getAttribute("token").toString();
 
@@ -281,30 +297,83 @@ public class ChatController {
 
         String userID = session.getAttribute("userID").toString();
         try {
-            Optional<Utente> otherUtenteOptional = utenteService.findById(Integer.parseInt(form.getId()));
+            Optional<Utente> otherUtenteOptional = utenteService.findById(Integer.parseInt(id));
             if (!otherUtenteOptional.isPresent())
                 return new ResponseEntity<>("{\"invalidField\" : \"id\"}", HttpStatus.NOT_FOUND);
             Utente dest = otherUtenteOptional.get(), mit = utenteService.findById(Integer.parseInt(userID)).get();
             Chatroom chatroom = chatroomService.getOrCreate(dest, mit);
-
+            Messaggio messaggio = new Messaggio();
+            messaggio.setChatroom(chatroom);
             Instant now = Instant.now();
+            messaggio.setTimestamp(Date.from(now));
+            String filePath = "";
 
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
 
-            String fileName = chatroom.getChatroomId()+"/" + sdf.format(Date.from(now)) + file.getOriginalFilename().split(".")[file.getOriginalFilename().split(".").length-1];
+            switch (tipo.toLowerCase()) {
+                case "image":
+                    OpenCV.loadLocally();
 
-            file.transferTo(new File("/var/www/html/assets/imgs/chat/"+fileName));
+                    filePath = "/var/www/html/assets/imgs/chat/" + sdf.format(Date.from(now)) + ".webp";
+                    File file = new File(filePath);
+                    File pngFile = new File(filePath + ".png");
+                    OutputStream png_ostream = null;
+                    boolean isSVG = payload.contains("data:image/svg");
+                    boolean isWEBP = payload.contains("data:image/webp");
+                    if (!isWEBP) {
+                        if (isSVG) {
+                            OutputStream stream = new FileOutputStream(filePath);
+                            byte[] svgBytes = Base64.decodeBase64(payload);
+                            stream.write(svgBytes);
+                            TranscoderInput input_svg_image = new TranscoderInput(file.toURI().toURL().toString());
+                            png_ostream = new FileOutputStream(pngFile);
+                            TranscoderOutput output_png_image = new TranscoderOutput(png_ostream);
+                            PNGTranscoder my_converter = new PNGTranscoder();
+                            my_converter.transcode(input_svg_image, output_png_image);
+                            png_ostream.flush();
+                            png_ostream.close();
+                            stream.flush();
+                            stream.close();
+                            file.delete();
+                        } else {
+                            OutputStream stream = new FileOutputStream(pngFile);
+                            byte[] imageBytes = Base64.decodeBase64(payload);
+                            stream.write(imageBytes);
+                            stream.flush();
+                            stream.close();
+                        }
+                        BufferedImage image = ImageIO.read(pngFile);
+                        BufferedImage imageCopy = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
 
-            Messaggio messaggio = new Messaggio();
-            messaggio.setChatroom(chatroom);
-            messaggio.setTimestamp(Date.from(now));
-            messaggio.setMessaggio(fileName);
-            messaggio.setTipo(form.getTipo().toLowerCase());
+                        imageCopy.getGraphics().drawImage(image, 0, 0, null);
+                        byte[] imageCopyBytes = ((DataBufferByte) imageCopy.getRaster().getDataBuffer()).getData();
 
-            ChatWSController.sendMessage(chatroom.getUtenteMit(), chatroom.getUtenteDest(), fileName, "image",chatroomService, utentePublicInfoService, messaggioService);
+                        Mat imageMatrix = new Mat(image.getHeight(), image.getWidth(), CvType.CV_8UC3);
+                        imageMatrix.put(0, 0, imageCopyBytes);
+
+                        imageCopyBytes = encodeWebp(imageMatrix, 100);
+                        OutputStream webpOutputStream = new FileOutputStream(filePath);
+                        webpOutputStream.write(imageCopyBytes);
+                        pngFile.delete();
+                    } else {
+                        byte[] webpBytes = Base64.decodeBase64(payload);
+                        try (OutputStream webpOutputStream = new FileOutputStream(filePath)) {
+                            webpOutputStream.write(webpBytes);
+                        }
+                    }
+                    messaggio.setMessaggio(filePath.replace("/var/www/html", ""));
+                    break;
+                case "location":
+                    break;
+                case "ad":
+                    break;
+            }
+            messaggio.setTipo(tipo);
+
+            ChatWSController.sendMessage(chatroom.getUtenteMit(), chatroom.getUtenteDest(), messaggio.getMessaggio(), messaggio.getTipo(), chatroomService, utentePublicInfoService, messaggioService);
 
             messaggioService.save(messaggio);
-            return ResponseEntity.ok("{fileName: \""+fileName+"\"}");
+            return ResponseEntity.ok("{fileName: \"" + filePath.replace("/var/www/html", "") + "\"}");
         } catch (Exception e) {
             Sentry.captureException(e);
             return ResponseEntity.internalServerError().build();
