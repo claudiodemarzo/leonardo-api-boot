@@ -3,7 +3,7 @@ package it.leonardo.leonardoapiboot.entity.form;
 public class SendEmbedForm {
     private String id;
     private String tipo;
-
+    private String payload;
     public String getId() {
         return id;
     }
@@ -18,6 +18,14 @@ public class SendEmbedForm {
 
     public void setTipo(String tipo) {
         this.tipo = tipo;
+    }
+
+    public String getPayload() {
+        return payload;
+    }
+
+    public void setPayload(String payload) {
+        this.payload = payload;
     }
 
     public SendEmbedForm(){
