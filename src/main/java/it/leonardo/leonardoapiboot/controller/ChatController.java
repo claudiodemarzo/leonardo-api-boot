@@ -377,7 +377,7 @@ public class ChatController {
             messaggio.setTipo(form.getTipo());
 
             ChatWSController.sendMessage(chatroom.getUtenteMit(), chatroom.getUtenteDest(), messaggio.getMessaggio(), messaggio.getTipo(), chatroomService, utentePublicInfoService, messaggioService);
-            return ResponseEntity.ok("{fileName: \"" + filePath.replace("/var/www/html/assets/imgs/chat/", "") + "\"}");
+            return ResponseEntity.ok("{\"fileName\": \"" + filePath.replace("/var/www/html/assets/imgs/chat/", "") + "\"}");
         } catch (Exception e) {
             Sentry.captureException(e);
             return ResponseEntity.internalServerError().build();
