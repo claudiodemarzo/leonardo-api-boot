@@ -13,4 +13,6 @@ public interface ChatroomService {
     Chatroom save(Chatroom c);
 
     List<Chatroom> getByUtenteDest(Utente dest);
+
+    Chatroom getById(Integer id);
 }

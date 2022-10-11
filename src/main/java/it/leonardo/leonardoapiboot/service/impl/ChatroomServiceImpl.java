@@ -50,5 +50,10 @@ public class ChatroomServiceImpl implements ChatroomService {
     public List<Chatroom> getByUtenteDest(Utente dest) {
         return repo.findAllByUtenteDest(dest);
     }
+
+    @Override
+    public Chatroom getById(Integer id) {
+        return repo.findById(id).orElse(null);
+    }
 }
 

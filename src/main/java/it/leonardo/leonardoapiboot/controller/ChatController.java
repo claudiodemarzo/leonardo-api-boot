@@ -30,6 +30,7 @@ import org.apache.tomcat.util.codec.binary.Base64;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -40,17 +41,11 @@ import javax.imageio.ImageIO;
 import javax.servlet.http.HttpSession;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static it.leonardo.leonardoapiboot.utils.ImageUtils.cropImageSquare;
 import static it.leonardo.leonardoapiboot.utils.ImageUtils.encodeWebp;
@@ -378,6 +373,29 @@ public class ChatController {
 
             ChatWSController.sendMessage(chatroom.getUtenteMit(), chatroom.getUtenteDest(), messaggio.getMessaggio(), messaggio.getTipo(), chatroomService, utentePublicInfoService, messaggioService);
             return ResponseEntity.ok("{\"fileName\": \"" + filePath.replace("/var/www/html/assets/imgs/chat/", "") + "\"}");
+        } catch (Exception e) {
+            Sentry.captureException(e);
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @GetMapping("mediaWatcher")
+    public ResponseEntity<InputStreamResource> mediaWatcher(@RequestParam String path) {
+        log.info("Invoked ChatController.mediaWatcher("+path+")");
+        String token = session.getAttribute("token") == null ? null : session.getAttribute("token").toString();
+        if (token == null) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        String userID = session.getAttribute("userID").toString();
+        try {
+            int chatroomID = Integer.parseInt(path.split("/")[0]);
+            Utente utente = utenteService.findById(Integer.parseInt(userID)).get();
+            Chatroom chatroom = chatroomService.getById(chatroomID);
+            if(!Objects.equals(chatroom.getUtenteMit().getUtenteId(), utente.getUtenteId()) && !Objects.equals(chatroom.getUtenteDest().getUtenteId(), utente.getUtenteId()))
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            InputStream in = new FileInputStream("/var/www/html/assets/imgs/chat/"+path);
+
+            return ResponseEntity.ok()
+                    .contentType(MediaType.IMAGE_PNG)
+                    .body(new InputStreamResource(in));
         } catch (Exception e) {
             Sentry.captureException(e);
             return ResponseEntity.internalServerError().build();
