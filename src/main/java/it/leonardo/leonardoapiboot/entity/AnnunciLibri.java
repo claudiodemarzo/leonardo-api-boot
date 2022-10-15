@@ -59,9 +59,6 @@ public class AnnunciLibri {
     @Temporal(TemporalType.TIMESTAMP)
     private Date saleDate;
 
-    @Column(name = "confirmed")
-    private Boolean confirmed;
-
     @OneToOne(mappedBy = "annuncio")
     private Recensione recensione;
 
@@ -159,14 +156,6 @@ public class AnnunciLibri {
 
     public void setRecensione(Recensione recensione) {
         this.recensione = recensione;
-    }
-
-    public Boolean getConfirmed() {
-        return confirmed;
-    }
-
-    public void setConfirmed(Boolean confirmed) {
-        this.confirmed = confirmed;
     }
 
     public AnnunciLibri() {
