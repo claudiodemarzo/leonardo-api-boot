@@ -386,6 +386,52 @@ public class AnnunciLibriController {
         }
     }
 
+    @Operation(description = "Conferma/Rifiuta la vendita di un annuncio")
+    @Parameters(value = {
+            @Parameter(name = "idAnn", description = "ID dell'annuncio", required = true),
+            @Parameter(name = "confirm", description = "Se true, l'annuncio viene confermato, altrimenti viene rifiutato", required = true)
+    })
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "La richiesta è andata a buon fine."),
+            @ApiResponse(responseCode = "404", description = "L'annuncio non esiste/non è di proprietà dell'utente, o l'utente specificato non esiste"),
+            @ApiResponse(responseCode = "401", description = "Sessione non settata e/o token invalido"),
+            @ApiResponse(responseCode = "403", description = "L'utente non ha ancora verificato l'email"),
+            @ApiResponse(responseCode = "500", description = "Errore generico del server"),
+            @ApiResponse(responseCode = "409", description = "L'annuncio è già stato impostato come venduto")
+    })
+    @PostMapping("/confirmSale")
+    public ResponseEntity<Object> confirmSale(Integer idAnn, Boolean confirm) {
+        log.info("Invoked AnnunciLibriController.confirmSale(" + confirm + ")");
+        String token = session.getAttribute("token") == null ? null : session.getAttribute("token").toString();
+        if (token == null) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        try {
+            if (!utenteService.findById(Integer.parseInt(session.getAttribute("userID").toString())).get().getEmail_confermata())
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            Optional<AnnunciLibri> opt = service.findById(idAnn);
+            if (!opt.isPresent()) return new ResponseEntity<>("{\"invalidField\" : \"id\"}", HttpStatus.NOT_FOUND);
+            AnnunciLibri ann = opt.get();
+            if ((ann.getUtente().getId().equals(utenteService.findById(Integer.parseInt(session.getAttribute("userID").toString())).get().getUtenteId()))) {
+                if(ann.getStato() != 2 && !ann.getConfirmed()) return new ResponseEntity<>(HttpStatus.CONFLICT);
+                if (confirm) {
+                    ann.setConfirmed(true);
+                    service.save(ann);
+                    return ResponseEntity.ok(ann);
+                } else {
+                    ann.setStato(1);
+                    ann.setConfirmed(false);
+                    ann.setSaleDate(null);
+                    ann.setSoldTo(null);
+                    service.save(ann);
+                    return ResponseEntity.ok(ann);
+                }
+            } else return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+
+        } catch (Exception e) {
+            Sentry.captureException(e);
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
     @Operation(description = "Invia una notifica al proprietario dell'annuncio")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "La richiesta è andata a buon fine, la notifica è stata inviata."),

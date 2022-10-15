@@ -20,7 +20,6 @@ public class CreateAnnuncioForm {
     private Integer pagRovMol;
     private Integer copRov;
     private Integer insManc;
-
     private String imgLink;
 
     public String getIsbn() {
