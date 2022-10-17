@@ -1,7 +1,7 @@
 package it.leonardo.leonardoapiboot.entity;
 
 import javax.persistence.*;
-import java.sql.Date;
+import java.util.Date;
 
 @Entity
 @Table(name = "preview_list")
