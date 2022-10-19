@@ -3,6 +3,8 @@ package it.leonardo.leonardoapiboot.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import it.leonardo.leonardoapiboot.entity.PreviewList;
 import it.leonardo.leonardoapiboot.service.PreviewListService;
 import org.apache.commons.logging.Log;
@@ -23,9 +25,13 @@ public class PreviewController {
     private static final Log log = LogFactory.getLog(PreviewController.class);
 
 
-    @Operation(summary = "Add email to preview list")
+    @Operation(summary = "Aggiunge email alla lista preview")
     @Parameters({
-            @Parameter(name = "email", description = "Email to add to preview list", required = true)
+            @Parameter(name = "email", description = "L'email da aggiungere", required = true)
+    })
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Email aggiunta correttamente"),
+            @ApiResponse(responseCode = "400", description = "Email non valida")
     })
     @PostMapping
     public ResponseEntity<PreviewList> register(String email){
