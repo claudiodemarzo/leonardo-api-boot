@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("setup")
-@CrossOrigin(origins = {"https://leonardostart.tk", "https://localhost"}, allowCredentials = "true")
+@CrossOrigin(origins = {"https://leonardostart.tk", "https://localhost", "https://buybooks.it"}, allowCredentials = "true")
 public class SetupController {
 
 	private static Log log = LogFactory.getLog(SetupController.class);
