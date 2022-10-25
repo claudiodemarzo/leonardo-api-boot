@@ -18,7 +18,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/livelli")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = {"https://leonardostart.tk", "https://localhost", "https://buybooks.it"}, allowCredentials = "true")
 public class LivelloController {
 
     private final Log log = LogFactory.getLog(LivelloController.class);

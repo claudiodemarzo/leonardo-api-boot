@@ -29,6 +29,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/recensioni")
+@CrossOrigin(origins = {"https://leonardostart.tk", "https://localhost", "https://buybooks.it"}, allowCredentials = "true")
 public class RecensioniController {
 
     private final Log log = LogFactory.getLog(RecensioniController.class);

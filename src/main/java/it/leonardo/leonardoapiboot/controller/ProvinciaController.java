@@ -21,7 +21,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/provincia")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = {"https://leonardostart.tk", "https://localhost", "https://buybooks.it"}, allowCredentials = "true")
 public class ProvinciaController {
 
     private final Log log = LogFactory.getLog(ProvinciaController.class);

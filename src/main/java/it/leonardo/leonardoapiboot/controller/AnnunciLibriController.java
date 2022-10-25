@@ -42,7 +42,7 @@ import static it.leonardo.leonardoapiboot.utils.ImageUtils.encodeWebp;
 @RestController
 @RequestMapping("/annuncilibri")
 //@CrossOrigin(origins = {"http://leonardostart.ddns.net","http://127.0.0.1:5507","http://192.168.1.2"}, allowCredentials = "true")
-@CrossOrigin(origins = "https://leonardostart.tk", allowCredentials = "true")
+@CrossOrigin(origins = {"https://leonardostart.tk", "https://buybooks.it"}, allowCredentials = "true")
 public class AnnunciLibriController {
 
     private final Log log = LogFactory.getLog(AnnunciLibriController.class);

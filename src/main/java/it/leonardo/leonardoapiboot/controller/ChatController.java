@@ -53,6 +53,7 @@ import static it.leonardo.leonardoapiboot.utils.ImageUtils.encodeWebp;
 
 @RestController
 @RequestMapping("/chat")
+@CrossOrigin(origins = {"https://leonardostart.tk", "https://localhost", "https://buybooks.it"}, allowCredentials = "true")
 public class ChatController {
 
     @Autowired

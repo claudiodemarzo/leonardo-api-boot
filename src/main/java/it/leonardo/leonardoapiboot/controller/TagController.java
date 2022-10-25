@@ -22,7 +22,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/tags")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = {"https://leonardostart.tk", "https://localhost", "https://buybooks.it"}, allowCredentials = "true")
 public class TagController {
 
     private final Log log = LogFactory.getLog(TagController.class);

@@ -26,7 +26,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/libri")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = {"https://leonardostart.tk", "https://localhost", "https://buybooks.it"}, allowCredentials = "true")
 public class LibroController {
 
     private final Log log = LogFactory.getLog(LibroController.class);

@@ -23,7 +23,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/citta")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = {"https://leonardostart.tk", "https://localhost", "https://buybooks.it"}, allowCredentials = "true")
 public class CittaController {
 
     private final Log log = LogFactory.getLog(CittaController.class);

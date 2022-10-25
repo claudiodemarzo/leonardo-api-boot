@@ -19,6 +19,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/notification")
+@CrossOrigin(origins = {"https://leonardostart.tk", "https://localhost", "https://buybooks.it"}, allowCredentials = "true")
 public class NotificaController {
 
     private final Log log = LogFactory.getLog(NotificaController.class);
