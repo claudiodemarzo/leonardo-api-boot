@@ -16,6 +16,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.Instant;
+import java.util.Date;
+
 @RestController
 @RequestMapping("/preview")
 @CrossOrigin(origins = {"https://leonardostart.tk", "https://localhost", "https://buybooks.it"}, allowCredentials = "true")
@@ -42,6 +45,7 @@ public class PreviewController {
             return ResponseEntity.badRequest().build();
         }
         PreviewList pl = new PreviewList();
+        pl.setTimestamp(Date.from(Instant.now()));
         pl.setEmail(email);
         return ResponseEntity.ok(previewListService.save(pl));
     }
