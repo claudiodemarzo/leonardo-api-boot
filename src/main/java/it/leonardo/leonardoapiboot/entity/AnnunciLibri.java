@@ -9,6 +9,7 @@ import it.leonardo.leonardoapiboot.entity.form.UpdateAnnuncioForm;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -61,6 +62,9 @@ public class AnnunciLibri {
 
     @OneToOne(mappedBy = "annuncio")
     private Recensione recensione;
+
+    @OneToMany(mappedBy = "annuncio")
+    private List<Richiesta> richieste;
 
     public Integer getAnnuncio_id() {
         return annuncio_id;
@@ -156,6 +160,14 @@ public class AnnunciLibri {
 
     public void setRecensione(Recensione recensione) {
         this.recensione = recensione;
+    }
+
+    public List<Richiesta> getRichieste() {
+        return richieste;
+    }
+
+    public void setRichieste(List<Richiesta> richieste) {
+        this.richieste = richieste;
     }
 
     public AnnunciLibri() {

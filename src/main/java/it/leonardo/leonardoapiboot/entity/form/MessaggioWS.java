@@ -57,6 +57,7 @@ public class MessaggioWS {
         text,
         image,
         location,
-        ad
+        ad,
+        request
     }
 }

@@ -33,6 +33,9 @@ public class Messaggio {
     @Column(name = "tipo")
     private String tipo;
 
+    @OneToOne
+    private Richiesta richiesta;
+
     public Integer getMessaggioId() {
         return messaggioId;
     }
@@ -81,6 +84,14 @@ public class Messaggio {
         this.tipo = tipo;
     }
 
+    public Richiesta getRichiesta() {
+        return richiesta;
+    }
+
+    public void setRichiesta(Richiesta richiesta) {
+        this.richiesta = richiesta;
+    }
+
     @Override
     public String toString() {
         return new JSONObject()
@@ -91,6 +102,7 @@ public class Messaggio {
                 .put("status", this.status)
                 .put("timestamp", this.timestamp.toInstant().toString())
                 .put("tipo", this.tipo)
+                .put("richiesta", this.richiesta != null ? this.richiesta : null)
                 .toString();
     }
 
