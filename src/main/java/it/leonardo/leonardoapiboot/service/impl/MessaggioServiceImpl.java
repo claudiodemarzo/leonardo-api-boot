@@ -23,6 +23,11 @@ public class MessaggioServiceImpl implements MessaggioService {
     private ChatroomRepository chatroomRepository;
 
     @Override
+    public Optional<Messaggio> findById(Integer id) {
+        return messaggioRepository.findById(id);
+    }
+
+    @Override
     @SentrySpan
     public List<Messaggio> findByUtenteMitAndUtenteDest(Utente mit, Utente dest) {
         Optional<Chatroom> chatroomOpt = chatroomRepository.findByUtenteMitAndUtenteDest(mit, dest);

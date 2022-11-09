@@ -1,14 +1,12 @@
 package it.leonardo.leonardoapiboot.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
-import it.leonardo.leonardoapiboot.entity.Chatroom;
-import it.leonardo.leonardoapiboot.entity.Messaggio;
-import it.leonardo.leonardoapiboot.entity.Notifica;
-import it.leonardo.leonardoapiboot.entity.Utente;
+import it.leonardo.leonardoapiboot.entity.*;
 import it.leonardo.leonardoapiboot.entity.form.MessaggioWS;
 import it.leonardo.leonardoapiboot.service.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -35,6 +33,11 @@ public class ChatWSController {
     private UtenteService utenteService;
     @Autowired
     private UtentePublicInfoService utentePublicInfoService;
+
+    @Autowired
+    private RichiestaService richiestaService;
+    @Autowired
+    private AnnunciLibriService annunciLibriService;
 
     public ChatWSController(SimpMessagingTemplate messagingTemplate) {
         ChatWSController.messagingTemplate = messagingTemplate;
@@ -74,7 +77,16 @@ public class ChatWSController {
         m.setTipo(message.getTipo());
 
         m = messaggioService.save(m);
-        
+
+        if(m.getTipo().equals("request")){
+            JSONObject json = new JSONObject(m.getMessaggio());
+            Richiesta r = new Richiesta();
+            r.setMessaggio(m);
+            r.setAnnuncio(annunciLibriService.findById(json.getInt("annuncio")).get());
+            r.setStato(null);
+            richiestaService.save(r);
+        }
+
         String msg = message.getMessaggio();
         Matcher matcher = Pattern.compile("^(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]", Pattern.CASE_INSENSITIVE).matcher(msg);
         for (int i = 0; matcher.find(); i++) {
@@ -82,6 +94,8 @@ public class ChatWSController {
             String url2 = url.substring(1, url.length() - 1);
             msg = msg.replace(url, "<a href=\"" + url2 + "\" target=\"_blank\">" + url2 + "</a>");
         }
+
+        m = messaggioService.findById(m.getMessaggioId()).get();
 
         m.setMessaggio(msg);
 

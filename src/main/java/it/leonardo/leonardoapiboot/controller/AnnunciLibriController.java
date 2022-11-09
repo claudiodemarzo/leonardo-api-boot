@@ -343,7 +343,7 @@ public class AnnunciLibriController {
         }
     }
 
-    @Operation(description = "Imposta un annuncio come venduto")
+    @Operation(description = "Imposta un annuncio come venduto, mandando una richiesta di conferma all'utente specificato")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "La richiesta è andata a buon fine, l'annuncio è stato impostato come venduto."),
             @ApiResponse(responseCode = "404", description = "L'annuncio non esiste/non è di proprietà dell'utente, o l'utente specificato non esiste"),
@@ -376,7 +376,7 @@ public class AnnunciLibriController {
                 AnnunciLibri annUpdated = service.save(ann);
 
                 carrelloService.deleteByAnnuncio(annUpdated);
-                ChatWSController.sendNotification(annUpdated.getSoldTo().getId().toString(), new Notifica(Notifica.TipoNotifica.info, "Lascia una recensione!", "Lascia una recensione a @" + annUpdated.getUtente().getUsername() + " per il tuo nuovo acquisto!", utenteService.findById(annUpdated.getSoldTo().getId()).get(), "/profile?sec=ord-hist"), notificaService);
+                //ChatWSController.sendNotification(, new Notifica(Notifica.TipoNotifica.info, "Lascia una recensione!", "Lascia una recensione a @" + annUpdated.getUtente().getUsername() + " per il tuo nuovo acquisto!", utenteService.findById(annUpdated.getSoldTo().getId()).get(), "/profile?sec=ord-hist"), notificaService);
                 return ResponseEntity.ok(annUpdated);
             }
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
