@@ -376,6 +376,13 @@ public class AnnunciLibriController {
                 AnnunciLibri annUpdated = service.save(ann);
 
                 carrelloService.deleteByAnnuncio(annUpdated);
+                ChatWSController.sendMessage(utenteService.findById(annUpdated.getUtente().getId()).get(),
+                        utenteService.findById(annUpdated.getSoldTo().getId()).get(),
+                        "{\"annuncio\" : " + annUpdated.getAnnuncio_id() + "}",
+                        "request",
+                        chatroomService,
+                        utentePublicInfoService,
+                        messaggioService);
                 //ChatWSController.sendNotification(, new Notifica(Notifica.TipoNotifica.info, "Lascia una recensione!", "Lascia una recensione a @" + annUpdated.getUtente().getUsername() + " per il tuo nuovo acquisto!", utenteService.findById(annUpdated.getSoldTo().getId()).get(), "/profile?sec=ord-hist"), notificaService);
                 return ResponseEntity.ok(annUpdated);
             }
