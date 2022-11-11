@@ -33,7 +33,7 @@ public class Messaggio {
     @Column(name = "tipo")
     private String tipo;
 
-    @OneToOne
+    @OneToOne(mappedBy = "messaggio")
     private Richiesta richiesta;
 
     public Integer getMessaggioId() {

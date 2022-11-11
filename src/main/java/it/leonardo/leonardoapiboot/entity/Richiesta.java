@@ -15,7 +15,7 @@ public class Richiesta {
     @JoinColumn(name = "annuncio")
     private AnnunciLibri annuncio;
 
-    @OneToOne(mappedBy = "richiesta")
+    @OneToOne
     @JoinColumn(name = "messaggio")
     private Messaggio messaggio;
 
