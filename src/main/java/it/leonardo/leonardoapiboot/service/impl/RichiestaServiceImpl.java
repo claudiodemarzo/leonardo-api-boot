@@ -6,6 +6,8 @@ import it.leonardo.leonardoapiboot.service.RichiestaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class RichiestaServiceImpl implements RichiestaService {
 
@@ -15,6 +17,11 @@ public class RichiestaServiceImpl implements RichiestaService {
     @Override
     public Richiesta save(Richiesta richiesta) {
         return repo.save(richiesta);
+    }
+
+    @Override
+    public Optional<Richiesta> findById(Integer id) {
+        return repo.findById(id);
     }
 }
 
