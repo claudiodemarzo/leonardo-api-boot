@@ -63,6 +63,7 @@ public class AnnunciLibri {
     @OneToOne(mappedBy = "annuncio")
     private Recensione recensione;
 
+    @JsonBackReference
     @OneToMany(mappedBy = "annuncio")
     private List<Richiesta> richieste;
 
