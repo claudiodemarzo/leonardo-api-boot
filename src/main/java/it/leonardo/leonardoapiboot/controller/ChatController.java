@@ -6,13 +6,11 @@ import io.sentry.SentryLevel;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import it.leonardo.leonardoapiboot.entity.Chatroom;
 import it.leonardo.leonardoapiboot.entity.Messaggio;
 import it.leonardo.leonardoapiboot.entity.Utente;
-import it.leonardo.leonardoapiboot.entity.form.MessaggioWS;
 import it.leonardo.leonardoapiboot.entity.form.SendEmbedForm;
 import it.leonardo.leonardoapiboot.service.ChatroomService;
 import it.leonardo.leonardoapiboot.service.MessaggioService;
@@ -36,7 +34,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpSession;
@@ -48,7 +45,6 @@ import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.*;
 
-import static it.leonardo.leonardoapiboot.utils.ImageUtils.cropImageSquare;
 import static it.leonardo.leonardoapiboot.utils.ImageUtils.encodeWebp;
 
 @RestController
@@ -288,7 +284,7 @@ public class ChatController {
     })
     @PostMapping("/embed")
     public ResponseEntity<Object> sendEmbed(SendEmbedForm form) {
-        log.info("Invoked ChatController.sendEmbed("+form.getId()+", "+form.getTipo()+", "+form.getPayload()+")");
+        log.info("Invoked ChatController.sendEmbed(" + form.getId() + ", " + form.getTipo() + ", " + form.getPayload() + ")");
         String token = session.getAttribute("token") == null ? null : session.getAttribute("token").toString();
 
         if (token == null) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -316,7 +312,7 @@ public class ChatController {
                 case "location":
                     OpenCV.loadLocally();
 
-                    filePath = "/var/www/html/assets/imgs/chat/"+chatroom.getChatroomId()+"/";
+                    filePath = "/var/www/html/assets/imgs/chat/" + chatroom.getChatroomId() + "/";
                     File file = new File(filePath);
                     file.mkdirs();
                     filePath += sdf.format(Date.from(now)) + ".webp";
@@ -367,13 +363,13 @@ public class ChatController {
                             webpOutputStream.write(webpBytes);
                         }
                     }
-                    if(form.getTipo().equals("location")){
-                        messaggio.setMessaggio("{\"image\" : \""+filePath.replace("/var/www/html/assets/imgs/chat/", "")+"\", \"text\" : \""+payloadJson.getString("text")+"\", \"url\" : \""+payloadJson.getString("url")+"\"}");
-                        ChatWSController.sendMessage(chatroom.getUtenteMit(), chatroom.getUtenteDest(), messaggio.getMessaggio(), messaggio.getTipo(), chatroomService, utentePublicInfoService, messaggioService);
+                    if (form.getTipo().equals("location")) {
+                        messaggio.setMessaggio("{\"image\" : \"" + filePath.replace("/var/www/html/assets/imgs/chat/", "") + "\", \"text\" : \"" + payloadJson.getString("text") + "\", \"url\" : \"" + payloadJson.getString("url") + "\"}");
+                        ChatWSController.sendMessage(chatroom.getUtenteMit(), chatroom.getUtenteDest(), messaggio.getMessaggio(), messaggio.getTipo(), chatroomService, utentePublicInfoService, messaggioService, null, null);
                         return new ResponseEntity<>(messaggio.getMessaggio(), HttpStatus.OK);
-                    }else if (form.getTipo().equals("image")){
-                        messaggio.setMessaggio("{\"image\" : \""+filePath.replace("/var/www/html/assets/imgs/chat/", "")+"\"}");
-                        ChatWSController.sendMessage(chatroom.getUtenteMit(), chatroom.getUtenteDest(), messaggio.getMessaggio(), messaggio.getTipo(), chatroomService, utentePublicInfoService, messaggioService);
+                    } else if (form.getTipo().equals("image")) {
+                        messaggio.setMessaggio("{\"image\" : \"" + filePath.replace("/var/www/html/assets/imgs/chat/", "") + "\"}");
+                        ChatWSController.sendMessage(chatroom.getUtenteMit(), chatroom.getUtenteDest(), messaggio.getMessaggio(), messaggio.getTipo(), chatroomService, utentePublicInfoService, messaggioService, null, null);
                         return ResponseEntity.ok("{\"image\": \"" + filePath.replace("/var/www/html/assets/imgs/chat/", "") + "\"}");
                     }
                     break;
@@ -389,7 +385,7 @@ public class ChatController {
 
     @GetMapping("mediaWatcher")
     public ResponseEntity<InputStreamResource> mediaWatcher(@RequestParam String path) {
-        log.info("Invoked ChatController.mediaWatcher("+path+")");
+        log.info("Invoked ChatController.mediaWatcher(" + path + ")");
         String token = session.getAttribute("token") == null ? null : session.getAttribute("token").toString();
         if (token == null) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         String userID = session.getAttribute("userID").toString();
@@ -397,9 +393,9 @@ public class ChatController {
             int chatroomID = Integer.parseInt(path.split("/")[0]);
             Utente utente = utenteService.findById(Integer.parseInt(userID)).get();
             Chatroom chatroom = chatroomService.getById(chatroomID);
-            if(!Objects.equals(chatroom.getUtenteMit().getUtenteId(), utente.getUtenteId()) && !Objects.equals(chatroom.getUtenteDest().getUtenteId(), utente.getUtenteId()))
+            if (!Objects.equals(chatroom.getUtenteMit().getUtenteId(), utente.getUtenteId()) && !Objects.equals(chatroom.getUtenteDest().getUtenteId(), utente.getUtenteId()))
                 return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-            InputStream in = new FileInputStream("/var/www/html/assets/imgs/chat/"+path);
+            InputStream in = new FileInputStream("/var/www/html/assets/imgs/chat/" + path);
 
             return ResponseEntity.ok()
                     .contentType(MediaType.IMAGE_PNG)

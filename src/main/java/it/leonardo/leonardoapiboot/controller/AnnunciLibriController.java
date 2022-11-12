@@ -76,6 +76,12 @@ public class AnnunciLibriController {
     @Autowired
     private CarrelloService carrelloService;
 
+    @Autowired
+    private RichiestaService richiestaService;
+
+    @Autowired
+    private AnnunciLibriService annunciLibriService;
+
     @Operation(description = "Restituisce tutti gli annunci")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "La richiesta è andata a buon fine, la lista è stata popolata "),
@@ -381,7 +387,9 @@ public class AnnunciLibriController {
                         "request",
                         chatroomService,
                         utentePublicInfoService,
-                        messaggioService);
+                        messaggioService,
+                        annunciLibriService,
+                        richiestaService);
                 //ChatWSController.sendNotification(, new Notifica(Notifica.TipoNotifica.info, "Lascia una recensione!", "Lascia una recensione a @" + annUpdated.getUtente().getUsername() + " per il tuo nuovo acquisto!", utenteService.findById(annUpdated.getSoldTo().getId()).get(), "/profile?sec=ord-hist"), notificaService);
                 return ResponseEntity.ok(annUpdated);
             }
@@ -424,7 +432,7 @@ public class AnnunciLibriController {
             costo = costo.setScale(2, RoundingMode.HALF_UP);
 
 
-            ChatWSController.sendMessage(utenteService.findById(Integer.parseInt(session.getAttribute("userID").toString())).get(), utenteService.findById(ann.getUtente().getId()).get(), "Ciao! Mi piacerebbe acquistare il libro<div ad-id=\"" + ann.getAnnuncio_id() + "\" class=\"ad-contacted card flex-row w-100\"><img src=\"" + ann.getLibro().getCopertina() + "\" alt=\"" + ann.getLibro().getNome() + "\"><div class=\"card-body d-flex flex-column\"><div class=\"ad-title\">" + ann.getLibro().getNome() + "</div><div class=\"ad-isbn\">" + ann.getLibro().getIsbn() + "</div><div class=\"ad-description\">" + ann.getLibro().getDescrizione() + "</div><div class=\"ad-price\">Prezzo: € " + costo.toPlainString() + "</div></div></div>", "text", chatroomService, utentePublicInfoService, messaggioService);
+            ChatWSController.sendMessage(utenteService.findById(Integer.parseInt(session.getAttribute("userID").toString())).get(), utenteService.findById(ann.getUtente().getId()).get(), "Ciao! Mi piacerebbe acquistare il libro<div ad-id=\"" + ann.getAnnuncio_id() + "\" class=\"ad-contacted card flex-row w-100\"><img src=\"" + ann.getLibro().getCopertina() + "\" alt=\"" + ann.getLibro().getNome() + "\"><div class=\"card-body d-flex flex-column\"><div class=\"ad-title\">" + ann.getLibro().getNome() + "</div><div class=\"ad-isbn\">" + ann.getLibro().getIsbn() + "</div><div class=\"ad-description\">" + ann.getLibro().getDescrizione() + "</div><div class=\"ad-price\">Prezzo: € " + costo.toPlainString() + "</div></div></div>", "text", chatroomService, utentePublicInfoService, messaggioService, annunciLibriService, richiestaService);
 
             return ResponseEntity.ok().body("{}");
         } catch (Exception e) {

@@ -78,15 +78,6 @@ public class ChatWSController {
 
         m = messaggioService.save(m);
 
-        if(m.getTipo().equalsIgnoreCase("request")){
-            JSONObject json = new JSONObject(m.getMessaggio());
-            Richiesta r = new Richiesta();
-            r.setMessaggio(m);
-            r.setAnnuncio(annunciLibriService.findById(json.getInt("annuncio")).get());
-            r.setStato(null);
-            richiestaService.save(r);
-        }
-
         String msg = message.getMessaggio();
         Matcher matcher = Pattern.compile("^(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]", Pattern.CASE_INSENSITIVE).matcher(msg);
         for (int i = 0; matcher.find(); i++) {
@@ -111,7 +102,7 @@ public class ChatWSController {
     }
 
     @Operation(description = "Invia un messaggio all'utente fornito")
-    public static void sendMessage(Utente sender, Utente recipient, String messaggioStr, String tipoMessaggio, ChatroomService chatroomService, UtentePublicInfoService utentePublicInfoService, MessaggioService messaggioService) {
+    public static void sendMessage(Utente sender, Utente recipient, String messaggioStr, String tipoMessaggio, ChatroomService chatroomService, UtentePublicInfoService utentePublicInfoService, MessaggioService messaggioService, AnnunciLibriService annunciLibriService, RichiestaService richiestaService) {
         log.info("Invoked ChatWSController.sendMessage()");
         Messaggio messaggio = new Messaggio();
         Integer utenteMit = sender.getUtenteId();
@@ -128,6 +119,17 @@ public class ChatWSController {
         messaggio.setTipo(tipoMessaggio);
 
         messaggio = messaggioService.save(messaggio);
+
+        if(tipoMessaggio.equalsIgnoreCase("request")){
+            JSONObject json = new JSONObject(messaggioStr);
+            Richiesta r = new Richiesta();
+            r.setMessaggio(messaggio);
+            r.setAnnuncio(annunciLibriService.findById(json.getInt("annuncio")).get());
+            r.setStato(null);
+            richiestaService.save(r);
+        }
+
+
 
         messagingTemplate.convertAndSendToUser(recipient.getUtenteId().toString(), "/topic/private-message", messaggio.toString());
     }
