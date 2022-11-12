@@ -1,5 +1,7 @@
 package it.leonardo.leonardoapiboot.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import javax.persistence.*;
 
 @Entity
@@ -15,6 +17,7 @@ public class Richiesta {
     @JoinColumn(name = "annuncio")
     private AnnunciLibri annuncio;
 
+    @JsonBackReference
     @OneToOne
     @JoinColumn(name = "messaggio")
     private Messaggio messaggio;
