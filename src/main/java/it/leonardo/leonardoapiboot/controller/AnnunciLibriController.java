@@ -10,7 +10,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import it.leonardo.leonardoapiboot.entity.*;
 import it.leonardo.leonardoapiboot.entity.form.CreateAnnuncioForm;
-import it.leonardo.leonardoapiboot.entity.form.MessaggioWS;
 import it.leonardo.leonardoapiboot.entity.form.UpdateAnnuncioForm;
 import it.leonardo.leonardoapiboot.service.*;
 import it.leonardo.leonardoapiboot.utils.AnnunciComparator;
@@ -354,7 +353,7 @@ public class AnnunciLibriController {
     })
     @PostMapping("/sold")
     public ResponseEntity<Object> setSold(Integer idAnn, Integer idUser, Float prezzo) {
-        log.info("Invoked AnnunciLibriController.setSold(" + idAnn + ", " + idUser + ")");
+        log.info("Invoked AnnunciLibriController.setSold(" + idAnn + ", " + idUser + ", " + prezzo + ")");
         String token = session.getAttribute("token") == null ? null : session.getAttribute("token").toString();
         if (token == null) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         try {

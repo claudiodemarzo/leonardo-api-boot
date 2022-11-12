@@ -78,7 +78,7 @@ public class ChatWSController {
 
         m = messaggioService.save(m);
 
-        if(m.getTipo().equals("request")){
+        if(m.getTipo().equalsIgnoreCase("request")){
             JSONObject json = new JSONObject(m.getMessaggio());
             Richiesta r = new Richiesta();
             r.setMessaggio(m);
