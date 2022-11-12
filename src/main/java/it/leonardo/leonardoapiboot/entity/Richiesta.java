@@ -25,6 +25,9 @@ public class Richiesta {
     @Column(name = "stato")
     private Integer stato;
 
+    @Transient
+    private Libro libro;
+
     public Integer getId() {
         return id;
     }
@@ -55,6 +58,14 @@ public class Richiesta {
 
     public void setStato(Integer stato) {
         this.stato = stato;
+    }
+
+    public Libro getLibro() {
+        return libro;
+    }
+
+    public void setLibro(Libro libro) {
+        this.libro = libro;
     }
 
     public Richiesta() {

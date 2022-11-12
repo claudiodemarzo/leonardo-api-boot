@@ -9,13 +9,11 @@ import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import it.leonardo.leonardoapiboot.entity.Chatroom;
+import it.leonardo.leonardoapiboot.entity.Libro;
 import it.leonardo.leonardoapiboot.entity.Messaggio;
 import it.leonardo.leonardoapiboot.entity.Utente;
 import it.leonardo.leonardoapiboot.entity.form.SendEmbedForm;
-import it.leonardo.leonardoapiboot.service.ChatroomService;
-import it.leonardo.leonardoapiboot.service.MessaggioService;
-import it.leonardo.leonardoapiboot.service.UtentePublicInfoService;
-import it.leonardo.leonardoapiboot.service.UtenteService;
+import it.leonardo.leonardoapiboot.service.*;
 import it.leonardo.leonardoapiboot.utils.ChatroomComparator;
 import it.leonardo.leonardoapiboot.utils.MessaggiComparator;
 import nu.pattern.OpenCV;
@@ -67,6 +65,9 @@ public class ChatController {
     @Autowired
     private UtentePublicInfoService utentePublicInfoService;
 
+    @Autowired
+    private LibroService libroService;
+
     private final Log log = LogFactory.getLog(ChatController.class);
 
 
@@ -99,6 +100,14 @@ public class ChatController {
             }
 
             messaggi.sort(new MessaggiComparator());
+
+            for(Messaggio m : messaggi){
+                if(m.getRichiesta() != null){
+                    Libro l = libroService.findByIsbn(m.getRichiesta().getAnnuncio().getLibro().getIsbn()).get();
+                    l.setAnnunci(null);
+                    m.getRichiesta().setLibro(l);
+                }
+            }
 
             return ResponseEntity.ok(messaggi);
         } catch (Exception e) {
