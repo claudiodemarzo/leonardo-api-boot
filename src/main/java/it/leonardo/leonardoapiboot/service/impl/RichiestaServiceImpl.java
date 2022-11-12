@@ -16,7 +16,7 @@ public class RichiestaServiceImpl implements RichiestaService {
 
     @Override
     public Richiesta save(Richiesta richiesta) {
-        return repo.save(richiesta);
+        return repo.saveAndFlush(richiesta);
     }
 
     @Override
