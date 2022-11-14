@@ -1,6 +1,7 @@
 package it.leonardo.leonardoapiboot.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import org.json.JSONObject;
 
 import javax.persistence.*;
 
@@ -66,6 +67,17 @@ public class Richiesta {
 
     public void setLibro(Libro libro) {
         this.libro = libro;
+    }
+
+    @Override
+    public String toString() {
+        JSONObject json = new JSONObject();
+        json.put("id", id);
+        json.put("annuncio", annuncio);
+        json.put("messaggio", messaggio);
+        json.put("stato", stato);
+        json.put("libro", libro);
+        return json.toString();
     }
 
     public Richiesta() {
