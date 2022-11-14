@@ -128,6 +128,7 @@ public class ChatWSController {
             r.setStato(null);
             richiestaService.save(r);
         }
+        messaggio = messaggioService.findById(messaggio.getMessaggioId()).get();
 
 
 
