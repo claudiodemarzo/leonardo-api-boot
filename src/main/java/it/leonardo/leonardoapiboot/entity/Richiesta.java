@@ -80,6 +80,15 @@ public class Richiesta {
         return json.toString();
     }
 
+    public JSONObject JSONObject(){
+        return new JSONObject()
+                .put("id", id)
+                .put("annuncio", annuncio)
+                .put("messaggio", messaggio)
+                .put("stato", stato)
+                .put("libro", libro);
+    }
+
     public Richiesta() {
     }
 }
