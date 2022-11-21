@@ -212,4 +212,8 @@ public class Libro implements Serializable {
         l.setAnno_pubblicazione(caf.getAnno());
         return l;
     }
+
+    public String toJSONString(){
+        return new JSONObject(this).toString();
+    }
 }

@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import it.leonardo.leonardoapiboot.entity.form.CreateAnnuncioForm;
 import it.leonardo.leonardoapiboot.entity.form.UpdateAnnuncioForm;
+import org.json.JSONObject;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -335,5 +336,9 @@ public class AnnunciLibri {
         this.setPrezzo(form.getPrezzoVendita());
         this.setLivello_usura(AnnunciLibri.calcolaLivelloUsura(form));
         this.setStatus(sl);
+    }
+
+    public String toJSONString(){
+        return new JSONObject(this).toString();
     }
 }

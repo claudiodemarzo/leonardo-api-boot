@@ -73,10 +73,10 @@ public class Richiesta {
     public String toString() {
         JSONObject json = new JSONObject();
         json.put("id", id);
-        json.put("annuncio", annuncio);
+        json.put("annuncio", annuncio.toJSONString());
         //json.put("messaggio", messaggio);
         json.put("stato", stato);
-        json.put("libro", libro);
+        json.put("libro", libro.toJSONString());
         return json.toString();
     }
 
