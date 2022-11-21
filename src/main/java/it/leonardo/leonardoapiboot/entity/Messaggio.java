@@ -102,7 +102,7 @@ public class Messaggio {
                 .put("status", this.status)
                 .put("timestamp", this.timestamp.toInstant().toString())
                 .put("tipo", this.tipo)
-                .put("richiesta", "stocazz" /*this.richiesta != null ? this.richiesta.getId() : null*/)
+                .put("richiesta", this.richiesta != null ? this.richiesta.getId() : null)
                 .toString();
     }
 

@@ -120,17 +120,15 @@ public class ChatWSController {
 
         messaggio = messaggioService.save(messaggio);
 
-        if(tipoMessaggio.equalsIgnoreCase("request")){
+        if(tipoMessaggio.equalsIgnoreCase("request")) {
             JSONObject json = new JSONObject(messaggioStr);
             Richiesta r = new Richiesta();
             r.setMessaggio(messaggio);
             r.setAnnuncio(annunciLibriService.findById(json.getInt("annuncio")).get());
             r.setStato(null);
-            richiestaService.save(r);
+            r = richiestaService.save(r);
+            messaggio.setRichiesta(r);
         }
-        messaggio = messaggioService.findById(messaggio.getMessaggioId()).get();
-
-        log.info("Messaggio: "+ messaggio);
 
         messagingTemplate.convertAndSendToUser(recipient.getUtenteId().toString(), "/topic/private-message", messaggio.toString());
     }
