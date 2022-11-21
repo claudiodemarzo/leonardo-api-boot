@@ -349,7 +349,6 @@ public class AnnunciLibri {
                 .put("status", this.getStatus().getId())
                 .put("stato", this.getStato())
                 .put("saleDate", this.getSaleDate())
-                .put("recensione", this.getRecensione().getRecensioneId())
                 .toString();
     }
 }
