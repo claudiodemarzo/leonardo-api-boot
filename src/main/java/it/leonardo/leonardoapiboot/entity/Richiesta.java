@@ -76,7 +76,7 @@ public class Richiesta {
         json.put("annuncio", annuncio.toJSONString());
         //json.put("messaggio", messaggio);
         json.put("stato", stato);
-        json.put("libro", libro.toJSONString());
+        //json.put("libro", libro.toJSONString());
         return json.toString();
     }
 
