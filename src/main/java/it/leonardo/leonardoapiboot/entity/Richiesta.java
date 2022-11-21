@@ -74,7 +74,7 @@ public class Richiesta {
         JSONObject json = new JSONObject();
         json.put("id", id);
         json.put("annuncio", annuncio);
-        json.put("messaggio", messaggio);
+        //json.put("messaggio", messaggio);
         json.put("stato", stato);
         json.put("libro", libro);
         return json.toString();
