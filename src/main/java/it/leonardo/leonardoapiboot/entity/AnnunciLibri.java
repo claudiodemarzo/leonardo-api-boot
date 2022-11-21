@@ -339,6 +339,17 @@ public class AnnunciLibri {
     }
 
     public String toJSONString(){
-        return new JSONObject(this).toString();
+        return new JSONObject()
+                .put("annuncio_id", this.getAnnuncio_id())
+                .put("prezzo", this.getPrezzo())
+                .put("created_at", this.getCreated_at())
+                .put("livello_usura", this.getLivello_usura())
+                .put("libro", this.getLibro().getLibroId())
+                .put("utente", this.getUtente().getId())
+                .put("status", this.getStatus().getId())
+                .put("stato", this.getStato())
+                .put("saleDate", this.getSaleDate())
+                .put("recensione", this.getRecensione().getRecensioneId())
+                .toString();
     }
 }

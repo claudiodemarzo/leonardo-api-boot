@@ -214,6 +214,17 @@ public class Libro implements Serializable {
     }
 
     public String toJSONString(){
-        return new JSONObject(this).toString();
+        return new JSONObject()
+                .put("isbn", this.getIsbn())
+                .put("nome", this.getNome())
+                .put("descrizione", this.getDescrizione())
+                .put("copertina", this.getCopertina())
+                .put("autori", this.getAutori())
+                .put("casaed", this.getCasaed())
+                .put("pagine", this.getPagine())
+                .put("categoria", this.getCategoria())
+                .put("prezzolistino", this.getPrezzolistino())
+                .put("anno_pubblicazione", this.getAnno_pubblicazione())
+                .toString();
     }
 }
