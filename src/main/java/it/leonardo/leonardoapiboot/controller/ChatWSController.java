@@ -130,7 +130,7 @@ public class ChatWSController {
         }
         messaggio = messaggioService.findById(messaggio.getMessaggioId()).get();
 
-
+        log.info("Messaggio: "+ messaggio);
 
         messagingTemplate.convertAndSendToUser(recipient.getUtenteId().toString(), "/topic/private-message", messaggio.toString());
     }
