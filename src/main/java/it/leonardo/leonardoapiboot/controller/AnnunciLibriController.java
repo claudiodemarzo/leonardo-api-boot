@@ -21,6 +21,8 @@ import org.opencv.core.Mat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.web.bind.annotation.*;
 
 import javax.imageio.ImageIO;
@@ -81,6 +83,9 @@ public class AnnunciLibriController {
 
     @Autowired
     private AnnunciLibriService annunciLibriService;
+
+    @Autowired
+    private JavaMailSender mailSender;
 
     @Operation(description = "Restituisce tutti gli annunci")
     @ApiResponses(value = {
@@ -433,6 +438,14 @@ public class AnnunciLibriController {
 
 
             ChatWSController.sendMessage(utenteService.findById(Integer.parseInt(session.getAttribute("userID").toString())).get(), utenteService.findById(ann.getUtente().getId()).get(), "Ciao! Mi piacerebbe acquistare il libro<div ad-id=\"" + ann.getAnnuncio_id() + "\" class=\"ad-contacted card flex-row w-100\"><img src=\"" + ann.getLibro().getCopertina() + "\" alt=\"" + ann.getLibro().getNome() + "\"><div class=\"card-body d-flex flex-column\"><div class=\"ad-title\">" + ann.getLibro().getNome() + "</div><div class=\"ad-isbn\">" + ann.getLibro().getIsbn() + "</div><div class=\"ad-description\">" + ann.getLibro().getDescrizione() + "</div><div class=\"ad-price\">Prezzo: € " + costo.toPlainString() + "</div></div></div>", "text", chatroomService, utentePublicInfoService, messaggioService, annunciLibriService, richiestaService);
+            if(!ann.getUtente().getOnline()){
+                SimpleMailMessage smm = new SimpleMailMessage();
+                smm.setFrom("leonardo.start0@gmail.com");
+                smm.setTo(utenteService.findById(ann.getUtente().getId()).get().getEmail());
+                smm.setSubject("Qualcuno è interessato al tuo annuncio!");
+                smm.setText("Ciao!\n Qualcuno è interessato al tuo annuncio: " + ann.getLibro().getNome() + "\n\nPer contattarlo, vai su https://buybooks.it/chat/" + session.getAttribute("userID").toString() + "\n\nGrazie per aver usato BuyBooks!");
+                mailSender.send(smm);
+            }
 
             return ResponseEntity.ok().body("{}");
         } catch (Exception e) {
