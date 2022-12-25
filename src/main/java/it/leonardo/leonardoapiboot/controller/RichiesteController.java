@@ -2,9 +2,12 @@ package it.leonardo.leonardoapiboot.controller;
 
 import io.sentry.Sentry;
 import it.leonardo.leonardoapiboot.entity.AnnunciLibri;
+import it.leonardo.leonardoapiboot.entity.Notifica;
 import it.leonardo.leonardoapiboot.entity.Richiesta;
 import it.leonardo.leonardoapiboot.service.AnnunciLibriService;
+import it.leonardo.leonardoapiboot.service.NotificaService;
 import it.leonardo.leonardoapiboot.service.RichiestaService;
+import it.leonardo.leonardoapiboot.service.UtenteService;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.Log;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +33,12 @@ public class RichiesteController {
     @Autowired
     private HttpSession session;
 
+    @Autowired
+    private UtenteService utenteService;
+
+    @Autowired
+    private NotificaService notificaService;
+
     @GetMapping("/{id}")
     public ResponseEntity<Richiesta> getRichiestaById(@PathVariable Integer id) {
         log.info("Invoked RichiesteController.getRichiestaById(" + id + ")");
@@ -38,7 +47,7 @@ public class RichiesteController {
 
         String userid = session.getAttribute("userID").toString();
 
-        try{
+        try {
             Optional<Richiesta> richiesta = richiestaService.findById(id);
             if (richiesta.isPresent()) {
                 if (richiesta.get().getMessaggio().getChatroom().getUtenteDest().getUtenteId().toString().equals(userid)) {
@@ -49,32 +58,35 @@ public class RichiesteController {
             } else {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             Sentry.captureException(e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @PostMapping("/{id}")
-    public ResponseEntity<Richiesta> saveRichiesta(@PathVariable Integer id, Boolean value){
-        log.info("Invoked RichiesteController.saveRichiesta("+id+")");
+    public ResponseEntity<Richiesta> saveRichiesta(@PathVariable Integer id, Boolean value) {
+        log.info("Invoked RichiesteController.saveRichiesta(" + id + ")");
         String token = session.getAttribute("token") == null ? null : session.getAttribute("token").toString();
         if (token == null) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 
         String userid = session.getAttribute("userID").toString();
 
-        try{
+        try {
             Optional<Richiesta> richiesta = richiestaService.findById(id);
             if (richiesta.isPresent() && richiesta.get().getStato() == null) {
                 if (richiesta.get().getMessaggio().getChatroom().getUtenteDest().getUtenteId().toString().equals(userid)) {
                     Richiesta r = richiesta.get();
-                    r.setStato(value ? 1: 0);
-                    if(!value){
+                    r.setStato(value ? 1 : 0);
+                    if (!value) {
                         AnnunciLibri al = annunciLibriService.findById(r.getAnnuncio().getAnnuncio_id()).get();
                         al.setStato(1);
                         al.setSoldTo(null);
                         al.setSaleDate(null);
                         annunciLibriService.save(al);
+                        ChatWSController.sendNotification(r.getAnnuncio().getUtente().getId().toString(), new Notifica(Notifica.TipoNotifica.info, "Richiesta d'acquisto rifiutata", "La richiesta per l'annuncio " + r.getAnnuncio().getLibro().getNome() + " è stata rifiutata", utenteService.findById(r.getAnnuncio().getUtente().getId()).get(), ""), notificaService);
+                    } else {
+                        ChatWSController.sendNotification(r.getAnnuncio().getUtente().getId().toString(), new Notifica(Notifica.TipoNotifica.info, "Richiesta d'acquisto accettata", "La richiesta per l'annuncio " + r.getAnnuncio().getLibro().getNome() + " è stata accettata", utenteService.findById(r.getAnnuncio().getUtente().getId()).get(), ""), notificaService);
                     }
                     return ResponseEntity.ok(richiestaService.save(richiesta.get()));
                 } else {
@@ -83,7 +95,7 @@ public class RichiesteController {
             } else {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             Sentry.captureException(e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
