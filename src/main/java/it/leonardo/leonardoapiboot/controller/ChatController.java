@@ -321,7 +321,7 @@ public class ChatController {
                 case "location":
                     OpenCV.loadLocally();
 
-                    filePath = "/var/www/html/assets/imgs/chat/" + chatroom.getChatroomId() + "/";
+                    filePath = "/var/www/bb-temp/assets/imgs/chat/" + chatroom.getChatroomId() + "/";
                     File file = new File(filePath);
                     file.mkdirs();
                     filePath += sdf.format(Date.from(now)) + ".webp";
@@ -373,13 +373,13 @@ public class ChatController {
                         }
                     }
                     if (form.getTipo().equals("location")) {
-                        messaggio.setMessaggio("{\"image\" : \"" + filePath.replace("/var/www/html/assets/imgs/chat/", "") + "\", \"text\" : \"" + payloadJson.getString("text") + "\", \"url\" : \"" + payloadJson.getString("url") + "\"}");
+                        messaggio.setMessaggio("{\"image\" : \"" + filePath.replace("/var/www/bb-temp/assets/imgs/chat/", "") + "\", \"text\" : \"" + payloadJson.getString("text") + "\", \"url\" : \"" + payloadJson.getString("url") + "\"}");
                         ChatWSController.sendMessage(chatroom.getUtenteMit(), chatroom.getUtenteDest(), messaggio.getMessaggio(), messaggio.getTipo(), chatroomService, utentePublicInfoService, messaggioService, null, null);
                         return new ResponseEntity<>(messaggio.getMessaggio(), HttpStatus.OK);
                     } else if (form.getTipo().equals("image")) {
-                        messaggio.setMessaggio("{\"image\" : \"" + filePath.replace("/var/www/html/assets/imgs/chat/", "") + "\"}");
+                        messaggio.setMessaggio("{\"image\" : \"" + filePath.replace("/var/www/bb-temp/assets/imgs/chat/", "") + "\"}");
                         ChatWSController.sendMessage(chatroom.getUtenteMit(), chatroom.getUtenteDest(), messaggio.getMessaggio(), messaggio.getTipo(), chatroomService, utentePublicInfoService, messaggioService, null, null);
-                        return ResponseEntity.ok("{\"image\": \"" + filePath.replace("/var/www/html/assets/imgs/chat/", "") + "\"}");
+                        return ResponseEntity.ok("{\"image\": \"" + filePath.replace("/var/www/bb-temp/assets/imgs/chat/", "") + "\"}");
                     }
                     break;
                 case "ad":
@@ -404,7 +404,7 @@ public class ChatController {
             Chatroom chatroom = chatroomService.getById(chatroomID);
             if (!Objects.equals(chatroom.getUtenteMit().getUtenteId(), utente.getUtenteId()) && !Objects.equals(chatroom.getUtenteDest().getUtenteId(), utente.getUtenteId()))
                 return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-            InputStream in = new FileInputStream("/var/www/html/assets/imgs/chat/" + path);
+            InputStream in = new FileInputStream("/var/www/bb-temp/assets/imgs/chat/" + path);
 
             return ResponseEntity.ok()
                     .contentType(MediaType.IMAGE_PNG)

@@ -208,7 +208,7 @@ public class UtenteController {
 
                 Utente uSaved = service.save(u);
 
-                String fotoPath = "/var/www/html/assets/imgs/utenti/" + uSaved.getUtenteId() + ".webp", tmpFotoPath = "/var/www/html/assets/imgs/utenti/" + uSaved.getUtenteId() + ".tmp.webp";
+                String fotoPath = "/var/www/bb-temp/assets/imgs/utenti/" + uSaved.getUtenteId() + ".webp", tmpFotoPath = "/var/www/bb-temp/assets/imgs/utenti/" + uSaved.getUtenteId() + ".tmp.webp";
                 ImageUtils.downloadFile(foto, tmpFotoPath);
 
                 File tmpFotoFile = new File(tmpFotoPath);
@@ -226,7 +226,7 @@ public class UtenteController {
                 webpOutputStream.write(imageCopyBytes);
                 tmpFotoFile.delete();
 
-                uSaved.setFoto(fotoPath.replace("/var/www/html", ""));
+                uSaved.setFoto(fotoPath.replace("/var/www/bb-temp", ""));
                 uSaved = service.save(uSaved);
 
                 SimpleMailMessage smm = new SimpleMailMessage();
@@ -327,7 +327,7 @@ public class UtenteController {
 
             Utente uSaved = service.save(u);
 
-            String fotoPath = "/var/www/html/assets/imgs/utenti/" + uSaved.getUtenteId() + ".webp", tmpFotoPath = "/var/www/html/assets/imgs/utenti/" + uSaved.getUtenteId() + ".tmp.webp";
+            String fotoPath = "/var/www/bb-temp/assets/imgs/utenti/" + uSaved.getUtenteId() + ".webp", tmpFotoPath = "/var/www/bb-temp/assets/imgs/utenti/" + uSaved.getUtenteId() + ".tmp.webp";
             ImageUtils.downloadFile(foto, tmpFotoPath);
 
             File tmpFotoFile = new File(tmpFotoPath);
@@ -345,7 +345,7 @@ public class UtenteController {
             webpOutputStream.write(imageCopyBytes);
             tmpFotoFile.delete();
 
-            uSaved.setFoto(fotoPath.replace("/var/www/html", ""));
+            uSaved.setFoto(fotoPath.replace("/var/www/bb-temp", ""));
             uSaved = service.save(uSaved);
 
             SimpleMailMessage smm = new SimpleMailMessage();
@@ -587,7 +587,7 @@ public class UtenteController {
 
         OpenCV.loadLocally();
 
-        String filePath = "/var/www/html/assets/imgs/utenti/" + userID + ".webp";
+        String filePath = "/var/www/bb-temp/assets/imgs/utenti/" + userID + ".webp";
         File file = new File(filePath);
         File pngFile = new File(filePath + ".png");
         OutputStream png_ostream = null;
@@ -643,7 +643,7 @@ public class UtenteController {
             }
 
             Utente u = utente.get();
-            u.setFoto(filePath.replace("/var/www/html", ""));
+            u.setFoto(filePath.replace("/var/www/bb-temp", ""));
             UtentiPreferences up = utentiPreferencesService.getById(Integer.parseInt(userID)).get();
             JSONObject preferencesJson = new JSONObject(up.getPreferences());
             if (isAvatar) {

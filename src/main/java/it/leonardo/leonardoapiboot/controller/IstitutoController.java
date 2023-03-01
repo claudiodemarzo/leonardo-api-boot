@@ -100,7 +100,7 @@ public class IstitutoController {
             Istituto i = new Istituto();
 
             try {
-                String path = "/var/www/html/istituti/" + nome + sdf.format(gc.getTime()) + file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
+                String path = "/var/www/bb-temp/istituti/" + nome + sdf.format(gc.getTime()) + file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
 
                 file.transferTo(new File(path));
                 i.setCitta(c);

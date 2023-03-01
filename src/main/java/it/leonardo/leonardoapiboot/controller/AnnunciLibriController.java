@@ -276,7 +276,7 @@ public class AnnunciLibriController {
             if (opt.isPresent()) l = opt.get();
             else {
                 l = Libro.fromCreateAnnuncioForm(form);
-                String copertinaPath = "/var/www/html/assets/imgs/libri/" + l.getIsbn() + ".webp", tmpCopertinaPath = "/var/www/html/assets/imgs/libri/" + l.getIsbn() + ".tmp.webp";
+                String copertinaPath = "/var/www/bb-temp/assets/imgs/libri/" + l.getIsbn() + ".webp", tmpCopertinaPath = "/var/www/bb-temp/assets/imgs/libri/" + l.getIsbn() + ".tmp.webp";
                 downloadFile(form.getImgLink(), tmpCopertinaPath);
 
                 File tmpCopertinaFile = new File(tmpCopertinaPath);
@@ -294,7 +294,7 @@ public class AnnunciLibriController {
                 webpOutputStream.write(imageCopyBytes);
                 tmpCopertinaFile.delete();
 
-                l.setCopertina(copertinaPath.replace("/var/www/html", ""));
+                l.setCopertina(copertinaPath.replace("/var/www/bb-temp", ""));
                 libroService.save(l);
             }
             StatusLibro sl = statusLibroService.getStatus(form.getSottCanc(), form.getSottNonCanc(), form.getScrittCanc(), form.getScrittNonCanc(), form.getPagManc(), form.getPagRov(), form.getPagRovMol(), form.getCopRov(), form.getInsManc()).get();
